@@ -3,6 +3,8 @@ package sim;
 
 import static comp3170.Math.TAU;
 
+import java.awt.event.KeyEvent;
+
 import comp3170.GLBuffers;
 import comp3170.InputManager;
 import comp3170.SceneObject;
@@ -67,17 +69,68 @@ public class Scene extends SceneObject{
 	private Vector4f mousePos = new Vector4f();
 	int screenWidth = 600;
 	int screenHeight = 600;
+	private int brushMode = 0;
+	private Vector3f clearColour = new Vector3f(0f, 0.1f, 0.2f); //Dark blue clear colour
+	private Vector3f blockerColour = new Vector3f(0.9f, 0.9f, 0.8f); //Pale yellow blocker colour
+	private Vector3f foodColour = new Vector3f(0.9f, 0.7f, 0.2f); //Red-orange food colour
+	private Vector3f foodScentColour = new Vector3f(0.3f, 0.8f, 0.5f); //Dark green food scent colour
+	private Vector3f homeScentColour = new Vector3f(0.8f, 0.1f, 0.6f); //Dark red home scent colour
+	private Vector3f homeColour = new Vector3f(1f, 1f, 1f); //White home colour
 	
 	public void update(float deltaTime, InputManager input) {
+		if (input.wasKeyPressed(KeyEvent.VK_0)){ //0 = clear
+			brushMode = 0;
+		}
+		if (input.wasKeyPressed(KeyEvent.VK_1)){ //1 = black blocker squares
+			brushMode = 1;
+		}
+		if (input.wasKeyPressed(KeyEvent.VK_2)){ //2 = food
+			brushMode = 2;
+		}
+		if (input.wasKeyPressed(KeyEvent.VK_3)){ //3 = food scent
+			brushMode = 3;
+		}
+		if (input.wasKeyPressed(KeyEvent.VK_4)){ //4 = home scent
+			brushMode = 4;
+		}
+		if (input.wasKeyPressed(KeyEvent.VK_5)){ //5 = home
+			brushMode = 5;
+		}
+		if (input.wasKeyPressed(KeyEvent.VK_5)){ //6 = paint ants
+			brushMode = 6;
+		}
+		
 		grid.update(deltaTime, input);
 		if (input.isMouseDown()) {
 			mousePos = getMousePosWorld(input);
-			int gridIndex = grid.getCellAtWorldPos(mousePos);
-			System.out.println("Grid Index:" + gridIndex);
-			if (gridIndex != -1) {
-				grid.setColour(gridIndex, new Vector3f(0,0,0));
+			if (brushMode != 6) {
+				int gridIndex = grid.getCellAtWorldPos(mousePos);
+				System.out.println("Grid Index:" + gridIndex);
+				if (gridIndex != -1) {
+					switch(brushMode) {
+						case 0: // clear
+							grid.setColour(gridIndex, clearColour);
+							break;
+						case 1: // blocker
+							grid.setColour(gridIndex, blockerColour);
+							break;
+						case 2: // food
+							grid.setColour(gridIndex, foodColour);
+							break;
+						case 3: // food scent
+							grid.setColour(gridIndex, foodScentColour);
+							break;
+						case 4: // home scent
+							grid.setColour(gridIndex, homeScentColour);
+							break;
+						case 5: //home colour
+							grid.setColour(gridIndex, homeColour);
+							break;
+					}
+				}
+			} else {
+				ants.addAnt(mousePos);
 			}
-			ants.addAnt(mousePos);
 		}		
 		ants.update(deltaTime, input);
 		currentCamera.update(deltaTime, input);
