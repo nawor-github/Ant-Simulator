@@ -72,6 +72,7 @@ public class Grid extends SceneObject {
 				float yCoord = (y*spacing) - squareRadius - heighRadius;
 				position[index] = new Vector3f(xCoord, yCoord, 0f);
 				colour[index] = new Vector3f(0.8f, 0.8f, 0.5f);
+				squares[index] = new Square(x,y,index);
 			}
 		}
 		positionBuffer = GLBuffers.createBuffer(position);

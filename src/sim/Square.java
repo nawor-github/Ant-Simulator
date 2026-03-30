@@ -24,7 +24,23 @@ public class Square {
 		clear();
 	}
 	
-	public Vector3f getColour() {
+	public Vector3f calculateColour() {
+		if (isBlocker) {
+			colour = blockerColour;
+		} else if (isHome) {
+			colour = homeColour;
+		} else {
+			colour = clearColour;
+		} 
+		if (food > 0) {
+			colour = foodColour;
+		}
+		if (foodScent > 0) {
+			colour = foodScentColour; //Make this blend later
+		}
+		if (homeScent > 0) {
+			colour = homeScentColour; //Make this blend later
+		}
 		return colour;
 	}
 	
@@ -35,31 +51,37 @@ public class Square {
 		isBlocker = false;
 		isHome = false;
 		colour = clearColour;
+		calculateColour();
 	}
 	
 	public void setBlocker() {
 		clear();
 		isBlocker = true;
+		calculateColour();
 	}
 	
 	public void setHome() {
 		clear();
 		isBlocker = false;
+		calculateColour();
 	}
 	
 	public void addFood(float f) {
 		clear();
 		food += f;
+		calculateColour();
 	}
 	
 	public void addFoodScent(float f) {
 		clear();
 		homeScent += f;
+		calculateColour();
 	}
 	
 	public void addHomeScent(float f) {
 		clear();
 		foodScent += f;
+		calculateColour();
 	}
 
 
@@ -75,6 +97,10 @@ public class Square {
 		if (foodScent < 0) {
 			foodScent = 0;
 		}
+	}
+	
+	public Vector3f getColour() {
+		return colour;
 	}
 	
 }
