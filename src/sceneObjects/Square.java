@@ -29,20 +29,18 @@ public class Square extends SceneObject {
 	private int vertexBuffer;
 	private int[] indices;
 	private int indexBuffer;
-	protected Vector3f colour = new Vector3f(0.1f,0.6f,0.3f); //Dark green
-	protected Vector3f stripeColour = new Vector3f(0.05f,0.4f,0.3f); //Darker green, with a blue-ish tinge
 	
 	private Vector3f[] position;
 	private int positionBuffer;
 	
-	private Vector2f[] scale;
-	private int scaleBuffer;
+	private Vector3f[] colour;
+	private int colourBuffer;
 	
 	private int width, height, numSquares;
 	
 	
 	
-	public Square(int w, int h, float max_scale, float min_scale, float scatter_X, float scatter_Y) {
+	public Square(int w, int h, float scale, float spacing) {
 		width = w;
 		height = h;
 		numSquares = width * height;
@@ -52,22 +50,17 @@ public class Square extends SceneObject {
 		makeMesh();
 		
 		position = new Vector3f[numSquares];
-		scale = new Vector2f[numSquares];
+		colour = new Vector3f[numSquares];
 		
-		float min_X = -scatter_X/2f;
-		float max_X = scatter_X/2f;
-		float min_Y = -scatter_Y/2f;
-		float max_Y = scatter_Y/2f;
-		
-		for (int i = 0; i < numSquares; i++) {
-			float x = Scene.randBetween(min_X, max_X);
-			float y = Scene.randBetween(min_Y, max_Y);
-			position[i] = new Vector3f(x, y, 0f);
-			float s = Scene.randBetween(min_scale, max_scale);
-			scale[i] = new Vector2f(s, s);
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				int index = (x*width)+y;
+				position[index] = new Vector3f(x*spacing,y*spacing,0f);
+				colour[index] = new Vector3f(0.5f, 0.8f, 0.5f);
+			}
 		}
 		positionBuffer = GLBuffers.createBuffer(position);
-		scaleBuffer = GLBuffers.createBuffer(scale);
+		colourBuffer = GLBuffers.createBuffer(colour);
 	}
 	
 	private void makeMesh() {	
@@ -96,17 +89,12 @@ public class Square extends SceneObject {
 		//Passing our instanced variables (yippee!)
 		shader.setAttribute("a_worldPos", positionBuffer);
 		glVertexAttribDivisor(shader.getAttribute("a_worldPos"), 1);
-		shader.setAttribute("a_scale", scaleBuffer);
-		glVertexAttribDivisor(shader.getAttribute("a_scale"), 1);
+		shader.setAttribute("a_colour", colourBuffer);
+		glVertexAttribDivisor(shader.getAttribute("a_colour"), 1);
 		
 		//This one isn't set as an attribute divisor as it is the same for all cacti (they use the same mesh)
 	    shader.setAttribute("a_position", vertexBuffer);
-	    
-	    //Setting our awesome colour uniforms to be passed to the fragment shader
-	    shader.setUniform("u_colour", colour);	 
-	    shader.setUniform("u_stripeColour", stripeColour);	    
-
-	    
+	    	    
 	    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 	    /*
 		        ________________
