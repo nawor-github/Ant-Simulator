@@ -4,7 +4,7 @@ in vec4 a_position; // The vertex position from our java class
 in vec3 a_worldPos; // The world coordinates at which to place the point
 in vec3 a_colour; //The specific colour to draw
 
-out float v_xCoord; //xCoordinate of point
+out vec2 v_localCoord; //xCoordinate of point in local space
 out vec3 v_colour; //xCoordinate of point
 
 
@@ -20,6 +20,6 @@ void main() {
 	gl_Position = modelMatrix * a_position;
 	
 	v_colour = a_colour;
-	v_xCoord = a_position.x;
+	v_localCoord = a_position.xy;
 	
 }

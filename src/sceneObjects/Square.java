@@ -38,7 +38,7 @@ public class Square extends SceneObject {
 	
 	private int width, height, numSquares;
 	private float scale;
-	private Vector3f borderColour = new Vector3f(0,0,0);
+	private Vector3f edgeColour = new Vector3f(0,0,0);
 	
 	
 	
@@ -98,7 +98,8 @@ public class Square extends SceneObject {
 		//This one isn't set as an attribute divisor as it is the same for all cacti (they use the same mesh)
 	    shader.setAttribute("a_position", vertexBuffer);
 	    
-	    shader.setUniform("u_scale", scale);	
+	    shader.setUniform("u_scale", scale);
+	    shader.setUniform("u_edgeColour", edgeColour);
 	    	    
 	    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 	    /*
