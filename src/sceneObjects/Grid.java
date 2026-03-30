@@ -9,6 +9,7 @@ import comp3170.SceneObject;
 import comp3170.Shader;
 import comp3170.ShaderLibrary;
 import sim.Scene;
+import sim.Square;
 
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
@@ -38,6 +39,8 @@ public class Grid extends SceneObject {
 	private Vector3f[] colour;
 	private int colourBuffer;
 	
+	private Square[] squares;
+	
 	private int count_x, count_y, numSquares;
 	private float scale;
 	private Vector3f edgeColour = new Vector3f(0,0,0);
@@ -56,6 +59,7 @@ public class Grid extends SceneObject {
 		
 		position = new Vector3f[numSquares];
 		colour = new Vector3f[numSquares];
+		squares = new Square[numSquares];
 		
 		float widthRadius = count_x * spacing / 2;
 		float heighRadius = count_y * spacing / 2;
