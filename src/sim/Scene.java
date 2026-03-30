@@ -71,28 +71,38 @@ public class Scene extends SceneObject{
 	public void update(float deltaTime, InputManager input) {
 		grid.update(deltaTime, input);
 		if (input.isMouseDown()) {
-			input.getCursorPos(mousePosition);
-			
-			float x = (2f * ((float) mousePosition.x()/screenWidth) - 1f);
-			float y = 1f - (2f * (((float) mousePosition.y()/screenHeight)));
-			System.out.println("Update function detecting mouse at: " + x + " " + y);
-			//Vector3f pos = new Vector3f(x, y, 0f);
-			//cacti.addAnt(pos);
-			
-			Matrix4f mvpMatrix = new Matrix4f();
-			Matrix4f viewMatrix = new Matrix4f();
-			camera.getViewMatrix(viewMatrix);
-			Matrix4f projectionMatrix = new Matrix4f();
-			camera.getProjectionMatrix(projectionMatrix);
-
-			mvpMatrix.set(viewMatrix.mul(projectionMatrix));
-			mvpMatrix.invert();
-			
-			mousePos = new Vector4f(x, y, 0f, 1f);
-			mousePos.mul(mvpMatrix);
+			mousePos = getMousePosWorld(input);
+			int gridIndex = grid.getCellAtWorldPos(mousePos);
+			System.out.println("Grid Index:" + gridIndex);
+			if (gridIndex != -1) {
+				grid.setColour(gridIndex, new Vector3f(0,0,0));
+			}
 			cacti.addAnt(mousePos);
 		}		
+		cacti.update(deltaTime, input);
 		currentCamera.update(deltaTime, input);
+	}
+	
+	public Vector4f getMousePosWorld(InputManager input) {
+		input.getCursorPos(mousePosition);
+		
+		float x = (2f * ((float) mousePosition.x()/screenWidth) - 1f);
+		float y = 1f - (2f * (((float) mousePosition.y()/screenHeight)));
+		//System.out.println("Update function detecting mouse at: " + x + " " + y);
+		
+		
+		Matrix4f mvpMatrix = new Matrix4f();
+		Matrix4f viewMatrix = new Matrix4f();
+		camera.getViewMatrix(viewMatrix);
+		Matrix4f projectionMatrix = new Matrix4f();
+		camera.getProjectionMatrix(projectionMatrix);
+
+		mvpMatrix.set(viewMatrix.mul(projectionMatrix));
+		mvpMatrix.invert();
+		
+		mousePos = new Vector4f(x, y, 0f, 1f);
+		mousePos.mul(mvpMatrix);
+		return mousePos;
 	}
 
 	

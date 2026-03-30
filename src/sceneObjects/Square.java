@@ -74,13 +74,6 @@ public class Square extends SceneObject {
 		colourBuffer = GLBuffers.createBuffer(colour);
 	}
 	
-	public int getIndexAtNDCPos(Vector3f position) {
-		if (position.x > 0.5) {
-			return 1;
-		}
-		return 0;
-	}
-	
 	private void makeMesh() {	
 		vertices = new Vector4f[] {
 			//Main body
@@ -138,5 +131,30 @@ public class Square extends SceneObject {
 
 	public void update(float deltaTime, InputManager input) {
 			
+	}
+	
+	public void setColour(int i, Vector3f c) {
+		colour[i] = c;
+		colourBuffer = GLBuffers.createBuffer(colour); // See if this can be removed??
+	}
+	
+	private boolean liesWithin(Vector4f mousePos, int index) {
+		float x1 = position[index].x;
+		float y1 = position[index].y;
+		float x2 = x1 + scale;
+		float y2 = y1 + scale;
+		if (mousePos.x >= x1 && mousePos.x <= x2 && mousePos.y >= y1 && mousePos.y <= y2) {
+			return true;
+		}
+		return false;
+	}
+
+	public int getCellAtWorldPos(Vector4f mousePos) {
+		for (int i = 0; i < position.length; i++) {
+			if (liesWithin(mousePos, i)) {
+				return i;
+			}
+		}
+		return -1;
 	}
 }

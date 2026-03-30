@@ -1,7 +1,5 @@
 package sceneObjects;
 
-import static comp3170.Math.TAU;
-
 import org.joml.Matrix4f;
 import static org.lwjgl.glfw.GLFW.*;
 

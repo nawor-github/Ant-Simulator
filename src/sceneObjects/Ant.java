@@ -4,6 +4,7 @@ import org.joml.Vector4f;
 
 
 import comp3170.GLBuffers;
+import comp3170.InputManager;
 import comp3170.SceneObject;
 import comp3170.Shader;
 import comp3170.ShaderLibrary;
@@ -12,6 +13,11 @@ import sim.Scene;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_DOWN;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_UP;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
 import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
@@ -78,7 +84,7 @@ public class Ant extends SceneObject {
 		scale = addToVector3fArray(scale, new Vector3f(s,s,s));
 		positionBuffer = GLBuffers.createBuffer(position);
 		scaleBuffer = GLBuffers.createBuffer(scale);
-		System.out.println("Ant created at: " + pos.x + ", " + pos.y);
+		//System.out.println("Ant created at: " + pos.x + ", " + pos.y);
 	}
 	
 	public void addAnt(Vector3f pos) {
@@ -97,6 +103,23 @@ public class Ant extends SceneObject {
 		}
 		result[base.length] = addition;
 		return result;
+	}
+	
+	private final float MOVE_SPEED = 20f;
+	
+	public void update(float deltaTime, InputManager input) {
+		if (input.isKeyDown(GLFW_KEY_UP)) { //A press, tank rotate left
+			this.getMatrix().translate(0f*deltaTime, MOVE_SPEED*deltaTime, 0*deltaTime);
+		}
+		if (input.isKeyDown(GLFW_KEY_LEFT)) { //A press, tank rotate left
+			this.getMatrix().translate(-MOVE_SPEED*deltaTime, 0f*deltaTime, 0*deltaTime);
+		}
+		if (input.isKeyDown(GLFW_KEY_RIGHT)) { //A press, tank rotate left
+			this.getMatrix().translate(MOVE_SPEED*deltaTime, 0f*deltaTime, 0*deltaTime);
+		}
+		if (input.isKeyDown(GLFW_KEY_DOWN)) { //A press, tank rotate left
+			this.getMatrix().translate(0f*deltaTime, -MOVE_SPEED*deltaTime, 0*deltaTime);
+		}
 	}
 	
 	private void makeMesh() {	
@@ -182,7 +205,7 @@ public class Ant extends SceneObject {
 	    // disable instance-based drawing (very important to a guy like me)
 		glVertexAttribDivisor(shader.getAttribute("a_worldPos"), 0);
 		glVertexAttribDivisor(shader.getAttribute("a_scale"), 0);
-
-
 	}
+	
+	
 }
