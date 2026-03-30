@@ -35,37 +35,68 @@ public class Ant extends SceneObject {
 	private Vector3f[] position;
 	private int positionBuffer;
 	
-	private Vector2f[] scale;
+	private Vector3f[] scale;
 	private int scaleBuffer;
 	
-	private int N_Cacti;
+	private int N_Ants;
 	
+	private float max_scale, min_scale;
 	
-	
-	public Ant(int nCacti, float max_scale, float min_scale, float scatter_X, float scatter_Y) {
-		N_Cacti = nCacti;
+	public Ant(int nCacti, float max_Scale, float min_Scale, float scatter_X, float scatter_Y) {
+		min_scale = min_Scale;
+		max_scale = max_Scale;
+		N_Ants = nCacti;
 		shader = ShaderLibrary.instance.compileShader(VERTEX_SHADER, FRAGMENT_SHADER);
 
 		// Make one copy of the mesh
 		makeMesh();
 		
-		position = new Vector3f[N_Cacti];
-		scale = new Vector2f[N_Cacti];
+		position = new Vector3f[N_Ants];
+		scale = new Vector3f[N_Ants];
 		
 		float min_X = -scatter_X/2f;
 		float max_X = scatter_X/2f;
 		float min_Y = -scatter_Y/2f;
 		float max_Y = scatter_Y/2f;
 		
-		for (int i = 0; i < N_Cacti; i++) {
+		for (int i = 0; i < N_Ants; i++) {
 			float x = Scene.randBetween(min_X, max_X);
 			float y = Scene.randBetween(min_Y, max_Y);
 			position[i] = new Vector3f(x, y, 0f);
 			float s = Scene.randBetween(min_scale, max_scale);
-			scale[i] = new Vector2f(s, s);
+			scale[i] = new Vector3f(s, s, s);
 		}
 		positionBuffer = GLBuffers.createBuffer(position);
 		scaleBuffer = GLBuffers.createBuffer(scale);
+	}
+	
+	public void addAnt(Vector4f pos) {
+		Vector3f p = new Vector3f(pos.x, pos.y, pos.z);
+		N_Ants = N_Ants + 1;
+		position = addToVector3fArray(position, p);
+		float s = Scene.randBetween(min_scale, max_scale);
+		scale = addToVector3fArray(scale, new Vector3f(s,s,s));
+		positionBuffer = GLBuffers.createBuffer(position);
+		scaleBuffer = GLBuffers.createBuffer(scale);
+		System.out.println("Ant created at: " + pos.x + ", " + pos.y);
+	}
+	
+	public void addAnt(Vector3f pos) {
+		N_Ants = N_Ants + 1;
+		position = addToVector3fArray(position, pos);
+		float s = Scene.randBetween(min_scale, max_scale);
+		scale = addToVector3fArray(scale, new Vector3f(s,s,s));
+		positionBuffer = GLBuffers.createBuffer(position);
+		scaleBuffer = GLBuffers.createBuffer(scale);
+	}
+	
+	private Vector3f[] addToVector3fArray(Vector3f[] base, Vector3f addition) {
+		Vector3f[] result = new Vector3f[base.length + 1];
+		for (int i = 0; i < base.length; i++) {
+			result[i] = base[i];
+		}
+		result[base.length] = addition;
+		return result;
 	}
 	
 	private void makeMesh() {	
@@ -146,7 +177,7 @@ public class Ant extends SceneObject {
 		   ()==(                (@==()
 		        '---------------'
 		*/
-	    glDrawElementsInstanced(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0, N_Cacti);	
+	    glDrawElementsInstanced(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0, N_Ants);	
 	    
 	    // disable instance-based drawing (very important to a guy like me)
 		glVertexAttribDivisor(shader.getAttribute("a_worldPos"), 0);

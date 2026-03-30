@@ -2,7 +2,7 @@
 
 in vec4 a_position; // The vertex position from our java class
 in vec3 a_worldPos; // The world coordinates at which to place the point
-in vec2 a_scale; //The scale to draw at
+in vec3 a_scale; //The scale to draw at
 
 out float v_xCoord; //xCoordinate of point
 

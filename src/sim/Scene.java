@@ -3,11 +3,14 @@ package sim;
 
 import static comp3170.Math.TAU;
 
+import comp3170.GLBuffers;
 import comp3170.InputManager;
 import comp3170.SceneObject;
 import sceneObjects.*;
 
 import org.joml.Matrix4f;
+import org.joml.Vector2i;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 
@@ -60,8 +63,32 @@ public class Scene extends SceneObject{
 		return currentCamera; //Return the current active camera
 	}
 	
+	private Vector2i mousePosition = new Vector2i();
+	private Vector4f mousePos = new Vector4f();
+	int screenWidth = 600;
+	int screenHeight = 600;
+	
 	public void update(float deltaTime, InputManager input) {
 		grid.update(deltaTime, input);
+		if (input.isMouseDown()) {
+			input.getCursorPos(mousePosition);
+			
+			float x = (2f * ((float) mousePosition.x()/screenWidth) - 1f);
+			float y = 1f - (2f * (((float) mousePosition.y()/screenHeight)));
+			System.out.println(x + " " + y);
+			//Vector3f pos = new Vector3f(x, y, 0f);
+			//cacti.addAnt(pos);
+			
+			Matrix4f mvpMatrix = new Matrix4f();
+			Matrix4f viewMatrix = new Matrix4f();
+			Matrix4f projectionMatrix = new Matrix4f();
+			mvpMatrix.set(viewMatrix.mul(projectionMatrix));
+			mvpMatrix.invert();
+			
+			mousePos = new Vector4f(x, y, 0f, 1f);
+			mousePos.mul(mvpMatrix);
+			cacti.addAnt(mousePos);
+		}		
 	}
 
 	
