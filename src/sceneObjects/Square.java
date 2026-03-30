@@ -135,21 +135,8 @@ public class Square extends SceneObject {
 
 
 	}
-	
-	private Vector2i mousePosition = new Vector2i();
-	int screenWidth = 600;
-	int screenHeight = 600;
 
 	public void update(float deltaTime, InputManager input) {
-		if (input.isMouseDown()) {
-			input.getCursorPos(mousePosition);
-			float x = ((float) mousePosition.x()/screenWidth);
-			float y = ((((float) mousePosition.y()/screenHeight) ) - 1f) * -1f;
-			System.out.println(x + " " + y);
-			Vector3f pos = new Vector3f(x, y, 0f);
-			int index = getIndexAtNDCPos(pos);
-			colour[index] = new Vector3f(0.8f, 0.8f, 0.8f);
-			colourBuffer = GLBuffers.createBuffer(colour);
-		}		
+			
 	}
 }

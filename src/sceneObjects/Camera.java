@@ -1,6 +1,11 @@
 package sceneObjects;
 
+import static comp3170.Math.TAU;
+
 import org.joml.Matrix4f;
+import static org.lwjgl.glfw.GLFW.*;
+
+import comp3170.InputManager;
 import comp3170.SceneObject;
 
 public class Camera extends SceneObject {
@@ -39,4 +44,20 @@ public class Camera extends SceneObject {
 		this.zoom = width * WIDTH_PROPORTION; //Scales the zoom to be proportional to the desired width proportion
 	}
 	
+	private final float MOVE_SPEED = 20f;
+	
+	public void update(float deltaTime, InputManager input) {
+		if (input.isKeyDown(GLFW_KEY_UP)) { //A press, tank rotate left
+			this.getMatrix().translate(0f*deltaTime, MOVE_SPEED*deltaTime, 0*deltaTime);
+		}
+		if (input.isKeyDown(GLFW_KEY_LEFT)) { //A press, tank rotate left
+			this.getMatrix().translate(-MOVE_SPEED*deltaTime, 0f*deltaTime, 0*deltaTime);
+		}
+		if (input.isKeyDown(GLFW_KEY_RIGHT)) { //A press, tank rotate left
+			this.getMatrix().translate(MOVE_SPEED*deltaTime, 0f*deltaTime, 0*deltaTime);
+		}
+		if (input.isKeyDown(GLFW_KEY_DOWN)) { //A press, tank rotate left
+			this.getMatrix().translate(0f*deltaTime, -MOVE_SPEED*deltaTime, 0*deltaTime);
+		}
+	}
 }

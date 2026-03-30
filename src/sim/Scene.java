@@ -75,13 +75,16 @@ public class Scene extends SceneObject{
 			
 			float x = (2f * ((float) mousePosition.x()/screenWidth) - 1f);
 			float y = 1f - (2f * (((float) mousePosition.y()/screenHeight)));
-			System.out.println(x + " " + y);
+			System.out.println("Update function detecting mouse at: " + x + " " + y);
 			//Vector3f pos = new Vector3f(x, y, 0f);
 			//cacti.addAnt(pos);
 			
 			Matrix4f mvpMatrix = new Matrix4f();
 			Matrix4f viewMatrix = new Matrix4f();
+			camera.getViewMatrix(viewMatrix);
 			Matrix4f projectionMatrix = new Matrix4f();
+			camera.getProjectionMatrix(projectionMatrix);
+
 			mvpMatrix.set(viewMatrix.mul(projectionMatrix));
 			mvpMatrix.invert();
 			
@@ -89,6 +92,7 @@ public class Scene extends SceneObject{
 			mousePos.mul(mvpMatrix);
 			cacti.addAnt(mousePos);
 		}		
+		currentCamera.update(deltaTime, input);
 	}
 
 	
