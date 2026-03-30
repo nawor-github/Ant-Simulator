@@ -22,13 +22,14 @@ public class Scene extends SceneObject{
 	
 	private final float MAIN_CAM_ZOOM = 200f;
 	private final int GRID_SIZE = 3;
+	private final int GRID_SPACING = 3;
 			
 	public Scene() {
 		
 		
 		theScene = this;
 		
-		grid = new Square(GRID_SIZE, GRID_SIZE, 1, 1);
+		grid = new Square(GRID_SIZE, GRID_SIZE, 2, GRID_SPACING);
 		grid.setParent(this);
 		
 		camera = new Camera(MAIN_CAM_ZOOM);

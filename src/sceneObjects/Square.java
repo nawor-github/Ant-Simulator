@@ -37,12 +37,15 @@ public class Square extends SceneObject {
 	private int colourBuffer;
 	
 	private int width, height, numSquares;
+	private float scale;
+	private Vector3f borderColour = new Vector3f(0,0,0);
 	
 	
 	
-	public Square(int w, int h, float scale, float spacing) {
+	public Square(int w, int h, float s, float spacing) {
 		width = w;
 		height = h;
+		scale = s;
 		numSquares = width * height;
 		shader = ShaderLibrary.instance.compileShader(VERTEX_SHADER, FRAGMENT_SHADER);
 
@@ -94,6 +97,8 @@ public class Square extends SceneObject {
 		
 		//This one isn't set as an attribute divisor as it is the same for all cacti (they use the same mesh)
 	    shader.setAttribute("a_position", vertexBuffer);
+	    
+	    shader.setUniform("u_scale", scale);	
 	    	    
 	    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 	    /*
@@ -110,7 +115,7 @@ public class Square extends SceneObject {
 	    
 	    // disable instance-based drawing (very important to a guy like me)
 		glVertexAttribDivisor(shader.getAttribute("a_worldPos"), 0);
-		glVertexAttribDivisor(shader.getAttribute("a_scale"), 0);
+		glVertexAttribDivisor(shader.getAttribute("a_colour"), 0);
 
 
 	}

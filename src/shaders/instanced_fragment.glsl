@@ -1,12 +1,13 @@
 #version 410
 
 in float v_xCoord;
-int vec3 v_Colour; // vertex colour (r,g,b)
+in vec3 v_colour; // vertex colour (r,g,b)
 
 layout(location = 0) out vec4 o_colour;	// RGBA output to colour buffer 
 
 
 
 void main() {
-	o_colour = v_colour;
+	vec4 colour = vec4(v_colour.x, v_colour.y, v_colour.z, 1);
+	o_colour = colour;
 }
