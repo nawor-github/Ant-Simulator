@@ -22,7 +22,7 @@ import static org.lwjgl.opengl.GL33.glVertexAttribDivisor;
 import static org.lwjgl.opengl.GL31.glDrawElementsInstanced;
 
 
-public class Square extends SceneObject {
+public class Grid extends SceneObject {
 	final private String VERTEX_SHADER = "instanced_square_vertex.glsl";
 	final private String FRAGMENT_SHADER = "instanced_square_fragment.glsl";
 	private Shader shader;
@@ -44,7 +44,7 @@ public class Square extends SceneObject {
 	
 	
 	
-	public Square(int w, int h, float s, float spacing) {
+	public Grid(int w, int h, float s, float spacing) {
 		count_x = w;
 		count_y = h;
 		scale = s;

@@ -26,7 +26,7 @@ public class Scene extends SceneObject{
 	private Ant ants;
 
 
-	private Square grid;
+	private Grid grid;
 	
 	private final float MAIN_CAM_ZOOM = 200f;
 	private final int GRID_SIZE = 30;
@@ -46,7 +46,7 @@ public class Scene extends SceneObject{
 		
 		
 		
-		grid = new Square(GRID_SIZE, GRID_SIZE, GRID_SCALE, GRID_SPACING);
+		grid = new Grid(GRID_SIZE, GRID_SIZE, GRID_SCALE, GRID_SPACING);
 		grid.setParent(this);		
 		camera = new Camera(MAIN_CAM_ZOOM);
 		camera.setParent(theScene);
