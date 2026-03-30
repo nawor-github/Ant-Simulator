@@ -23,8 +23,8 @@ import static org.lwjgl.opengl.GL31.glDrawElementsInstanced;
 
 
 public class Square extends SceneObject {
-	final private String VERTEX_SHADER = "instanced_vertex.glsl";
-	final private String FRAGMENT_SHADER = "instanced_fragment.glsl";
+	final private String VERTEX_SHADER = "instanced_square_vertex.glsl";
+	final private String FRAGMENT_SHADER = "instanced_square_fragment.glsl";
 	private Shader shader;
 	
 	private Vector4f[] vertices;
@@ -67,7 +67,7 @@ public class Square extends SceneObject {
 				float xCoord = (x*spacing) - squareRadius - widthRadius;
 				float yCoord = (y*spacing) - squareRadius - heighRadius;
 				position[index] = new Vector3f(xCoord, yCoord, 0f);
-				colour[index] = new Vector3f(0.5f, 0.8f, 0.5f);
+				colour[index] = new Vector3f(0.8f, 0.8f, 0.5f);
 			}
 		}
 		positionBuffer = GLBuffers.createBuffer(position);
