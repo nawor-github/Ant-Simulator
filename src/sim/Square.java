@@ -7,7 +7,7 @@ import comp3170.InputManager;
 public class Square {
 	float food, foodScent, homeScent;
 	boolean isBlocker, isHome;
-	int x, y, i;
+	public int x, y, i;
 	private Vector3f colour;
 	
 	private Vector3f clearColour = new Vector3f(0f, 0.1f, 0.2f); //Dark blue clear colour

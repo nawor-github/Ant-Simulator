@@ -77,6 +77,9 @@ public class Scene extends SceneObject{
 	private Vector3f homeScentColour = new Vector3f(0.8f, 0.1f, 0.6f); //Dark red home scent colour
 	private Vector3f homeColour = new Vector3f(1f, 1f, 1f); //White home colour
 	
+	private final float FOOD_AMOUNT = 20f;
+	private final float SCENT_AMOUNT = 20f;
+	
 	public void update(float deltaTime, InputManager input) {
 		if (input.wasKeyPressed(KeyEvent.VK_0)){ //0 = clear
 			brushMode = 0;
@@ -107,24 +110,31 @@ public class Scene extends SceneObject{
 				int gridIndex = grid.getCellAtWorldPos(mousePos);
 				System.out.println("Grid Index:" + gridIndex);
 				if (gridIndex != -1) {
+					Square s = grid.getSquare(gridIndex);
 					switch(brushMode) {
 						case 0: // clear
-							grid.setColour(gridIndex, clearColour);
+							s.clear();
+							//grid.setColour(gridIndex, clearColour);
 							break;
 						case 1: // blocker
-							grid.setColour(gridIndex, blockerColour);
+							s.setBlocker();
+							//grid.setColour(gridIndex, blockerColour);
 							break;
 						case 2: // food
-							grid.setColour(gridIndex, foodColour);
+							s.addFood(FOOD_AMOUNT * deltaTime);
+							//grid.setColour(gridIndex, foodColour);
 							break;
 						case 3: // food scent
-							grid.setColour(gridIndex, foodScentColour);
+							s.addFoodScent(SCENT_AMOUNT * deltaTime);
+							//grid.setColour(gridIndex, foodScentColour);
 							break;
 						case 4: // home scent
-							grid.setColour(gridIndex, homeScentColour);
+							s.addHomeScent(SCENT_AMOUNT * deltaTime);
+							//grid.setColour(gridIndex, homeScentColour);
 							break;
 						case 5: //home colour
-							grid.setColour(gridIndex, homeColour);
+							s.setHome();
+							//grid.setColour(gridIndex, homeColour);
 							break;
 					}
 				}

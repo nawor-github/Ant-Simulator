@@ -79,6 +79,10 @@ public class Grid extends SceneObject {
 		colourBuffer = GLBuffers.createBuffer(colour);
 	}
 	
+	public Square getSquare(int index) {
+		return squares[index];
+	}
+	
 	private void makeMesh() {	
 		vertices = new Vector4f[] {
 			//Main body
@@ -135,7 +139,11 @@ public class Grid extends SceneObject {
 	}
 
 	public void update(float deltaTime, InputManager input) {
-			
+		for (Square s : squares) {
+			s.calculateColour();
+			colour[s.i] = s.getColour();
+		}
+		colourBuffer = GLBuffers.createBuffer(colour); // See if this can be removed??
 	}
 	
 	public void setColour(int i, Vector3f c) {
