@@ -48,10 +48,10 @@ public class Ant extends SceneObject {
 	
 	private float max_scale, min_scale;
 	
-	public Ant(int nCacti, float max_Scale, float min_Scale, float scatter_X, float scatter_Y) {
+	public Ant(int nAnts, float max_Scale, float min_Scale, float scatter_X, float scatter_Y) {
 		min_scale = min_Scale;
 		max_scale = max_Scale;
-		N_Ants = nCacti;
+		N_Ants = nAnts;
 		shader = ShaderLibrary.instance.compileShader(VERTEX_SHADER, FRAGMENT_SHADER);
 
 		// Make one copy of the mesh

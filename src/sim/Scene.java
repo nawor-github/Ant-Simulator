@@ -21,7 +21,7 @@ public class Scene extends SceneObject{
 	private Camera camera;
 	private Camera currentCamera;
 	
-	private Ant cacti;
+	private Ant ants;
 
 
 	private Square grid;
@@ -31,9 +31,9 @@ public class Scene extends SceneObject{
 	private final float GRID_SPACING = 1f;
 	private final float GRID_SCALE = 1;
 	
-	private final int CACTUS_COUNT = 10000;
-	private final float CACTUS_SCALE_MIN = 1f;
-	private final float CACTUS_SCALE_MAX = 2f;
+	private final int ANT_COUNT = 10000;
+	private final float ANT_SCALE_MIN = 1f;
+	private final float ANT_SCALE_MAX = 2f;
 	private final float SCATTER_WIDTH = 200f;
 	private final float SCATTER_HEIGHT = 500f;
 			
@@ -50,8 +50,8 @@ public class Scene extends SceneObject{
 		camera.setParent(theScene);
 		currentCamera = camera;
 		
-		cacti = new Ant(CACTUS_COUNT, CACTUS_SCALE_MAX, CACTUS_SCALE_MIN, SCATTER_WIDTH, SCATTER_HEIGHT);
-		cacti.setParent(this);
+		ants = new Ant(ANT_COUNT, ANT_SCALE_MAX, ANT_SCALE_MIN, SCATTER_WIDTH, SCATTER_HEIGHT);
+		ants.setParent(this);
 	}
 	
 	public static float randBetween(float min, float max) { //Awesome function that is used in other classes
@@ -77,9 +77,9 @@ public class Scene extends SceneObject{
 			if (gridIndex != -1) {
 				grid.setColour(gridIndex, new Vector3f(0,0,0));
 			}
-			cacti.addAnt(mousePos);
+			ants.addAnt(mousePos);
 		}		
-		cacti.update(deltaTime, input);
+		ants.update(deltaTime, input);
 		currentCamera.update(deltaTime, input);
 	}
 	
