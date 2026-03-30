@@ -74,6 +74,13 @@ public class Square extends SceneObject {
 		colourBuffer = GLBuffers.createBuffer(colour);
 	}
 	
+	public int getIndexAtNDCPos(Vector3f position) {
+		if (position.x > 0.5) {
+			return 1;
+		}
+		return 0;
+	}
+	
 	private void makeMesh() {	
 		vertices = new Vector4f[] {
 			//Main body
@@ -136,13 +143,13 @@ public class Square extends SceneObject {
 	public void update(float deltaTime, InputManager input) {
 		if (input.isMouseDown()) {
 			input.getCursorPos(mousePosition);
-			float x = ((float) mousePosition.x()/screenWidth) - 1f;
+			float x = ((float) mousePosition.x()/screenWidth);
 			float y = ((((float) mousePosition.y()/screenHeight) ) - 1f) * -1f;
 			System.out.println(x + " " + y);
 			Vector3f pos = new Vector3f(x, y, 0f);
-			
-		}
-		// TODO Auto-generated method stub
-		
+			int index = getIndexAtNDCPos(pos);
+			colour[index] = new Vector3f(0.8f, 0.8f, 0.8f);
+			colourBuffer = GLBuffers.createBuffer(colour);
+		}		
 	}
 }

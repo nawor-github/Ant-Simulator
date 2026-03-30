@@ -22,7 +22,7 @@ public class Scene extends SceneObject{
 	private Square grid;
 	
 	private final float MAIN_CAM_ZOOM = 200f;
-	private final int GRID_SIZE = 100;
+	private final int GRID_SIZE = 30;
 	private final float GRID_SPACING = 1f;
 	private final float GRID_SCALE = 1;
 			
