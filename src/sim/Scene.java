@@ -3,6 +3,7 @@ package sim;
 
 import static comp3170.Math.TAU;
 
+import comp3170.InputManager;
 import comp3170.SceneObject;
 import sceneObjects.Camera;
 import sceneObjects.Square;
@@ -46,8 +47,8 @@ public class Scene extends SceneObject{
 		return currentCamera; //Return the current active camera
 	}
 	
-	public void update(boolean[] directions, float dt) { //LEFT RIGHT UP DOWN STRANGE CHARM
-		
+	public void update(float deltaTime, InputManager input) {
+		grid.update(deltaTime, input);
 	}
 
 	

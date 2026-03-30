@@ -4,6 +4,7 @@ import org.joml.Vector4f;
 
 
 import comp3170.GLBuffers;
+import comp3170.InputManager;
 import comp3170.SceneObject;
 import comp3170.Shader;
 import comp3170.ShaderLibrary;
@@ -11,6 +12,7 @@ import sim.Scene;
 
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
+import org.joml.Vector2i;
 import org.joml.Vector3f;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
@@ -125,5 +127,22 @@ public class Square extends SceneObject {
 		glVertexAttribDivisor(shader.getAttribute("a_colour"), 0);
 
 
+	}
+	
+	private Vector2i mousePosition = new Vector2i();
+	int screenWidth = 600;
+	int screenHeight = 600;
+
+	public void update(float deltaTime, InputManager input) {
+		if (input.isMouseDown()) {
+			input.getCursorPos(mousePosition);
+			float x = ((float) mousePosition.x()/screenWidth) - 1f;
+			float y = ((((float) mousePosition.y()/screenHeight) ) - 1f) * -1f;
+			System.out.println(x + " " + y);
+			Vector3f pos = new Vector3f(x, y, 0f);
+			
+		}
+		// TODO Auto-generated method stub
+		
 	}
 }
