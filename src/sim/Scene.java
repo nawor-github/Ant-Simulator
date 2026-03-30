@@ -21,9 +21,9 @@ public class Scene extends SceneObject{
 	private Square grid;
 	
 	private final float MAIN_CAM_ZOOM = 200f;
-	private final int GRID_SIZE = 10;
-	private final float GRID_SPACING = 2.1f;
-	private final float GRID_SCALE = 2;
+	private final int GRID_SIZE = 100;
+	private final float GRID_SPACING = 1f;
+	private final float GRID_SCALE = 1;
 			
 	public Scene() {
 		
@@ -31,8 +31,7 @@ public class Scene extends SceneObject{
 		theScene = this;
 		
 		grid = new Square(GRID_SIZE, GRID_SIZE, GRID_SCALE, GRID_SPACING);
-		grid.setParent(this);
-		
+		grid.setParent(this);		
 		camera = new Camera(MAIN_CAM_ZOOM);
 		camera.setParent(theScene);
 		currentCamera = camera;

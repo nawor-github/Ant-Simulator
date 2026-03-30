@@ -36,17 +36,17 @@ public class Square extends SceneObject {
 	private Vector3f[] colour;
 	private int colourBuffer;
 	
-	private int width, height, numSquares;
+	private int count_x, count_y, numSquares;
 	private float scale;
 	private Vector3f edgeColour = new Vector3f(0,0,0);
 	
 	
 	
 	public Square(int w, int h, float s, float spacing) {
-		width = w;
-		height = h;
+		count_x = w;
+		count_y = h;
 		scale = s;
-		numSquares = width * height;
+		numSquares = count_x * count_y;
 		shader = ShaderLibrary.instance.compileShader(VERTEX_SHADER, FRAGMENT_SHADER);
 
 		// Make one copy of the mesh
@@ -55,10 +55,16 @@ public class Square extends SceneObject {
 		position = new Vector3f[numSquares];
 		colour = new Vector3f[numSquares];
 		
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				int index = (x*width)+y;
-				position[index] = new Vector3f(x*spacing,y*spacing,0f);
+		float widthRadius = count_x * spacing / 2;
+		float heighRadius = count_y * spacing / 2;
+		float squareRadius = 0;
+		
+		for (int x = 0; x < count_x; x++) {
+			for (int y = 0; y < count_y; y++) {
+				int index = (x*count_x)+y;
+				float xCoord = (x*spacing) - squareRadius - widthRadius;
+				float yCoord = (y*spacing) - squareRadius - heighRadius;
+				position[index] = new Vector3f(xCoord, yCoord, 0f);
 				colour[index] = new Vector3f(0.5f, 0.8f, 0.5f);
 			}
 		}
