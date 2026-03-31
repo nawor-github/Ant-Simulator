@@ -137,6 +137,9 @@ public class Ant extends SceneObject {
 		
 
 		int currentIndex = grid.getCellAtWorldPos(new Vector4f(antPos.x, antPos.y, antPos.z, 1));
+		Square currentSquare = grid.getSquare(currentIndex);
+		Square[] neighbourhood = grid.getNeighbourhood(currentSquare.x, currentSquare.y);
+
 		int projectedIndex = grid.getCellAtWorldPos(new Vector4f(projectedPos.x, projectedPos.y, projectedPos.z, 1));
 		if (currentIndex == -1) {
 			return true;
@@ -150,7 +153,7 @@ public class Ant extends SceneObject {
 		}
 		return false;
 	}
-	
+		
 	public void update(float deltaTime, InputManager input) {
 		for (int i = 0; i < N_Ants; i++) {
 			if (forwardDesireable(i)) { //If ahead looks good, go ahead

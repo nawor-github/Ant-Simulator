@@ -39,7 +39,7 @@ public class Grid extends SceneObject {
 	private Vector3f[] colour;
 	private int colourBuffer;
 	
-	private Square[] squares;
+	private Square[][] squares;
 	
 	private int count_x, count_y, numSquares;
 	private float scale;
@@ -59,7 +59,7 @@ public class Grid extends SceneObject {
 		
 		position = new Vector3f[numSquares];
 		colour = new Vector3f[numSquares];
-		squares = new Square[numSquares];
+		squares = new Square[count_x][count_y];
 		
 		float widthRadius = count_x * spacing / 2;
 		float heighRadius = count_y * spacing / 2;
@@ -72,7 +72,7 @@ public class Grid extends SceneObject {
 				float yCoord = (y*spacing) - squareRadius - heighRadius;
 				position[index] = new Vector3f(xCoord, yCoord, 0f);
 				colour[index] = new Vector3f(0.8f, 0.8f, 0.5f);
-				squares[index] = new Square(x,y,index);
+				squares[x][y] = new Square(x,y,index);
 			}
 		}
 		positionBuffer = GLBuffers.createBuffer(position);
@@ -81,9 +81,15 @@ public class Grid extends SceneObject {
 	
 	public Square getSquare(int index) {
 		if (index != -1) {
-			return squares[index];
+			for (int x = 0; x < count_x; x++) {
+				for (int y = 0; y < count_y; y++) {
+					if (squares[x][y].i == index) {
+						return squares[x][y];
+					}
+				}
+			}
 		}
-		return new Square(0,0,-1);
+		return new Square(-1,-1,-1);
 	}
 	
 	private void makeMesh() {	
@@ -142,10 +148,12 @@ public class Grid extends SceneObject {
 	}
 
 	public void update(float deltaTime, InputManager input) {
-		for (Square s : squares) {
-			s.calculateColour();
-			colour[s.i] = s.getColour();
-			s.update(deltaTime,  input);
+		for (int x = 0; x < count_x; x++) {
+			for (int y = 0; y < count_y; y++) {
+				squares[x][y].calculateColour();
+				colour[squares[x][y].i] = squares[x][y].getColour();
+				squares[x][y].update(deltaTime,  input);
+			}
 		}
 		colourBuffer = GLBuffers.createBuffer(colour); // See if this can be removed??
 	}
@@ -173,6 +181,54 @@ public class Grid extends SceneObject {
 			}
 		}
 		return -1;
+	}
+	
+	public Square[] getNeighbourhood(int x, int y) {
+		// 0 1 2 
+		// 7   3
+		// 6 5 4
+		Square[] result = new Square[8];
+		try {
+			result[0] = squares[x - 1][y - 1];
+		} catch (Exception e) {
+			result[0] = squares[x][y];
+		}
+		try {
+			result[1] = squares[x + 0][y + 1];
+		} catch (Exception e) {
+			result[1] = squares[x][y];
+		}
+		try {
+			result[2] = squares[x + 1][y + 1];
+		} catch (Exception e) {
+			result[2] = squares[x][y];
+		}
+		try {
+			result[3] = squares[x + 1][y + 0];
+		} catch (Exception e) {
+			result[3] = squares[x][y];
+		}
+		try {
+			result[4] = squares[x + 1][y - 1];
+		} catch (Exception e) {
+			result[4] = squares[x][y];
+		}
+		try {
+			result[5] = squares[x + 0][y - 1];
+		} catch (Exception e) {
+			result[5] = squares[x][y];
+		}
+		try {
+			result[6] = squares[x - 1][y - 1];
+		} catch (Exception e) {
+			result[6] = squares[x][y];
+		}
+		try {
+			result[7] = squares[x - 1][y + 0];
+		} catch (Exception e) {
+			result[7] = squares[x][y];
+		}
+		return result;
 	}
 
 	public float getScale() {
