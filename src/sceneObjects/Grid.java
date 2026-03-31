@@ -45,6 +45,8 @@ public class Grid extends SceneObject {
 	private float scale;
 	private Vector3f edgeColour = new Vector3f(0,0,0);
 	
+	float foodStored = 0;
+	
 	
 	
 	public Grid(int w, int h, float s, float spacing) {

@@ -168,7 +168,7 @@ public class Ant extends SceneObject {
 		Square leftSquare = grid.getSquare(leftIndex);
 		Square rightSquare = grid.getSquare(rightIndex);
 		float value = 0; //Steady course
-		if (foraging.get(antIndex) == 0) {
+		if (foraging.get(antIndex) == 1) {
 			if (forwardSquare.getHomeScent() < leftSquare.getHomeScent() && rightSquare.getHomeScent() < leftSquare.getHomeScent()) {
 				value = 1; //Turn left
 			}
@@ -189,20 +189,21 @@ public class Ant extends SceneObject {
 	private final float MOVE_SPEED = 2f;
 	private final float TURN_SPEED = 2f;
 	
-	private final float TRAIL_DEPOSIT_STRENGTH = 0.1f;
+	private final float TRAIL_DEPOSIT_STRENGTH = 0.5f;
 
 	private final float FOOD_CAPACITY = 1f;
 	private final float FOOD_TAKE_SPEED = 1f;
 
-
+	private static float RANDOM_WIGGLE = 0.1f;
 		
 	public void update(float deltaTime, InputManager input) {
 		for (int i = 0; i < N_Ants; i++) {
 			Square current = getCurrentSquare(i);
 			pickUpFood(i, current);
+			dropOffFood(i, current);
 			depositTrail(i, current);
 			float turnMult = turnDirection(i);
-			rotation[i].x += turnMult * TURN_SPEED * deltaTime;
+			rotation[i].x += (turnMult + (RANDOM_WIGGLE*Scene.randBetween(0,1))) * TURN_SPEED * deltaTime;
 
 			heading[i] = calcHeading(rotation[i].x);
 			if (i == 0) {
@@ -237,6 +238,19 @@ public class Ant extends SceneObject {
 		}
 		foodAmount.set(antIndex, currentFood);
 		foraging.set(antIndex, 0);
+	}
+	
+	private void dropOffFood(int antIndex, Square s) {
+		if (s.isHome) {
+			float currentFood = foodAmount.get(antIndex);
+			if (currentFood == 0) {
+				return;
+			}
+			grid.foodStored += currentFood;
+			foodAmount.set(antIndex, 0f);
+			
+			foraging.set(antIndex, 1);
+		}
 	}
 	
 	private void depositTrail(int antIndex, Square s) { //1 for food, 0 for home
