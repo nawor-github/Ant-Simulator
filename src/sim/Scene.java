@@ -38,8 +38,16 @@ public class Scene extends SceneObject{
 	private final float ANT_SCALE_MAX = 2f;
 	private final float SCATTER_WIDTH = 2f;
 	private final float SCATTER_HEIGHT = 2f;
+	
+	private final float FOOD_AMOUNT = 20000f;
+	private final float SCENT_AMOUNT = 200f;
+	
+	private Simulator sim;
 			
-	public Scene() {
+	public Scene(Simulator s) {
+		sim = s;
+		screenWidth = sim.screenWidth;
+		screenHeight = sim.screenHeight;
 		theScene = this;
 		
 		grid = new Grid(GRID_SIZE, GRID_SIZE, GRID_SCALE, GRID_SPACING);
@@ -63,12 +71,11 @@ public class Scene extends SceneObject{
 	
 	private Vector2i mousePosition = new Vector2i();
 	private Vector4f mousePos = new Vector4f();
-	int screenWidth = 600;
-	int screenHeight = 600;
+	int screenWidth = 0;
+	int screenHeight = 0;
 	private int brushMode = 0;
 	
-	private final float FOOD_AMOUNT = 200f;
-	private final float SCENT_AMOUNT = 200f;
+
 	
 	public void update(float deltaTime, InputManager input) {
 		if (input.wasKeyPressed(KeyEvent.VK_0)){ //0 = clear

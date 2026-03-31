@@ -27,8 +27,8 @@ import sceneObjects.Camera;
 		public static Simulator instance;
 		
 		private Window window;
-		private int screenWidth = 600; 
-		private int screenHeight = 600; 
+		public int screenWidth = 800; 
+		public int screenHeight = 800; 
 		private Scene scene;
 		
 		private long oldTime;
@@ -51,7 +51,7 @@ import sceneObjects.Camera;
 			new ShaderLibrary(DIRECTORY);
 			
 			input = new InputManager(window);
-			scene = new Scene();
+			scene = new Scene(this);
 
 			glClearColor(0.96f, 0.85f, 0.65f, 1.0f); // SANDY DESERT
 			

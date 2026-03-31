@@ -57,10 +57,21 @@ public class Ant extends SceneObject {
 	
 	private Grid grid;
 	
+	private final float MOVE_SPEED = 2f;
+	private final float TURN_SPEED = 2f;
+	
+	private final float TRAIL_DEPOSIT_STRENGTH = 0.1f;
+
+	private final float FOOD_CAPACITY = 1f;
+	private final float FOOD_TAKE_SPEED = 1f;
+
+	private static float RANDOM_WIGGLE = 0.1f;
+	
+	private static float ANTENNAE_ROTATION = 0.5f;
+	
 	ArrayList<Integer> foraging = new ArrayList<Integer>(); //1 for following food, 0 for following home
 	ArrayList<Float> foodAmount = new ArrayList<Float>();
 	
-	private static float ANTENNAE_ROTATION = 0.5f;
 	
 	public Ant(int nAnts, float max_Scale, float min_Scale, float scatter_X, float scatter_Y, Grid g) {
 		min_scale = min_Scale;
@@ -186,15 +197,7 @@ public class Ant extends SceneObject {
 		return value;
 	}
 	
-	private final float MOVE_SPEED = 2f;
-	private final float TURN_SPEED = 2f;
-	
-	private final float TRAIL_DEPOSIT_STRENGTH = 0.5f;
 
-	private final float FOOD_CAPACITY = 1f;
-	private final float FOOD_TAKE_SPEED = 1f;
-
-	private static float RANDOM_WIGGLE = 0.1f;
 		
 	public void update(float deltaTime, InputManager input) {
 		for (int i = 0; i < N_Ants; i++) {

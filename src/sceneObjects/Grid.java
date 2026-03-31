@@ -94,6 +94,52 @@ public class Grid extends SceneObject {
 		return new Square(-1,-1,-1);
 	}
 	
+	
+
+	public void update(float deltaTime, InputManager input) {
+		for (int x = 0; x < count_x; x++) {
+			for (int y = 0; y < count_y; y++) {
+				squares[x][y].calculateColour();
+				colour[squares[x][y].i] = squares[x][y].getColour();
+				squares[x][y].update(deltaTime,  input);
+			}
+		}
+		colourBuffer = GLBuffers.createBuffer(colour); // See if this can be removed??
+	}
+	
+	public void setColour(int i, Vector3f c) {
+		colour[i] = c;
+		colourBuffer = GLBuffers.createBuffer(colour); // See if this can be removed??
+	}
+	
+	private boolean liesWithin(Vector4f mousePos, int index) {
+		float x1 = position[index].x;
+		float y1 = position[index].y;
+		float x2 = x1 + getScale();
+		float y2 = y1 + getScale();
+		if (mousePos.x >= x1 && mousePos.x <= x2 && mousePos.y >= y1 && mousePos.y <= y2) {
+			return true;
+		}
+		return false;
+	}
+
+	public int getCellAtWorldPos(Vector4f mousePos) { //This can be optimized
+		for (int i = 0; i < position.length; i++) {
+			if (liesWithin(mousePos, i)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	public float getScale() {
+		return scale;
+	}
+
+	public void setScale(float scale) {
+		this.scale = scale;
+	}
+	
 	private void makeMesh() {	
 		vertices = new Vector4f[] {
 			//Main body
@@ -147,49 +193,5 @@ public class Grid extends SceneObject {
 		glVertexAttribDivisor(shader.getAttribute("a_colour"), 0);
 
 
-	}
-
-	public void update(float deltaTime, InputManager input) {
-		for (int x = 0; x < count_x; x++) {
-			for (int y = 0; y < count_y; y++) {
-				squares[x][y].calculateColour();
-				colour[squares[x][y].i] = squares[x][y].getColour();
-				squares[x][y].update(deltaTime,  input);
-			}
-		}
-		colourBuffer = GLBuffers.createBuffer(colour); // See if this can be removed??
-	}
-	
-	public void setColour(int i, Vector3f c) {
-		colour[i] = c;
-		colourBuffer = GLBuffers.createBuffer(colour); // See if this can be removed??
-	}
-	
-	private boolean liesWithin(Vector4f mousePos, int index) {
-		float x1 = position[index].x;
-		float y1 = position[index].y;
-		float x2 = x1 + getScale();
-		float y2 = y1 + getScale();
-		if (mousePos.x >= x1 && mousePos.x <= x2 && mousePos.y >= y1 && mousePos.y <= y2) {
-			return true;
-		}
-		return false;
-	}
-
-	public int getCellAtWorldPos(Vector4f mousePos) {
-		for (int i = 0; i < position.length; i++) {
-			if (liesWithin(mousePos, i)) {
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	public float getScale() {
-		return scale;
-	}
-
-	public void setScale(float scale) {
-		this.scale = scale;
 	}
 }

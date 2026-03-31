@@ -17,6 +17,8 @@ public class Square {
 	private Vector3f homeScentColour = new Vector3f(0.8f, 0.1f, 0.6f); //Dark red home scent colour
 	private Vector3f homeColour = new Vector3f(1f, 1f, 1f); //White home colour
 	
+	private final static float DECAY_SPEED = 0.01f;
+	
 	public Square(int X, int Y, int I) {
 		x = X;
 		y = Y;
@@ -135,7 +137,6 @@ public class Square {
 		calculateColour();
 	}
 	
-	private final static float DECAY_SPEED = 2f;
 	
 	private void decay(float deltaTime) {
 		foodScent -= DECAY_SPEED * deltaTime;
