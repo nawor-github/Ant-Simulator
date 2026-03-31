@@ -117,8 +117,11 @@ public class Ant extends SceneObject {
 	
 	public void update(float deltaTime, InputManager input) {
 		for (int i = 0; i < N_Ants; i++) {
-			rotation[i].x += ROTATION_SPEED * deltaTime;
+			//rotation[i].x += ROTATION_SPEED * deltaTime;
 			heading[i] = calcHeading(rotation[i].x);
+			if (i == 0) {
+				//System.out.println("Heading is: " + heading[i].x + "," + heading[i].y + " and rotation is: " + rotation[i].x);
+			}
 			position[i].x += heading[i].x * MOVE_SPEED * deltaTime;
 			position[i].y += heading[i].y * MOVE_SPEED * deltaTime;
 		}
