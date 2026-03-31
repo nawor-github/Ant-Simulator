@@ -135,9 +135,7 @@ public class Ant extends SceneObject {
 		return result;
 	}
 	
-	private final float MOVE_SPEED = 2f;
-	private final float ROTATION_SPEED = 0.2f;
-	
+
 	private float turnDirection(int antIndex) {
 		Vector3f antPos = position[antIndex];
 		//Vector3f projectedPos = heading[index].add(antPos).mul(grid.getScale()); //Project forward direction, corrected for changing grid scale from 1
@@ -236,19 +234,21 @@ public class Ant extends SceneObject {
 		}
 		return highScoreIndex;
 	}
+	
+	private final float MOVE_SPEED = 2f;
+	private final float TURN_SPEED = 2f;
 		
 	public void update(float deltaTime, InputManager input) {
 		for (int i = 0; i < N_Ants; i++) {
-			if (forwardDesireable(i)) { //If ahead looks good, go ahead
-				heading[i] = calcHeading(rotation[i].x);
-				if (i == 0) {
-					//System.out.println("Heading is: " + heading[i].x + "," + heading[i].y + " and rotation is: " + rotation[i].x);
-				}
-				position[i].x += heading[i].x * MOVE_SPEED * deltaTime;
-				position[i].y += heading[i].y * MOVE_SPEED * deltaTime;
-			} else {
-				rotation[i].x += ROTATION_SPEED * deltaTime;
+			float turnMult = turnDirection(i);
+			rotation[i].x += turnMult * TURN_SPEED * deltaTime;
+
+			heading[i] = calcHeading(rotation[i].x);
+			if (i == 0) {
+				//System.out.println("Heading is: " + heading[i].x + "," + heading[i].y + " and rotation is: " + rotation[i].x);
 			}
+			position[i].x += heading[i].x * MOVE_SPEED * deltaTime;
+			position[i].y += heading[i].y * MOVE_SPEED * deltaTime;
 			
 		}
 		positionBuffer = GLBuffers.createBuffer(position);
