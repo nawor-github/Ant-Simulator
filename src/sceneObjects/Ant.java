@@ -44,6 +44,9 @@ public class Ant extends SceneObject {
 	private Vector3f[] scale;
 	private int scaleBuffer;
 	
+	private Vector3f[] rotation;
+	private int rotationBuffer;
+	
 	private int N_Ants;
 	
 	private float max_scale, min_scale;
@@ -59,6 +62,7 @@ public class Ant extends SceneObject {
 		
 		position = new Vector3f[N_Ants];
 		scale = new Vector3f[N_Ants];
+		rotation = new Vector3f[N_Ants];
 		
 		float min_X = -scatter_X/2f;
 		float max_X = scatter_X/2f;
@@ -71,9 +75,11 @@ public class Ant extends SceneObject {
 			position[i] = new Vector3f(x, y, 0f);
 			float s = Scene.randBetween(min_scale, max_scale);
 			scale[i] = new Vector3f(s, s, s);
+			rotation[i] = new Vector3f(Scene.randBetween(0,1), 0, 0);
 		}
 		positionBuffer = GLBuffers.createBuffer(position);
 		scaleBuffer = GLBuffers.createBuffer(scale);
+		rotationBuffer = GLBuffers.createBuffer(rotation); //This might cause erros based on what type should be
 	}
 	
 	public void addAnt(Vector4f pos) {
@@ -180,6 +186,8 @@ public class Ant extends SceneObject {
 		glVertexAttribDivisor(shader.getAttribute("a_worldPos"), 1);
 		shader.setAttribute("a_scale", scaleBuffer);
 		glVertexAttribDivisor(shader.getAttribute("a_scale"), 1);
+		shader.setAttribute("a_rotation", rotationBuffer);
+		glVertexAttribDivisor(shader.getAttribute("a_rotation"), 1);
 		
 		//This one isn't set as an attribute divisor as it is the same for all cacti (they use the same mesh)
 	    shader.setAttribute("a_position", vertexBuffer);
