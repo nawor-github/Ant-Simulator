@@ -8,6 +8,8 @@ import comp3170.InputManager;
 import comp3170.SceneObject;
 import comp3170.Shader;
 import comp3170.ShaderLibrary;
+import static comp3170.Math.TAU;
+
 import sim.Scene;
 
 import org.joml.Matrix4f;
@@ -75,11 +77,11 @@ public class Ant extends SceneObject {
 			position[i] = new Vector3f(x, y, 0f);
 			float s = Scene.randBetween(min_scale, max_scale);
 			scale[i] = new Vector3f(s, s, s);
-			rotation[i] = new Vector3f(Scene.randBetween(0,1), 0, 0);
+			rotation[i] = new Vector3f(Scene.randBetween(0,TAU), 0, 0);
 		}
 		positionBuffer = GLBuffers.createBuffer(position);
 		scaleBuffer = GLBuffers.createBuffer(scale);
-		rotationBuffer = GLBuffers.createBuffer(rotation); //This might cause erros based on what type should be
+		rotationBuffer = GLBuffers.createBuffer(rotation); 
 	}
 	
 	public void addAnt(Vector4f pos) {
@@ -98,8 +100,11 @@ public class Ant extends SceneObject {
 		position = addToVector3fArray(position, pos);
 		float s = Scene.randBetween(min_scale, max_scale);
 		scale = addToVector3fArray(scale, new Vector3f(s,s,s));
+		rotation = addToVector3fArray(rotation, new Vector3f(0,0,0));
+
 		positionBuffer = GLBuffers.createBuffer(position);
 		scaleBuffer = GLBuffers.createBuffer(scale);
+		rotationBuffer = GLBuffers.createBuffer(rotation); 
 	}
 	
 	private Vector3f[] addToVector3fArray(Vector3f[] base, Vector3f addition) {
@@ -111,9 +116,19 @@ public class Ant extends SceneObject {
 		return result;
 	}
 	
-	private final float MOVE_SPEED = 20f;
+	private final float MOVE_SPEED = 2f;
+	private final float ROTATION_SPEED = 2f;
 	
 	public void update(float deltaTime, InputManager input) {
+		for (Vector3f v : rotation) {
+			v.x += ROTATION_SPEED * deltaTime;
+		}
+		for (Vector3f v : position) {
+			v.x += MOVE_SPEED * deltaTime;
+			v.y += MOVE_SPEED * deltaTime;
+		}
+		positionBuffer = GLBuffers.createBuffer(position);
+		rotationBuffer = GLBuffers.createBuffer(rotation); 
 		if (input.isKeyDown(GLFW_KEY_UP)) { //A press, tank rotate left
 			this.getMatrix().translate(0f*deltaTime, MOVE_SPEED*deltaTime, 0*deltaTime);
 		}
