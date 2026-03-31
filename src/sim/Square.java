@@ -26,6 +26,11 @@ public class Square {
 		clear();
 	}
 	
+	private final static float FOOD_SCENT_MAX_DISPLAY = 50f;
+	private final static float HOME_SCENT_MAX_DISPLAY = 50f;
+	private final static float FOOD_MAX_DISPLAY = 50f;
+
+	
 	public Vector3f calculateColour() {
 		if (isBlocker) {
 			colour = blockerColour;
@@ -37,23 +42,39 @@ public class Square {
 			colour = clearColour;
 		} 
 		if (food > 0) {
-			colour = foodColour;
-		}
-		if (foodScent > 0) {
-			float blendFactor = foodScent / 50f;
-			if (foodScent > 50) {
-				blendFactor = 1;
+			float foodWeight = food / FOOD_MAX_DISPLAY;
+			if (foodWeight > FOOD_MAX_DISPLAY) {
+				foodWeight = 1;
 			}
-			colour = blendBetween(foodScentColour, clearColour, blendFactor);
-			//colour = foodScentColour; //Make this blend later
+			colour = blendBetween(foodColour, clearColour, 1);
+			return colour;
 		}
-		if (homeScent > 0) {
-			float blendFactor = homeScent / 50f;
-			if (homeScent > 50) {
-				blendFactor = 1;
-			}
-			colour = blendBetween(homeScentColour, clearColour, blendFactor);
-			//colour = homeScentColour; //Make this blend later
+		float foodScentWeight = foodScent / FOOD_SCENT_MAX_DISPLAY;
+		if (foodScentWeight > FOOD_SCENT_MAX_DISPLAY) {
+			foodScentWeight = 1;
+		}
+		Vector3f foodScentWeighted = blendBetween(foodScentColour, clearColour, foodScentWeight);
+		if (homeScent == 0) {
+			colour = foodScentWeighted;
+			return colour;
+		}
+
+		float homeScentWeight = homeScent / HOME_SCENT_MAX_DISPLAY;
+		if (homeScentWeight > HOME_SCENT_MAX_DISPLAY) {
+			homeScentWeight = 1;
+		}
+		Vector3f homeScentWeighted = blendBetween(homeScentColour, clearColour, homeScentWeight);
+		if (foodScent == 0) {
+			colour = homeScentWeighted;
+			return colour;
+
+		}
+		if (foodScentWeight > homeScentWeight) {
+			float finalWeight = foodScentWeight/(foodScentWeight+homeScentWeight);
+			colour = blendBetween(foodScentWeighted, homeScentWeighted, finalWeight);
+		} else {
+			float finalWeight = homeScentWeight/(foodScentWeight+homeScentWeight);
+			colour = blendBetween(homeScentWeighted, foodScentWeighted, finalWeight);
 		}
 		return colour;
 	}
@@ -107,12 +128,14 @@ public class Square {
 	
 	public void addFoodScent(float f) {
 		foodScent += f;
-		//System.out.println("Adding " + f + " food scent to " + x + "," + y + ". Food scent is now: " + foodScent);
+		System.out.println("Adding " + f + " food scent to " + x + "," + y + ". Food scent is now: " + foodScent);
 		calculateColour();
 	}
 	
 	public void addHomeScent(float f) {
 		homeScent += f;
+		System.out.println("Adding " + f + " home scent to " + x + "," + y + ". Home scent is now: " + homeScent);
+
 		calculateColour();
 	}
 
@@ -121,6 +144,9 @@ public class Square {
 		decay(deltaTime);
 		calculateColour();
 	}
+	
+	
+	
 	
 	
 	private void decay(float deltaTime) {

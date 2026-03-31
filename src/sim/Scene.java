@@ -105,7 +105,7 @@ public class Scene extends SceneObject{
 			mousePos = getMousePosWorld(input);
 			if (brushMode != 6) {
 				int gridIndex = grid.getCellAtWorldPos(mousePos);
-				System.out.println("Grid Index:" + gridIndex);
+				//System.out.println("Grid Index:" + gridIndex);
 				if (gridIndex != -1) {
 					Square s = grid.getSquare(gridIndex);
 					switch(brushMode) {
