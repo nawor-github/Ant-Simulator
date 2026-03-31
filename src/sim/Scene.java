@@ -29,22 +29,18 @@ public class Scene extends SceneObject{
 	private Grid grid;
 	
 	private final float MAIN_CAM_ZOOM = 200f;
-	private final int GRID_SIZE = 30;
+	private final int GRID_SIZE = 50;
 	private final float GRID_SPACING = 1f;
 	private final float GRID_SCALE = 1;
 	
-	private final int ANT_COUNT = 10000;
+	private final int ANT_COUNT = 100;
 	private final float ANT_SCALE_MIN = 1f;
 	private final float ANT_SCALE_MAX = 2f;
-	private final float SCATTER_WIDTH = 200f;
-	private final float SCATTER_HEIGHT = 500f;
+	private final float SCATTER_WIDTH = 2f;
+	private final float SCATTER_HEIGHT = 2f;
 			
 	public Scene() {
-		
-		
 		theScene = this;
-		
-		
 		
 		grid = new Grid(GRID_SIZE, GRID_SIZE, GRID_SCALE, GRID_SPACING);
 		grid.setParent(this);		

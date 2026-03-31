@@ -182,54 +182,6 @@ public class Grid extends SceneObject {
 		}
 		return -1;
 	}
-	
-	public Square[] getNeighbourhood(int x, int y) {
-		// 0 1 2 
-		// 7   3
-		// 6 5 4
-		Square[] result = new Square[8];
-		try {
-			result[0] = squares[x - 1][y - 1];
-		} catch (Exception e) {
-			result[0] = squares[x][y];
-		}
-		try {
-			result[1] = squares[x + 0][y + 1];
-		} catch (Exception e) {
-			result[1] = squares[x][y];
-		}
-		try {
-			result[2] = squares[x + 1][y + 1];
-		} catch (Exception e) {
-			result[2] = squares[x][y];
-		}
-		try {
-			result[3] = squares[x + 1][y + 0];
-		} catch (Exception e) {
-			result[3] = squares[x][y];
-		}
-		try {
-			result[4] = squares[x + 1][y - 1];
-		} catch (Exception e) {
-			result[4] = squares[x][y];
-		}
-		try {
-			result[5] = squares[x + 0][y - 1];
-		} catch (Exception e) {
-			result[5] = squares[x][y];
-		}
-		try {
-			result[6] = squares[x - 1][y - 1];
-		} catch (Exception e) {
-			result[6] = squares[x][y];
-		}
-		try {
-			result[7] = squares[x - 1][y + 0];
-		} catch (Exception e) {
-			result[7] = squares[x][y];
-		}
-		return result;
-	}
 
 	public float getScale() {
 		return scale;

@@ -118,6 +118,8 @@ public class Ant extends SceneObject {
 		scale = addToVector3fArray(scale, new Vector3f(s,s,s));
 		rotation = addToVector3fArray(rotation, new Vector3f(0,0,0));
 		heading = addToVector3fArray(heading, new Vector3f(0, 1f, 0));
+		Lheading = addToVector3fArray(heading, new Vector3f(0, 1f + ANTENNAE_ROTATION, 0));
+		Rheading = addToVector3fArray(heading, new Vector3f(0, 1f - ANTENNAE_ROTATION, 0));
 		foraging.add(1);
 		
 		positionBuffer = GLBuffers.createBuffer(position);
@@ -134,7 +136,6 @@ public class Ant extends SceneObject {
 		result[base.length] = addition;
 		return result;
 	}
-	
 
 	private float turnDirection(int antIndex) {
 		Vector3f antPos = position[antIndex];
@@ -175,23 +176,15 @@ public class Ant extends SceneObject {
 		return value;
 	}
 	
-	private int highestScore(Square[] neighbourhood) {
-		float highScore = 0;
-		int highScoreIndex = -1;
-		for (int i = 0; i < neighbourhood.length; i++) {
-			if (neighbourhood[i].getFoodScent() > highScore) {
-				highScore = neighbourhood[i].getFoodScent();
-				highScoreIndex = i;
-			}
-		}
-		return highScoreIndex;
-	}
-	
 	private final float MOVE_SPEED = 2f;
 	private final float TURN_SPEED = 2f;
+	
+	private final float TRAIL_DEPOSIT_STRENGTH = 1f;
+
 		
 	public void update(float deltaTime, InputManager input) {
 		for (int i = 0; i < N_Ants; i++) {
+			depositTrail(i);
 			float turnMult = turnDirection(i);
 			rotation[i].x += turnMult * TURN_SPEED * deltaTime;
 
@@ -204,19 +197,16 @@ public class Ant extends SceneObject {
 			
 		}
 		positionBuffer = GLBuffers.createBuffer(position);
-		rotationBuffer = GLBuffers.createBuffer(rotation); 
-		if (input.isKeyDown(GLFW_KEY_UP)) { //A press, tank rotate left
-			this.getMatrix().translate(0f*deltaTime, MOVE_SPEED*deltaTime, 0*deltaTime);
-		}
-		if (input.isKeyDown(GLFW_KEY_LEFT)) { //A press, tank rotate left
-			this.getMatrix().translate(-MOVE_SPEED*deltaTime, 0f*deltaTime, 0*deltaTime);
-		}
-		if (input.isKeyDown(GLFW_KEY_RIGHT)) { //A press, tank rotate left
-			this.getMatrix().translate(MOVE_SPEED*deltaTime, 0f*deltaTime, 0*deltaTime);
-		}
-		if (input.isKeyDown(GLFW_KEY_DOWN)) { //A press, tank rotate left
-			this.getMatrix().translate(0f*deltaTime, -MOVE_SPEED*deltaTime, 0*deltaTime);
-		}
+		rotationBuffer = GLBuffers.createBuffer(rotation);
+	}
+	
+	
+	
+	private void depositTrail(int antIndex) {
+		Vector3f antPos = position[antIndex];
+		int currentIndex = grid.getCellAtWorldPos(new Vector4f(antPos.x, antPos.y, antPos.z, 1));
+		Square currentSquare = grid.getSquare(currentIndex);
+		currentSquare.addFoodScent(TRAIL_DEPOSIT_STRENGTH);
 	}
 	
 	private Vector3f calcHeading(float r) { //The rotation as a number expressed in radians
