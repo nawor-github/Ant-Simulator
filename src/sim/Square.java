@@ -92,6 +92,17 @@ public class Square {
 		calculateColour();
 	}
 	
+	public float takeFood(float f) {
+		if (f >= food) {
+			float value = food;
+			food = 0;
+			return value;
+		}
+		food -= f;
+		calculateColour();
+		return f;
+	}
+	
 	public void addFoodScent(float f) {
 		if (homeScent > 0) { //Make the two scents mutually exclusive/decay each other
 			homeScent -= f;

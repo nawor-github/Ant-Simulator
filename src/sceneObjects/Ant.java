@@ -58,6 +58,7 @@ public class Ant extends SceneObject {
 	private Grid grid;
 	
 	ArrayList<Integer> foraging = new ArrayList<Integer>(); //1 for following food, 0 for following home
+	ArrayList<Float> foodAmount = new ArrayList<Float>();
 	
 	private static float ANTENNAE_ROTATION = 0.5f;
 	
@@ -79,9 +80,7 @@ public class Ant extends SceneObject {
 		
 		Lheading = new Vector3f[N_Ants]; //Headings either sideo of the main heading
 		Rheading = new Vector3f[N_Ants];
-		
-		foraging = new ArrayList<Integer>();
-		
+				
 		float min_X = -scatter_X/2f;
 		float max_X = scatter_X/2f;
 		float min_Y = -scatter_Y/2f;
@@ -102,6 +101,7 @@ public class Ant extends SceneObject {
 			
 			
 			foraging.add(1);
+			foodAmount.add(0f);
 		}
 		positionBuffer = GLBuffers.createBuffer(position);
 		scaleBuffer = GLBuffers.createBuffer(scale);
@@ -121,6 +121,7 @@ public class Ant extends SceneObject {
 		Lheading = addToVector3fArray(heading, new Vector3f(0, 1f + ANTENNAE_ROTATION, 0));
 		Rheading = addToVector3fArray(heading, new Vector3f(0, 1f - ANTENNAE_ROTATION, 0));
 		foraging.add(1);
+		foraging.add(0);
 		
 		positionBuffer = GLBuffers.createBuffer(position);
 		scaleBuffer = GLBuffers.createBuffer(scale);
@@ -158,7 +159,7 @@ public class Ant extends SceneObject {
 		//int currentIndex = grid.getCellAtWorldPos(new Vector4f(antPos.x, antPos.y, antPos.z, 1));
 		int projectedIndex = grid.getCellAtWorldPos(new Vector4f(projectedPos.x, projectedPos.y, projectedPos.z, 1));
 		if (projectedIndex == -1) {
-			return 0;
+			return 1;
 		}
 		int leftIndex = grid.getCellAtWorldPos(new Vector4f(L_AnntennaePos.x, L_AnntennaePos.y, L_AnntennaePos.z, 1));
 		int rightIndex = grid.getCellAtWorldPos(new Vector4f(R_AnntennaePos.x, R_AnntennaePos.y, R_AnntennaePos.z, 1));
@@ -179,12 +180,18 @@ public class Ant extends SceneObject {
 	private final float MOVE_SPEED = 2f;
 	private final float TURN_SPEED = 2f;
 	
-	private final float TRAIL_DEPOSIT_STRENGTH = 1f;
+	private final float TRAIL_DEPOSIT_STRENGTH = 0.1f;
+
+	private final float FOOD_CAPACITY = 1f;
+	private final float FOOD_TAKE_SPEED = 1f;
+
 
 		
 	public void update(float deltaTime, InputManager input) {
 		for (int i = 0; i < N_Ants; i++) {
-			depositTrail(i);
+			Square current = getCurrentSquare(i);
+			pickUpFood(i, current);
+			depositTrail(i, current);
 			float turnMult = turnDirection(i);
 			rotation[i].x += turnMult * TURN_SPEED * deltaTime;
 
@@ -194,19 +201,30 @@ public class Ant extends SceneObject {
 			}
 			position[i].x += heading[i].x * MOVE_SPEED * deltaTime;
 			position[i].y += heading[i].y * MOVE_SPEED * deltaTime;
-			
 		}
 		positionBuffer = GLBuffers.createBuffer(position);
 		rotationBuffer = GLBuffers.createBuffer(rotation);
 	}
 	
-	
-	
-	private void depositTrail(int antIndex) {
+	private Square getCurrentSquare(int antIndex) {
 		Vector3f antPos = position[antIndex];
 		int currentIndex = grid.getCellAtWorldPos(new Vector4f(antPos.x, antPos.y, antPos.z, 1));
-		Square currentSquare = grid.getSquare(currentIndex);
-		currentSquare.addFoodScent(TRAIL_DEPOSIT_STRENGTH);
+		return grid.getSquare(currentIndex);
+	}
+	
+	private void pickUpFood(int antIndex, Square s) {
+		float currentFood = foodAmount.get(antIndex);
+		currentFood += s.takeFood(FOOD_TAKE_SPEED);
+		foodAmount.set(antIndex, currentFood);
+		foraging.set(antIndex, 0);
+	}
+	
+	private void depositTrail(int antIndex, Square s) {
+		if (foraging.get(antIndex) == 0) {
+			s.addHomeScent(TRAIL_DEPOSIT_STRENGTH);
+			return;
+		}
+		s.addFoodScent(TRAIL_DEPOSIT_STRENGTH);
 	}
 	
 	private Vector3f calcHeading(float r) { //The rotation as a number expressed in radians
