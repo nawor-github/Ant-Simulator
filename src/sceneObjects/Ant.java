@@ -168,6 +168,15 @@ public class Ant extends SceneObject {
 		Square leftSquare = grid.getSquare(leftIndex);
 		Square rightSquare = grid.getSquare(rightIndex);
 		float value = 0; //Steady course
+		if (foraging.get(antIndex) == 0) {
+			if (forwardSquare.getHomeScent() < leftSquare.getHomeScent() && rightSquare.getHomeScent() < leftSquare.getHomeScent()) {
+				value = 1; //Turn left
+			}
+			if (forwardSquare.getHomeScent() < rightSquare.getHomeScent()) {
+				value = -1; //Turn right
+			}
+			return value;
+		}
 		if (forwardSquare.getFoodScent() < leftSquare.getFoodScent() && rightSquare.getFoodScent() < leftSquare.getFoodScent()) {
 			value = 1; //Turn left
 		}
@@ -214,12 +223,23 @@ public class Ant extends SceneObject {
 	
 	private void pickUpFood(int antIndex, Square s) {
 		float currentFood = foodAmount.get(antIndex);
-		currentFood += s.takeFood(FOOD_TAKE_SPEED);
+		if (currentFood == FOOD_CAPACITY) {
+			return;
+		}
+		float foodGrabbed = s.takeFood(FOOD_TAKE_SPEED);
+		if (foodGrabbed == 0) {
+			return;
+		}
+		currentFood += foodGrabbed;
+		if (currentFood > FOOD_CAPACITY) {
+			s.addFood(currentFood-FOOD_CAPACITY);
+			currentFood = FOOD_CAPACITY;
+		}
 		foodAmount.set(antIndex, currentFood);
 		foraging.set(antIndex, 0);
 	}
 	
-	private void depositTrail(int antIndex, Square s) {
+	private void depositTrail(int antIndex, Square s) { //1 for food, 0 for home
 		if (foraging.get(antIndex) == 0) {
 			s.addHomeScent(TRAIL_DEPOSIT_STRENGTH);
 			return;
