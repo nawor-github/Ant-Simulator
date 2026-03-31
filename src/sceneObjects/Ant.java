@@ -48,7 +48,7 @@ public class Ant extends SceneObject {
 	private Vector3f[] scale;
 	private int scaleBuffer;
 	
-	private Vector3f[] rotation, heading, Lrotation, Lheading, Rrotation, Rheading;
+	private Vector3f[] rotation, heading, Lheading, Rheading;
 	private int rotationBuffer;
 	
 	private int N_Ants;
@@ -77,9 +77,7 @@ public class Ant extends SceneObject {
 		rotation = new Vector3f[N_Ants];
 		heading = new Vector3f[N_Ants];
 		
-		Lrotation = new Vector3f[N_Ants]; //Left rotation for a point ahead of the ant and to the left
-		Lheading = new Vector3f[N_Ants];
-		Rrotation = new Vector3f[N_Ants]; //Right rotation for a point ahead of the ant to the right
+		Lheading = new Vector3f[N_Ants]; //Headings either sideo of the main heading
 		Rheading = new Vector3f[N_Ants];
 		
 		foraging = new ArrayList<Integer>();
@@ -99,10 +97,8 @@ public class Ant extends SceneObject {
 			rotation[i] = new Vector3f(randomRotation, 0, 0);
 			heading[i] = calcHeading(rotation[i].x);
 			//Antennae calcs
-			Lrotation[i] = new Vector3f(randomRotation + ANTENNAE_ROTATION, 0, 0);
-			Lheading[i] = calcHeading(Lrotation[i].x);
-			Rrotation[i] = new Vector3f(randomRotation - ANTENNAE_ROTATION, 0, 0);
-			Rheading[i] = calcHeading(Rrotation[i].x);
+			Lheading[i] = calcHeading(rotation[i].x + ANTENNAE_ROTATION);
+			Rheading[i] = calcHeading(rotation[i].x - ANTENNAE_ROTATION);
 			
 			
 			foraging.add(1);
@@ -141,6 +137,45 @@ public class Ant extends SceneObject {
 	
 	private final float MOVE_SPEED = 2f;
 	private final float ROTATION_SPEED = 0.2f;
+	
+	private float turnDirection(int antIndex) {
+		Vector3f antPos = position[antIndex];
+		//Vector3f projectedPos = heading[index].add(antPos).mul(grid.getScale()); //Project forward direction, corrected for changing grid scale from 1
+		heading[antIndex] = calcHeading(rotation[antIndex].x);
+		Lheading[antIndex] = calcHeading(rotation[antIndex].x + ANTENNAE_ROTATION);
+		Rheading[antIndex] = calcHeading(rotation[antIndex].x - ANTENNAE_ROTATION);
+		Vector3f projectedPos = heading[antIndex];
+		projectedPos.x += antPos.x;
+		projectedPos.y += antPos.y;
+		
+		Vector3f L_AnntennaePos = Lheading[antIndex];
+		L_AnntennaePos.x += antPos.x;
+		L_AnntennaePos.y += antPos.y;
+		
+		Vector3f R_AnntennaePos = Rheading[antIndex];
+		R_AnntennaePos.x += antPos.x;
+		R_AnntennaePos.y += antPos.y;
+		
+		//int currentIndex = grid.getCellAtWorldPos(new Vector4f(antPos.x, antPos.y, antPos.z, 1));
+		int projectedIndex = grid.getCellAtWorldPos(new Vector4f(projectedPos.x, projectedPos.y, projectedPos.z, 1));
+		if (projectedIndex == -1) {
+			return 0;
+		}
+		int leftIndex = grid.getCellAtWorldPos(new Vector4f(L_AnntennaePos.x, L_AnntennaePos.y, L_AnntennaePos.z, 1));
+		int rightIndex = grid.getCellAtWorldPos(new Vector4f(R_AnntennaePos.x, R_AnntennaePos.y, R_AnntennaePos.z, 1));
+
+		Square forwardSquare = grid.getSquare(projectedIndex);
+		Square leftSquare = grid.getSquare(leftIndex);
+		Square rightSquare = grid.getSquare(rightIndex);
+		float value = 0; //Steady course
+		if (forwardSquare.getFoodScent() < leftSquare.getFoodScent() && rightSquare.getFoodScent() < leftSquare.getFoodScent()) {
+			value = 1; //Turn left
+		}
+		if (forwardSquare.getFoodScent() < rightSquare.getFoodScent()) {
+			value = -1; //Turn right
+		}
+		return value;
+	}
 	
 	private boolean forwardDesireable(int index) {
 		Vector3f antPos = position[index];
