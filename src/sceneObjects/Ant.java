@@ -206,7 +206,7 @@ public class Ant extends SceneObject {
 			dropOffFood(i, current);
 			depositTrail(i, current);
 			float turnMult = turnDirection(i);
-			rotation[i].x += (turnMult + (RANDOM_WIGGLE*Scene.randBetween(0,1))) * TURN_SPEED * deltaTime;
+			rotation[i].x += (turnMult + (RANDOM_WIGGLE*Scene.randBetween(-1,1))) * TURN_SPEED * deltaTime;
 
 			heading[i] = calcHeading(rotation[i].x);
 			if (i == 0) {

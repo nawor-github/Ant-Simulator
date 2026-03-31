@@ -106,28 +106,13 @@ public class Square {
 	}
 	
 	public void addFoodScent(float f) {
-		if (homeScent > 0) { //Make the two scents mutually exclusive/decay each other
-			homeScent -= f;
-			if (homeScent < 0) {
-				homeScent = 0;
-			}
-		} else {
-			foodScent += f;
-		}
-		System.out.println("Adding " + f + " food scent to " + x + "," + y + ". Food scent is now: " + foodScent);
-
+		foodScent += f;
+		//System.out.println("Adding " + f + " food scent to " + x + "," + y + ". Food scent is now: " + foodScent);
 		calculateColour();
 	}
 	
 	public void addHomeScent(float f) {
-		if (foodScent > 0) { //Make the two scents mutually exclusive/decay each other
-			foodScent -= f;
-			if (foodScent < 0) {
-				foodScent = 0;
-			}
-		} else {
-			homeScent += f;
-		}
+		homeScent += f;
 		calculateColour();
 	}
 
