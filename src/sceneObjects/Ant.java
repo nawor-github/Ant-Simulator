@@ -46,7 +46,7 @@ public class Ant extends SceneObject {
 	private Vector3f[] scale;
 	private int scaleBuffer;
 	
-	private Vector3f[] rotation;
+	private Vector3f[] rotation, heading;
 	private int rotationBuffer;
 	
 	private int N_Ants;
@@ -65,6 +65,7 @@ public class Ant extends SceneObject {
 		position = new Vector3f[N_Ants];
 		scale = new Vector3f[N_Ants];
 		rotation = new Vector3f[N_Ants];
+		heading = new Vector3f[N_Ants];
 		
 		float min_X = -scatter_X/2f;
 		float max_X = scatter_X/2f;
@@ -78,11 +79,14 @@ public class Ant extends SceneObject {
 			float s = Scene.randBetween(min_scale, max_scale);
 			scale[i] = new Vector3f(s, s, s);
 			rotation[i] = new Vector3f(Scene.randBetween(0,TAU), 0, 0);
+			heading[i] = calcHeading(rotation[i].x);
 		}
 		positionBuffer = GLBuffers.createBuffer(position);
 		scaleBuffer = GLBuffers.createBuffer(scale);
 		rotationBuffer = GLBuffers.createBuffer(rotation); 
 	}
+	
+
 	
 	public void addAnt(Vector4f pos) {
 		Vector3f p = new Vector3f(pos.x, pos.y, pos.z);
@@ -90,21 +94,13 @@ public class Ant extends SceneObject {
 		position = addToVector3fArray(position, p);
 		float s = Scene.randBetween(min_scale, max_scale);
 		scale = addToVector3fArray(scale, new Vector3f(s,s,s));
-		positionBuffer = GLBuffers.createBuffer(position);
-		scaleBuffer = GLBuffers.createBuffer(scale);
-		//System.out.println("Ant created at: " + pos.x + ", " + pos.y);
-	}
-	
-	public void addAnt(Vector3f pos) {
-		N_Ants = N_Ants + 1;
-		position = addToVector3fArray(position, pos);
-		float s = Scene.randBetween(min_scale, max_scale);
-		scale = addToVector3fArray(scale, new Vector3f(s,s,s));
 		rotation = addToVector3fArray(rotation, new Vector3f(0,0,0));
-
+		heading = addToVector3fArray(heading, new Vector3f(0, 1f, 0));
+		
 		positionBuffer = GLBuffers.createBuffer(position);
 		scaleBuffer = GLBuffers.createBuffer(scale);
 		rotationBuffer = GLBuffers.createBuffer(rotation); 
+		//System.out.println("Ant created at: " + pos.x + ", " + pos.y);
 	}
 	
 	private Vector3f[] addToVector3fArray(Vector3f[] base, Vector3f addition) {
@@ -120,12 +116,11 @@ public class Ant extends SceneObject {
 	private final float ROTATION_SPEED = 2f;
 	
 	public void update(float deltaTime, InputManager input) {
-		for (Vector3f v : rotation) {
-			v.x += ROTATION_SPEED * deltaTime;
-		}
-		for (Vector3f v : position) {
-			v.x += MOVE_SPEED * deltaTime;
-			v.y += MOVE_SPEED * deltaTime;
+		for (int i = 0; i < N_Ants; i++) {
+			rotation[i].x += ROTATION_SPEED * deltaTime;
+			heading[i] = calcHeading(rotation[i].x);
+			position[i].x += heading[i].x * MOVE_SPEED * deltaTime;
+			position[i].y += heading[i].y * MOVE_SPEED * deltaTime;
 		}
 		positionBuffer = GLBuffers.createBuffer(position);
 		rotationBuffer = GLBuffers.createBuffer(rotation); 
@@ -141,6 +136,13 @@ public class Ant extends SceneObject {
 		if (input.isKeyDown(GLFW_KEY_DOWN)) { //A press, tank rotate left
 			this.getMatrix().translate(0f*deltaTime, -MOVE_SPEED*deltaTime, 0*deltaTime);
 		}
+	}
+	
+	private Vector3f calcHeading(float r) { //The rotation as a number expressed in radians
+		float x = (float) Math.cos(r);
+		float y = (float) Math.sin(r);
+		Vector3f result = new Vector3f(x, y, 0);
+		return result.normalize();
 	}
 	
 	private void makeMesh() {	
