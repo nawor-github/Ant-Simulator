@@ -11,6 +11,7 @@ import comp3170.ShaderLibrary;
 import static comp3170.Math.TAU;
 
 import sim.Scene;
+import sim.Square;
 
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
@@ -53,10 +54,16 @@ public class Ant extends SceneObject {
 	
 	private float max_scale, min_scale;
 	
-	public Ant(int nAnts, float max_Scale, float min_Scale, float scatter_X, float scatter_Y) {
+	private Grid grid;
+	
+	private boolean[] foraging; //1 for following food, 0 for following home
+	
+	public Ant(int nAnts, float max_Scale, float min_Scale, float scatter_X, float scatter_Y, Grid g) {
 		min_scale = min_Scale;
 		max_scale = max_Scale;
 		N_Ants = nAnts;
+		grid = g;
+		
 		shader = ShaderLibrary.instance.compileShader(VERTEX_SHADER, FRAGMENT_SHADER);
 
 		// Make one copy of the mesh
@@ -80,6 +87,7 @@ public class Ant extends SceneObject {
 			scale[i] = new Vector3f(s, s, s);
 			rotation[i] = new Vector3f(Scene.randBetween(0,TAU), 0, 0);
 			heading[i] = calcHeading(rotation[i].x);
+			foraging[i] = true;
 		}
 		positionBuffer = GLBuffers.createBuffer(position);
 		scaleBuffer = GLBuffers.createBuffer(scale);
@@ -96,6 +104,7 @@ public class Ant extends SceneObject {
 		scale = addToVector3fArray(scale, new Vector3f(s,s,s));
 		rotation = addToVector3fArray(rotation, new Vector3f(0,0,0));
 		heading = addToVector3fArray(heading, new Vector3f(0, 1f, 0));
+		foraging = true;
 		
 		positionBuffer = GLBuffers.createBuffer(position);
 		scaleBuffer = GLBuffers.createBuffer(scale);
@@ -113,11 +122,22 @@ public class Ant extends SceneObject {
 	}
 	
 	private final float MOVE_SPEED = 2f;
-	private final float ROTATION_SPEED = 2f;
+	private final float ROTATION_SPEED = 0.2f;
+	
+	private boolean forwardDesireable(int index) {
+		Vector3f antPos = position[index];
+		Vector3f projectedPos = heading[index].add(antPos).mul(grid.getScale()); //Project forward direction, corrected for changing grid scale from 1
+		
+		int currentIndex = grid.getCellAtWorldPos(new Vector4f(antPos.x, antPos.y, antPos.z, 1));
+		int projectedIndex = grid.getCellAtWorldPos(new Vector4f(projectedPos.x, projectedPos.y, projectedPos.z, 1));
+		Square current = grid.getSquare(currentIndex);
+		Square ahead = grid.getSquare(projectedIndex);
+		return false;
+	}
 	
 	public void update(float deltaTime, InputManager input) {
 		for (int i = 0; i < N_Ants; i++) {
-			//rotation[i].x += ROTATION_SPEED * deltaTime;
+			rotation[i].x += ROTATION_SPEED * deltaTime;
 			heading[i] = calcHeading(rotation[i].x);
 			if (i == 0) {
 				//System.out.println("Heading is: " + heading[i].x + "," + heading[i].y + " and rotation is: " + rotation[i].x);

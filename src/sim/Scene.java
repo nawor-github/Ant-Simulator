@@ -52,7 +52,7 @@ public class Scene extends SceneObject{
 		camera.setParent(theScene);
 		currentCamera = camera;
 		
-		ants = new Ant(ANT_COUNT, ANT_SCALE_MAX, ANT_SCALE_MIN, SCATTER_WIDTH, SCATTER_HEIGHT);
+		ants = new Ant(ANT_COUNT, ANT_SCALE_MAX, ANT_SCALE_MIN, SCATTER_WIDTH, SCATTER_HEIGHT, grid);
 		ants.setParent(this);
 	}
 	

@@ -50,7 +50,7 @@ public class Grid extends SceneObject {
 	public Grid(int w, int h, float s, float spacing) {
 		count_x = w;
 		count_y = h;
-		scale = s;
+		setScale(s);
 		numSquares = count_x * count_y;
 		shader = ShaderLibrary.instance.compileShader(VERTEX_SHADER, FRAGMENT_SHADER);
 
@@ -115,7 +115,7 @@ public class Grid extends SceneObject {
 		//This one isn't set as an attribute divisor as it is the same for all cacti (they use the same mesh)
 	    shader.setAttribute("a_position", vertexBuffer);
 	    
-	    shader.setUniform("u_scale", scale);
+	    shader.setUniform("u_scale", getScale());
 	    shader.setUniform("u_edgeColour", edgeColour);
 	    	    
 	    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
@@ -155,8 +155,8 @@ public class Grid extends SceneObject {
 	private boolean liesWithin(Vector4f mousePos, int index) {
 		float x1 = position[index].x;
 		float y1 = position[index].y;
-		float x2 = x1 + scale;
-		float y2 = y1 + scale;
+		float x2 = x1 + getScale();
+		float y2 = y1 + getScale();
 		if (mousePos.x >= x1 && mousePos.x <= x2 && mousePos.y >= y1 && mousePos.y <= y2) {
 			return true;
 		}
@@ -170,5 +170,13 @@ public class Grid extends SceneObject {
 			}
 		}
 		return -1;
+	}
+
+	public float getScale() {
+		return scale;
+	}
+
+	public void setScale(float scale) {
+		this.scale = scale;
 	}
 }
