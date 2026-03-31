@@ -48,7 +48,7 @@ public class Ant extends SceneObject {
 	private Vector3f[] scale;
 	private int scaleBuffer;
 	
-	private Vector3f[] rotation, heading;
+	private Vector3f[] rotation, heading, Lrotation, Lheading, Rrotation, Rheading;
 	private int rotationBuffer;
 	
 	private int N_Ants;
@@ -58,6 +58,8 @@ public class Ant extends SceneObject {
 	private Grid grid;
 	
 	ArrayList<Integer> foraging = new ArrayList<Integer>(); //1 for following food, 0 for following home
+	
+	private static float ANTENNAE_ROTATION = 0.5f;
 	
 	public Ant(int nAnts, float max_Scale, float min_Scale, float scatter_X, float scatter_Y, Grid g) {
 		min_scale = min_Scale;
@@ -74,6 +76,12 @@ public class Ant extends SceneObject {
 		scale = new Vector3f[N_Ants];
 		rotation = new Vector3f[N_Ants];
 		heading = new Vector3f[N_Ants];
+		
+		Lrotation = new Vector3f[N_Ants]; //Left rotation for a point ahead of the ant and to the left
+		Lheading = new Vector3f[N_Ants];
+		Rrotation = new Vector3f[N_Ants]; //Right rotation for a point ahead of the ant to the right
+		Rheading = new Vector3f[N_Ants];
+		
 		foraging = new ArrayList<Integer>();
 		
 		float min_X = -scatter_X/2f;
@@ -87,8 +95,16 @@ public class Ant extends SceneObject {
 			position[i] = new Vector3f(x, y, 0f);
 			float s = Scene.randBetween(min_scale, max_scale);
 			scale[i] = new Vector3f(s, s, s);
-			rotation[i] = new Vector3f(Scene.randBetween(0,TAU), 0, 0);
+			float randomRotation = Scene.randBetween(0,TAU);
+			rotation[i] = new Vector3f(randomRotation, 0, 0);
 			heading[i] = calcHeading(rotation[i].x);
+			//Antennae calcs
+			Lrotation[i] = new Vector3f(randomRotation + ANTENNAE_ROTATION, 0, 0);
+			Lheading[i] = calcHeading(Lrotation[i].x);
+			Rrotation[i] = new Vector3f(randomRotation - ANTENNAE_ROTATION, 0, 0);
+			Rheading[i] = calcHeading(Rrotation[i].x);
+			
+			
 			foraging.add(1);
 		}
 		positionBuffer = GLBuffers.createBuffer(position);
@@ -133,25 +149,57 @@ public class Ant extends SceneObject {
 		Vector3f projectedPos = heading[index];
 		projectedPos.x += antPos.x;
 		projectedPos.y += antPos.y;
-
-		
-
 		int currentIndex = grid.getCellAtWorldPos(new Vector4f(antPos.x, antPos.y, antPos.z, 1));
 		Square currentSquare = grid.getSquare(currentIndex);
-		Square[] neighbourhood = grid.getNeighbourhood(currentSquare.x, currentSquare.y);
-
 		int projectedIndex = grid.getCellAtWorldPos(new Vector4f(projectedPos.x, projectedPos.y, projectedPos.z, 1));
 		if (currentIndex == -1) {
 			return true;
 		}
-		Square current = grid.getSquare(currentIndex);
 		Square ahead = grid.getSquare(projectedIndex);
 		System.out.println("Current pos is:" + antPos.x + "," + antPos.y + " and pPos is " + projectedPos.x + "," + projectedPos.y);
-		System.out.println("Current square is square:" + current.x + "," + current.y + " and ahead is " + ahead.x + "," + ahead.y);
-		if (ahead.getFoodScent() > current.getFoodScent()) {
+		System.out.println("Current square is square:" + currentSquare.x + "," + currentSquare.y + " and ahead is " + ahead.x + "," + ahead.y);
+		if (ahead.getFoodScent() > currentSquare.getFoodScent()) {
 			return true;
 		}
 		return false;
+	}
+	
+	private float turnStrength(int index) {
+		Vector3f antPos = position[index];
+		//Vector3f projectedPos = heading[index].add(antPos).mul(grid.getScale()); //Project forward direction, corrected for changing grid scale from 1
+		heading[index] = calcHeading(rotation[index].x);
+		Vector3f projectedPos = heading[index];
+		projectedPos.x += antPos.x;
+		projectedPos.y += antPos.y;
+
+		int currentIndex = grid.getCellAtWorldPos(new Vector4f(antPos.x, antPos.y, antPos.z, 1));
+		if (currentIndex == -1) {
+			return 0;
+		}
+		int facingIndex = grid.getCellAtWorldPos(new Vector4f(projectedPos.x, projectedPos.y, projectedPos.z, 1));
+		
+		Square currentSquare = grid.getSquare(currentIndex);
+		Square[] neighbourhood = grid.getNeighbourhood(currentSquare.x, currentSquare.y);
+
+		int bestValue = highestScore(neighbourhood); //Currently this is always scoring on foodScent;
+		if (facingIndex != neighbourhood[bestValue].i) {
+			
+		}
+		
+		System.out.println("Current pos is:" + antPos.x + "," + antPos.y + " and pPos is " + projectedPos.x + "," + projectedPos.y);
+		return 0;
+	}
+	
+	private int highestScore(Square[] neighbourhood) {
+		float highScore = 0;
+		int highScoreIndex = -1;
+		for (int i = 0; i < neighbourhood.length; i++) {
+			if (neighbourhood[i].getFoodScent() > highScore) {
+				highScore = neighbourhood[i].getFoodScent();
+				highScoreIndex = i;
+			}
+		}
+		return highScoreIndex;
 	}
 		
 	public void update(float deltaTime, InputManager input) {
