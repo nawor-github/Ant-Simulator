@@ -80,7 +80,10 @@ public class Grid extends SceneObject {
 	}
 	
 	public Square getSquare(int index) {
-		return squares[index];
+		if (index != -1) {
+			return squares[index];
+		}
+		return new Square(0,0,-1);
 	}
 	
 	private void makeMesh() {	

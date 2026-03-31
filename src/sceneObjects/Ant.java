@@ -16,6 +16,7 @@ import sim.Square;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import java.util.ArrayList;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_DOWN;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT;
@@ -56,7 +57,7 @@ public class Ant extends SceneObject {
 	
 	private Grid grid;
 	
-	private boolean[] foraging; //1 for following food, 0 for following home
+	ArrayList<Integer> foraging = new ArrayList<Integer>(); //1 for following food, 0 for following home
 	
 	public Ant(int nAnts, float max_Scale, float min_Scale, float scatter_X, float scatter_Y, Grid g) {
 		min_scale = min_Scale;
@@ -73,6 +74,7 @@ public class Ant extends SceneObject {
 		scale = new Vector3f[N_Ants];
 		rotation = new Vector3f[N_Ants];
 		heading = new Vector3f[N_Ants];
+		foraging = new ArrayList<Integer>();
 		
 		float min_X = -scatter_X/2f;
 		float max_X = scatter_X/2f;
@@ -87,7 +89,7 @@ public class Ant extends SceneObject {
 			scale[i] = new Vector3f(s, s, s);
 			rotation[i] = new Vector3f(Scene.randBetween(0,TAU), 0, 0);
 			heading[i] = calcHeading(rotation[i].x);
-			foraging[i] = true;
+			foraging.add(1);
 		}
 		positionBuffer = GLBuffers.createBuffer(position);
 		scaleBuffer = GLBuffers.createBuffer(scale);
@@ -104,7 +106,7 @@ public class Ant extends SceneObject {
 		scale = addToVector3fArray(scale, new Vector3f(s,s,s));
 		rotation = addToVector3fArray(rotation, new Vector3f(0,0,0));
 		heading = addToVector3fArray(heading, new Vector3f(0, 1f, 0));
-		foraging = true;
+		foraging.add(1);
 		
 		positionBuffer = GLBuffers.createBuffer(position);
 		scaleBuffer = GLBuffers.createBuffer(scale);
@@ -137,13 +139,17 @@ public class Ant extends SceneObject {
 	
 	public void update(float deltaTime, InputManager input) {
 		for (int i = 0; i < N_Ants; i++) {
-			rotation[i].x += ROTATION_SPEED * deltaTime;
-			heading[i] = calcHeading(rotation[i].x);
-			if (i == 0) {
-				//System.out.println("Heading is: " + heading[i].x + "," + heading[i].y + " and rotation is: " + rotation[i].x);
+			if (forwardDesireable(i)) { //If ahead looks good, go ahead
+				heading[i] = calcHeading(rotation[i].x);
+				if (i == 0) {
+					//System.out.println("Heading is: " + heading[i].x + "," + heading[i].y + " and rotation is: " + rotation[i].x);
+				}
+				position[i].x += heading[i].x * MOVE_SPEED * deltaTime;
+				position[i].y += heading[i].y * MOVE_SPEED * deltaTime;
+			} else {
+				rotation[i].x += ROTATION_SPEED * deltaTime;
 			}
-			position[i].x += heading[i].x * MOVE_SPEED * deltaTime;
-			position[i].y += heading[i].y * MOVE_SPEED * deltaTime;
+			
 		}
 		positionBuffer = GLBuffers.createBuffer(position);
 		rotationBuffer = GLBuffers.createBuffer(rotation); 
