@@ -175,54 +175,6 @@ public class Ant extends SceneObject {
 		return value;
 	}
 	
-	private boolean forwardDesireable(int index) {
-		Vector3f antPos = position[index];
-		//Vector3f projectedPos = heading[index].add(antPos).mul(grid.getScale()); //Project forward direction, corrected for changing grid scale from 1
-		heading[index] = calcHeading(rotation[index].x);
-		Vector3f projectedPos = heading[index];
-		projectedPos.x += antPos.x;
-		projectedPos.y += antPos.y;
-		int currentIndex = grid.getCellAtWorldPos(new Vector4f(antPos.x, antPos.y, antPos.z, 1));
-		Square currentSquare = grid.getSquare(currentIndex);
-		int projectedIndex = grid.getCellAtWorldPos(new Vector4f(projectedPos.x, projectedPos.y, projectedPos.z, 1));
-		if (currentIndex == -1) {
-			return true;
-		}
-		Square ahead = grid.getSquare(projectedIndex);
-		System.out.println("Current pos is:" + antPos.x + "," + antPos.y + " and pPos is " + projectedPos.x + "," + projectedPos.y);
-		System.out.println("Current square is square:" + currentSquare.x + "," + currentSquare.y + " and ahead is " + ahead.x + "," + ahead.y);
-		if (ahead.getFoodScent() > currentSquare.getFoodScent()) {
-			return true;
-		}
-		return false;
-	}
-	
-	private float turnStrength(int index) {
-		Vector3f antPos = position[index];
-		//Vector3f projectedPos = heading[index].add(antPos).mul(grid.getScale()); //Project forward direction, corrected for changing grid scale from 1
-		heading[index] = calcHeading(rotation[index].x);
-		Vector3f projectedPos = heading[index];
-		projectedPos.x += antPos.x;
-		projectedPos.y += antPos.y;
-
-		int currentIndex = grid.getCellAtWorldPos(new Vector4f(antPos.x, antPos.y, antPos.z, 1));
-		if (currentIndex == -1) {
-			return 0;
-		}
-		int facingIndex = grid.getCellAtWorldPos(new Vector4f(projectedPos.x, projectedPos.y, projectedPos.z, 1));
-		
-		Square currentSquare = grid.getSquare(currentIndex);
-		Square[] neighbourhood = grid.getNeighbourhood(currentSquare.x, currentSquare.y);
-
-		int bestValue = highestScore(neighbourhood); //Currently this is always scoring on foodScent;
-		if (facingIndex != neighbourhood[bestValue].i) {
-			
-		}
-		
-		System.out.println("Current pos is:" + antPos.x + "," + antPos.y + " and pPos is " + projectedPos.x + "," + projectedPos.y);
-		return 0;
-	}
-	
 	private int highestScore(Square[] neighbourhood) {
 		float highScore = 0;
 		int highScoreIndex = -1;
