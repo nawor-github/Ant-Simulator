@@ -128,12 +128,26 @@ public class Ant extends SceneObject {
 	
 	private boolean forwardDesireable(int index) {
 		Vector3f antPos = position[index];
-		Vector3f projectedPos = heading[index].add(antPos).mul(grid.getScale()); //Project forward direction, corrected for changing grid scale from 1
+		//Vector3f projectedPos = heading[index].add(antPos).mul(grid.getScale()); //Project forward direction, corrected for changing grid scale from 1
+		heading[index] = calcHeading(rotation[index].x);
+		Vector3f projectedPos = heading[index];
+		projectedPos.x += antPos.x;
+		projectedPos.y += antPos.y;
+
 		
+
 		int currentIndex = grid.getCellAtWorldPos(new Vector4f(antPos.x, antPos.y, antPos.z, 1));
 		int projectedIndex = grid.getCellAtWorldPos(new Vector4f(projectedPos.x, projectedPos.y, projectedPos.z, 1));
+		if (currentIndex == -1) {
+			return true;
+		}
 		Square current = grid.getSquare(currentIndex);
 		Square ahead = grid.getSquare(projectedIndex);
+		System.out.println("Current pos is:" + antPos.x + "," + antPos.y + " and pPos is " + projectedPos.x + "," + projectedPos.y);
+		System.out.println("Current square is square:" + current.x + "," + current.y + " and ahead is " + ahead.x + "," + ahead.y);
+		if (ahead.getFoodScent() > current.getFoodScent()) {
+			return true;
+		}
 		return false;
 	}
 	

@@ -141,4 +141,12 @@ public class Square {
 		return colour;
 	}
 	
+	public float getFoodScent() {
+		return foodScent;
+	}
+	
+	public float getHomeScent() {
+		return homeScent;
+	}
+	
 }
