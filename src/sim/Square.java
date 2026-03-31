@@ -27,8 +27,10 @@ public class Square {
 	public Vector3f calculateColour() {
 		if (isBlocker) {
 			colour = blockerColour;
+			return colour;
 		} else if (isHome) {
 			colour = homeColour;
+			return colour;
 		} else {
 			colour = clearColour;
 		} 
@@ -44,7 +46,12 @@ public class Square {
 			//colour = foodScentColour; //Make this blend later
 		}
 		if (homeScent > 0) {
-			colour = homeScentColour; //Make this blend later
+			float blendFactor = homeScent / 50f;
+			if (homeScent > 50) {
+				blendFactor = 1;
+			}
+			colour = blendBetween(homeScentColour, clearColour, blendFactor);
+			//colour = homeScentColour; //Make this blend later
 		}
 		return colour;
 	}
@@ -86,14 +93,28 @@ public class Square {
 	}
 	
 	public void addFoodScent(float f) {
-		foodScent += f;
+		if (homeScent > 0) { //Make the two scents mutually exclusive/decay each other
+			homeScent -= f;
+			if (homeScent < 0) {
+				homeScent = 0;
+			}
+		} else {
+			foodScent += f;
+		}
 		System.out.println("Adding " + f + " food scent to " + x + "," + y + ". Food scent is now: " + foodScent);
 
 		calculateColour();
 	}
 	
 	public void addHomeScent(float f) {
-		homeScent += f;
+		if (foodScent > 0) { //Make the two scents mutually exclusive/decay each other
+			foodScent -= f;
+			if (foodScent < 0) {
+				foodScent = 0;
+			}
+		} else {
+			homeScent += f;
+		}
 		calculateColour();
 	}
 
