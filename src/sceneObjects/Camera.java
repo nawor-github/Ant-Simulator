@@ -13,7 +13,12 @@ public class Camera extends SceneObject {
 	private int width;
 	private int height;
 	private float zoom;
-	private static float WIDTH_PROPORTION = 0.066f; //Relates the zoom to the width to control the scaling of the camera
+	private float width_proportion = 0.066f; //Relates the zoom to the width to control the scaling of the camera
+	
+	private final float MOVE_SPEED = 20f;
+
+	private final float ZOOM_SPEED = 0.02f;
+
 	
 	public Camera(float z) {	
 		zoom = z;
@@ -39,12 +44,19 @@ public class Camera extends SceneObject {
 	public void resize(int width, int height) {
 		this.width = width;
 		this.height = height;
-		this.zoom = width * WIDTH_PROPORTION; //Scales the zoom to be proportional to the desired width proportion
+		this.zoom = width * width_proportion; //Scales the zoom to be proportional to the desired width proportion
 	}
 	
-	private final float MOVE_SPEED = 20f;
 	
 	public void update(float deltaTime, InputManager input) {
+		if (input.isKeyDown(GLFW_KEY_PAGE_UP)) { //A press, tank rotate left
+			width_proportion += ZOOM_SPEED * deltaTime;
+			resize(width, height);
+		}
+		if (input.isKeyDown(GLFW_KEY_PAGE_DOWN)) { //A press, tank rotate left
+			width_proportion -= ZOOM_SPEED * deltaTime;
+			resize(width, height);
+		}
 		if (input.isKeyDown(GLFW_KEY_UP)) { //A press, tank rotate left
 			this.getMatrix().translate(0f*deltaTime, MOVE_SPEED*deltaTime, 0*deltaTime);
 		}
