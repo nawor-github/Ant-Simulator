@@ -70,15 +70,9 @@ public class Scene extends SceneObject{
 	int screenWidth = 600;
 	int screenHeight = 600;
 	private int brushMode = 0;
-	private Vector3f clearColour = new Vector3f(0f, 0.1f, 0.2f); //Dark blue clear colour
-	private Vector3f blockerColour = new Vector3f(0.9f, 0.9f, 0.8f); //Pale yellow blocker colour
-	private Vector3f foodColour = new Vector3f(0.9f, 0.7f, 0.2f); //Red-orange food colour
-	private Vector3f foodScentColour = new Vector3f(0.3f, 0.8f, 0.5f); //Dark green food scent colour
-	private Vector3f homeScentColour = new Vector3f(0.8f, 0.1f, 0.6f); //Dark red home scent colour
-	private Vector3f homeColour = new Vector3f(1f, 1f, 1f); //White home colour
 	
-	private final float FOOD_AMOUNT = 20f;
-	private final float SCENT_AMOUNT = 20f;
+	private final float FOOD_AMOUNT = 200f;
+	private final float SCENT_AMOUNT = 200f;
 	
 	public void update(float deltaTime, InputManager input) {
 		if (input.wasKeyPressed(KeyEvent.VK_0)){ //0 = clear

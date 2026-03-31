@@ -36,12 +36,25 @@ public class Square {
 			colour = foodColour;
 		}
 		if (foodScent > 0) {
-			colour = foodScentColour; //Make this blend later
+			float blendFactor = foodScent / 50f;
+			if (foodScent > 50) {
+				blendFactor = 1;
+			}
+			colour = blendBetween(foodScentColour, clearColour, blendFactor);
+			//colour = foodScentColour; //Make this blend later
 		}
 		if (homeScent > 0) {
 			colour = homeScentColour; //Make this blend later
 		}
 		return colour;
+	}
+	
+	private Vector3f blendBetween(Vector3f a, Vector3f b, float t) { //Stub to be repalced with a lerp later on
+		// a * t + y * (1-t)
+		float R = (a.x * t) + (b.x*(1-t));
+		float G = (a.y * t) + (b.y*(1-t));
+		float B = (a.z * t) + (b.z*(1-t));
+		return new Vector3f(R,G,B);
 	}
 	
 	public void clear() {
@@ -67,35 +80,39 @@ public class Square {
 	}
 	
 	public void addFood(float f) {
-		clear();
 		food += f;
+		System.out.println("Adding " + f + " food to " + x + "," + y + ". Food is now: " + food);
 		calculateColour();
 	}
 	
 	public void addFoodScent(float f) {
-		clear();
-		homeScent += f;
+		foodScent += f;
+		System.out.println("Adding " + f + " food scent to " + x + "," + y + ". Food scent is now: " + foodScent);
+
 		calculateColour();
 	}
 	
 	public void addHomeScent(float f) {
-		clear();
-		foodScent += f;
+		homeScent += f;
 		calculateColour();
 	}
 
 
 	public void update(float deltaTime, InputManager input) {
 		decay(deltaTime);
+		calculateColour();
 	}
 	
-	private final static float DECAY_SPEED = 0.5f;
+	private final static float DECAY_SPEED = 2f;
 	
 	private void decay(float deltaTime) {
-		foodScent = foodScent - DECAY_SPEED * deltaTime;
-		homeScent = foodScent - DECAY_SPEED * deltaTime;
+		foodScent -= DECAY_SPEED * deltaTime;
+		homeScent -= DECAY_SPEED * deltaTime;
 		if (foodScent < 0) {
 			foodScent = 0;
+		}
+		if (homeScent < 0) {
+			homeScent = 0;
 		}
 	}
 	

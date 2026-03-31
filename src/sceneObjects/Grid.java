@@ -142,6 +142,7 @@ public class Grid extends SceneObject {
 		for (Square s : squares) {
 			s.calculateColour();
 			colour[s.i] = s.getColour();
+			s.update(deltaTime,  input);
 		}
 		colourBuffer = GLBuffers.createBuffer(colour); // See if this can be removed??
 	}
