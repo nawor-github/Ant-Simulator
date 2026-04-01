@@ -58,7 +58,7 @@ public class Ant extends SceneObject {
 	private Grid grid;
 	
 	private final float MOVE_SPEED = 4f;
-	private final float TURN_SPEED = 4f;
+	private final float TURN_SPEED = 5f;
 	
 	private final float TRAIL_DEPOSIT_STRENGTH = 0.1f;
 
@@ -109,8 +109,6 @@ public class Ant extends SceneObject {
 			//Antennae calcs
 			Lheading[i] = calcHeading(rotation[i].x + ANTENNAE_ROTATION);
 			Rheading[i] = calcHeading(rotation[i].x - ANTENNAE_ROTATION);
-			
-			
 			foraging.add(1);
 			foodAmount.add(0f);
 		}
@@ -209,27 +207,23 @@ public class Ant extends SceneObject {
 			return 1;
 		}
 		float value = 0; //Steady course
-		if (foraging.get(antIndex) == 1) {
-			if (forwardSquare.getHomeScent() < leftSquare.getHomeScent() && rightSquare.getHomeScent() < leftSquare.getHomeScent()) {
+		if (foraging.get(antIndex) == 1) { // Following food
+			if (forwardSquare.getFoodScent() < leftSquare.getFoodScent() && rightSquare.getFoodScent() < leftSquare.getFoodScent()) {
 				value = 1; //Turn left
 			}
-			if (forwardSquare.getHomeScent() < rightSquare.getHomeScent()) {
+			if (forwardSquare.getFoodScent() < rightSquare.getFoodScent()) {
 				value = -1; //Turn right
 			}
 			return value;
 		}
-		if (forwardSquare.getFoodScent() < leftSquare.getFoodScent() && rightSquare.getFoodScent() < leftSquare.getFoodScent()) {
+		if (forwardSquare.getHomeScent() < leftSquare.getHomeScent() && rightSquare.getHomeScent() < leftSquare.getHomeScent()) { //Following home
 			value = 1; //Turn left
 		}
-		if (forwardSquare.getFoodScent() < rightSquare.getFoodScent()) {
+		if (forwardSquare.getHomeScent() < rightSquare.getHomeScent()) {
 			value = -1; //Turn right
 		}
 		return value;
 	}
-	
-
-		
-	
 	
 	private Square getCurrentSquare(int antIndex) {
 		Vector3f antPos = position[antIndex];
@@ -252,7 +246,7 @@ public class Ant extends SceneObject {
 			currentFood = FOOD_CAPACITY;
 		}
 		foodAmount.set(antIndex, currentFood);
-		foraging.set(antIndex, 0);
+		foraging.set(antIndex, 0); //1 for following food, 0 for following home
 	}
 	
 	private void dropOffFood(int antIndex, Square s) {
@@ -264,16 +258,16 @@ public class Ant extends SceneObject {
 			grid.foodStored += currentFood;
 			foodAmount.set(antIndex, 0f);
 			
-			foraging.set(antIndex, 1);
+			foraging.set(antIndex, 1); //1 for following food, 0 for following home
 		}
 	}
 	
-	private void depositTrail(int antIndex, Square s) { //1 for food, 0 for home
+	private void depositTrail(int antIndex, Square s) { //1 for following food, 0 for following home
 		if (foraging.get(antIndex) == 0) {
-			s.addHomeScent(TRAIL_DEPOSIT_STRENGTH);
+			s.addFoodScent(TRAIL_DEPOSIT_STRENGTH);
 			return;
 		}
-		s.addFoodScent(TRAIL_DEPOSIT_STRENGTH);
+		s.addHomeScent(TRAIL_DEPOSIT_STRENGTH);
 	}
 	
 	private Vector3f calcHeading(float r) { //The rotation as a number expressed in radians

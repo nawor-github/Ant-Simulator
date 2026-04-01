@@ -96,7 +96,7 @@ public class Scene extends SceneObject{
 		if (input.wasKeyPressed(KeyEvent.VK_5)){ //5 = home
 			brushMode = 5;
 		}
-		if (input.wasKeyPressed(KeyEvent.VK_5)){ //6 = paint ants
+		if (input.wasKeyPressed(KeyEvent.VK_6)){ //6 = paint ants
 			brushMode = 6;
 		}
 		
