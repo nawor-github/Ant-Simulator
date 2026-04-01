@@ -57,8 +57,8 @@ public class Ant extends SceneObject {
 	
 	private Grid grid;
 	
-	private final float MOVE_SPEED = 2f;
-	private final float TURN_SPEED = 2f;
+	private final float MOVE_SPEED = 4f;
+	private final float TURN_SPEED = 4f;
 	
 	private final float TRAIL_DEPOSIT_STRENGTH = 0.1f;
 
@@ -152,7 +152,7 @@ public class Ant extends SceneObject {
 		Lheading = addToVector3fArray(heading, new Vector3f(0, 1f + ANTENNAE_ROTATION, 0));
 		Rheading = addToVector3fArray(heading, new Vector3f(0, 1f - ANTENNAE_ROTATION, 0));
 		foraging.add(1);
-		foraging.add(0);
+		foodAmount.add(0f);
 		
 		positionBuffer = GLBuffers.createBuffer(position);
 		scaleBuffer = GLBuffers.createBuffer(scale);

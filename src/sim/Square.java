@@ -17,7 +17,12 @@ public class Square {
 	private Vector3f homeScentColour = new Vector3f(0.8f, 0.1f, 0.6f); //Dark red home scent colour
 	private Vector3f homeColour = new Vector3f(1f, 1f, 1f); //White home colour
 	
-	private final static float DECAY_SPEED = 0.01f;
+	private final static float DECAY_SPEED = 0.1f;
+	
+	
+	private final static float FOOD_SCENT_MAX_DISPLAY = 100f;
+	private final static float HOME_SCENT_MAX_DISPLAY = 100f;
+	private final static float FOOD_MAX_DISPLAY = 2000f;
 	
 	public Square(int X, int Y, int I) {
 		x = X;
@@ -25,10 +30,7 @@ public class Square {
 		i = I;
 		clear();
 	}
-	
-	private final static float FOOD_SCENT_MAX_DISPLAY = 50f;
-	private final static float HOME_SCENT_MAX_DISPLAY = 50f;
-	private final static float FOOD_MAX_DISPLAY = 50f;
+
 
 	
 	public Vector3f calculateColour() {
@@ -111,7 +113,7 @@ public class Square {
 	
 	public void addFood(float f) {
 		food += f;
-		System.out.println("Adding " + f + " food to " + x + "," + y + ". Food is now: " + food);
+		//System.out.println("Adding " + f + " food to " + x + "," + y + ". Food is now: " + food);
 		calculateColour();
 	}
 	
@@ -128,13 +130,13 @@ public class Square {
 	
 	public void addFoodScent(float f) {
 		foodScent += f;
-		System.out.println("Adding " + f + " food scent to " + x + "," + y + ". Food scent is now: " + foodScent);
+		//System.out.println("Adding " + f + " food scent to " + x + "," + y + ". Food scent is now: " + foodScent);
 		calculateColour();
 	}
 	
 	public void addHomeScent(float f) {
 		homeScent += f;
-		System.out.println("Adding " + f + " home scent to " + x + "," + y + ". Home scent is now: " + homeScent);
+		//System.out.println("Adding " + f + " home scent to " + x + "," + y + ". Home scent is now: " + homeScent);
 
 		calculateColour();
 	}

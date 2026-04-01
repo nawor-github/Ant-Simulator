@@ -33,7 +33,7 @@ public class Scene extends SceneObject{
 	private final float GRID_SPACING = 1f;
 	private final float GRID_SCALE = 1;
 	
-	private final int ANT_COUNT = 100;
+	private final int ANT_COUNT = 1000;
 	private final float ANT_SCALE_MIN = 1f;
 	private final float ANT_SCALE_MAX = 2f;
 	private final float SCATTER_WIDTH = 2f;
@@ -105,7 +105,7 @@ public class Scene extends SceneObject{
 			mousePos = getMousePosWorld(input);
 			if (brushMode != 6) {
 				int gridIndex = grid.getCellAtWorldPos(mousePos);
-				//System.out.println("Grid Index:" + gridIndex);
+				//6System.out.println("Grid Index:" + gridIndex);
 				if (gridIndex != -1) {
 					Square s = grid.getSquare(gridIndex);
 					switch(brushMode) {
