@@ -65,7 +65,7 @@ public class Ant extends SceneObject {
 	private final float FOOD_CAPACITY = 1f;
 	private final float FOOD_TAKE_SPEED = 1f;
 
-	private static float RANDOM_WIGGLE = 0.1f;
+	private static float RANDOM_WIGGLE = 0.5f;
 	
 	private static float ANTENNAE_ROTATION = 0.5f;
 	
@@ -119,6 +119,26 @@ public class Ant extends SceneObject {
 		rotationBuffer = GLBuffers.createBuffer(rotation); 
 	}
 	
+	public void update(float deltaTime, InputManager input) {
+		for (int i = 0; i < N_Ants; i++) {
+			Square current = getCurrentSquare(i);
+			pickUpFood(i, current);
+			dropOffFood(i, current);
+			depositTrail(i, current);
+			float turnMult = turnDirection(i);
+			rotation[i].x += (turnMult + (RANDOM_WIGGLE*Scene.randBetween(-1,1))) * TURN_SPEED * deltaTime;
+
+			heading[i] = calcHeading(rotation[i].x);
+			if (i == 0) {
+				//System.out.println("Heading is: " + heading[i].x + "," + heading[i].y + " and rotation is: " + rotation[i].x);
+			}
+			position[i].x += heading[i].x * MOVE_SPEED * deltaTime;
+			position[i].y += heading[i].y * MOVE_SPEED * deltaTime;
+		}
+		positionBuffer = GLBuffers.createBuffer(position);
+		rotationBuffer = GLBuffers.createBuffer(rotation);
+	}
+	
 
 	
 	public void addAnt(Vector4f pos) {
@@ -169,15 +189,25 @@ public class Ant extends SceneObject {
 		
 		//int currentIndex = grid.getCellAtWorldPos(new Vector4f(antPos.x, antPos.y, antPos.z, 1));
 		int projectedIndex = grid.getCellAtWorldPos(new Vector4f(projectedPos.x, projectedPos.y, projectedPos.z, 1));
-		if (projectedIndex == -1) {
-			return 1;
+		if (projectedIndex == -1 || grid.getSquare(projectedIndex).isBlocker) { //Return a random turn direction if directly ahead is off-nap or a blocker
+			if (antIndex % 2 == 0) { //Pick a side this ant will always turn towards
+				return 1;
+			} else {
+				return 0;
+			}
 		}
 		int leftIndex = grid.getCellAtWorldPos(new Vector4f(L_AnntennaePos.x, L_AnntennaePos.y, L_AnntennaePos.z, 1));
 		int rightIndex = grid.getCellAtWorldPos(new Vector4f(R_AnntennaePos.x, R_AnntennaePos.y, R_AnntennaePos.z, 1));
 
 		Square forwardSquare = grid.getSquare(projectedIndex);
 		Square leftSquare = grid.getSquare(leftIndex);
+		if (leftSquare.isBlocker || leftSquare.i == -1) {
+			return -1;
+		}
 		Square rightSquare = grid.getSquare(rightIndex);
+		if (rightSquare.isBlocker || rightSquare.i == -1) {
+			return 1;
+		}
 		float value = 0; //Steady course
 		if (foraging.get(antIndex) == 1) {
 			if (forwardSquare.getHomeScent() < leftSquare.getHomeScent() && rightSquare.getHomeScent() < leftSquare.getHomeScent()) {
@@ -199,25 +229,7 @@ public class Ant extends SceneObject {
 	
 
 		
-	public void update(float deltaTime, InputManager input) {
-		for (int i = 0; i < N_Ants; i++) {
-			Square current = getCurrentSquare(i);
-			pickUpFood(i, current);
-			dropOffFood(i, current);
-			depositTrail(i, current);
-			float turnMult = turnDirection(i);
-			rotation[i].x += (turnMult + (RANDOM_WIGGLE*Scene.randBetween(-1,1))) * TURN_SPEED * deltaTime;
-
-			heading[i] = calcHeading(rotation[i].x);
-			if (i == 0) {
-				//System.out.println("Heading is: " + heading[i].x + "," + heading[i].y + " and rotation is: " + rotation[i].x);
-			}
-			position[i].x += heading[i].x * MOVE_SPEED * deltaTime;
-			position[i].y += heading[i].y * MOVE_SPEED * deltaTime;
-		}
-		positionBuffer = GLBuffers.createBuffer(position);
-		rotationBuffer = GLBuffers.createBuffer(rotation);
-	}
+	
 	
 	private Square getCurrentSquare(int antIndex) {
 		Vector3f antPos = position[antIndex];
