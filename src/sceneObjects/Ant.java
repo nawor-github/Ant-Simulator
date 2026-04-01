@@ -193,7 +193,7 @@ public class Ant extends SceneObject {
 			if (antIndex % 2 == 0) { //Pick a side this ant will always turn towards
 				return 1;
 			} else {
-				return 0;
+				return -1;
 			}
 		}
 		int leftIndex = grid.getCellAtWorldPos(new Vector4f(L_AnntennaePos.x, L_AnntennaePos.y, L_AnntennaePos.z, 1));
