@@ -101,7 +101,7 @@ public class Ant extends SceneObject {
 			float x = Scene.randBetween(min_X, max_X);
 			float y = Scene.randBetween(min_Y, max_Y);
 			position[i] = new Vector3f(x, y, 0f);
-			float s = Scene.randBetween(min_scale, max_scale);
+			float s = min_scale;
 			scale[i] = new Vector3f(s, s, s);
 			float randomRotation = Scene.randBetween(0,TAU);
 			rotation[i] = new Vector3f(randomRotation, 0, 0);
@@ -135,6 +135,8 @@ public class Ant extends SceneObject {
 		}
 		positionBuffer = GLBuffers.createBuffer(position);
 		rotationBuffer = GLBuffers.createBuffer(rotation);
+		scaleBuffer = GLBuffers.createBuffer(scale);
+
 	}
 	
 
@@ -166,24 +168,30 @@ public class Ant extends SceneObject {
 		result[base.length] = addition;
 		return result;
 	}
+	
+	public Vector3f getAntennaeWorldPos(int antIndex, boolean leftAnntennae) {
+		Vector3f antPos = position[antIndex];
+		float antennae_rot = -1f * ANTENNAE_ROTATION;
+		if (leftAnntennae) {
+			antennae_rot = ANTENNAE_ROTATION;
+		}
+		Lheading[antIndex] = calcHeading(rotation[antIndex].x + antennae_rot);
+		Vector3f anntennaePos = Lheading[antIndex];
+		anntennaePos.x += antPos.x;
+		anntennaePos.y += antPos.y;
+		return anntennaePos;
+	}
 
 	private float turnDirection(int antIndex) {
 		Vector3f antPos = position[antIndex];
 		//Vector3f projectedPos = heading[index].add(antPos).mul(grid.getScale()); //Project forward direction, corrected for changing grid scale from 1
 		heading[antIndex] = calcHeading(rotation[antIndex].x);
-		Lheading[antIndex] = calcHeading(rotation[antIndex].x + ANTENNAE_ROTATION);
-		Rheading[antIndex] = calcHeading(rotation[antIndex].x - ANTENNAE_ROTATION);
 		Vector3f projectedPos = heading[antIndex];
 		projectedPos.x += antPos.x;
 		projectedPos.y += antPos.y;
 		
-		Vector3f L_AnntennaePos = Lheading[antIndex];
-		L_AnntennaePos.x += antPos.x;
-		L_AnntennaePos.y += antPos.y;
-		
-		Vector3f R_AnntennaePos = Rheading[antIndex];
-		R_AnntennaePos.x += antPos.x;
-		R_AnntennaePos.y += antPos.y;
+		Vector3f L_AnntennaePos = getAntennaeWorldPos(antIndex, true);
+		Vector3f R_AnntennaePos = getAntennaeWorldPos(antIndex, false);
 		
 		//int currentIndex = grid.getCellAtWorldPos(new Vector4f(antPos.x, antPos.y, antPos.z, 1));
 		int projectedIndex = grid.getCellAtWorldPos(new Vector4f(projectedPos.x, projectedPos.y, projectedPos.z, 1));
@@ -241,6 +249,7 @@ public class Ant extends SceneObject {
 			return;
 		}
 		currentFood += foodGrabbed;
+		scale[antIndex] = new Vector3f(max_scale,max_scale,max_scale);
 		if (currentFood > FOOD_CAPACITY) {
 			s.addFood(currentFood-FOOD_CAPACITY);
 			currentFood = FOOD_CAPACITY;
@@ -257,6 +266,7 @@ public class Ant extends SceneObject {
 			}
 			grid.foodStored += currentFood;
 			foodAmount.set(antIndex, 0f);
+			scale[antIndex] = new Vector3f(min_scale,min_scale,min_scale);
 			
 			foraging.set(antIndex, 1); //1 for following food, 0 for following home
 		}
