@@ -125,10 +125,9 @@ public class Ant extends SceneObject {
 	public void update(float deltaTime, InputManager input) {
 		for (int i = 0; i < N_Ants; i++) {
 			Square current = getCurrentSquare(i);
-			if (foraging.get(i) == 1) { //1 for following food, 0 for following home
-				timeSinceTarget[i] += deltaTime;
-			} else {
-				timeSinceTarget[i] += deltaTime;
+			timeSinceTarget[i] += deltaTime;
+			if (current.isHome || current.getFood() > 0) { 
+				timeSinceTarget[i] = 0;
 			}
 			pickUpFood(i, current);
 			dropOffFood(i, current);
@@ -285,11 +284,13 @@ public class Ant extends SceneObject {
 	}
 	
 	private void depositTrail(int antIndex, Square s) { //1 for following food, 0 for following home
+		float decayMult = 0.05f;
+		float pheremoneAmount = TRAIL_DEPOSIT_STRENGTH * (float) Math.pow((1f - decayMult),timeSinceTarget[antIndex]);
 		if (foraging.get(antIndex) == 0) {
-			s.addFoodScent(TRAIL_DEPOSIT_STRENGTH * timeSinceTarget[antIndex]);
+			s.addFoodScent(pheremoneAmount);
 			return;
 		}
-		s.addHomeScent(TRAIL_DEPOSIT_STRENGTH * timeSinceTarget[antIndex]);
+		s.addHomeScent(pheremoneAmount);
 	}
 	
 	private Vector3f calcHeading(float r) { //The rotation as a number expressed in radians

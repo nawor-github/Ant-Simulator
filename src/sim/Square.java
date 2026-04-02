@@ -127,16 +127,17 @@ public class Square {
 	}
 	
 	public void addFoodScent(float f) {
-		foodScent += f;
-		//System.out.println("Adding " + f + " food scent to " + x + "," + y + ". Food scent is now: " + foodScent);
-		calculateColour();
+		if (f > foodScent) {
+			foodScent = f;
+			calculateColour();
+		}
 	}
 	
 	public void addHomeScent(float f) {
-		homeScent += f;
-		//System.out.println("Adding " + f + " home scent to " + x + "," + y + ". Home scent is now: " + homeScent);
-
-		calculateColour();
+		if (f > homeScent) {
+			homeScent = f;
+			calculateColour();
+		}
 	}
 
 
@@ -172,4 +173,7 @@ public class Square {
 		return homeScent;
 	}
 	
+	public float getFood() {
+		return food;
+	}
 }
