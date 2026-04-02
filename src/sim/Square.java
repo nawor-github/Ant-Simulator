@@ -17,11 +17,11 @@ public class Square {
 	private Vector3f homeScentColour = new Vector3f(0.8f, 0.1f, 0.6f); //Dark red home scent colour
 	private Vector3f homeColour = new Vector3f(1f, 1f, 1f); //White home colour
 	
-	private final static float DECAY_SPEED = 0f;
+	private final static float DECAY_SPEED = 0.5f;
 	
 	
-	private final static float FOOD_SCENT_MAX_DISPLAY = 10f;
-	private final static float HOME_SCENT_MAX_DISPLAY = 10f;
+	private final static float FOOD_SCENT_MAX_DISPLAY = 5f;
+	private final static float HOME_SCENT_MAX_DISPLAY = 5f;
 	private final static float FOOD_MAX_DISPLAY = 2000f;
 	
 	public Square(int X, int Y, int I) {
@@ -151,8 +151,9 @@ public class Square {
 	
 	
 	private void decay(float deltaTime) {
-		foodScent -= DECAY_SPEED * deltaTime;
-		homeScent -= DECAY_SPEED * deltaTime;
+		float decayProportion = (float) Math.pow((1 - DECAY_SPEED), deltaTime);
+		foodScent *= decayProportion;
+		homeScent *= decayProportion;
 		if (foodScent < 0) {
 			foodScent = 0;
 		}
