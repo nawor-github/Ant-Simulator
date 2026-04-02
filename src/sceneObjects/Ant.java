@@ -284,7 +284,7 @@ public class Ant extends SceneObject {
 	}
 	
 	private void depositTrail(int antIndex, Square s) { //1 for following food, 0 for following home
-		float decayMult = 0.05f;
+		float decayMult = 0.5f;
 		float pheremoneAmount = TRAIL_DEPOSIT_STRENGTH * (float) Math.pow((1f - decayMult),timeSinceTarget[antIndex]);
 		if (foraging.get(antIndex) == 0) {
 			s.addFoodScent(pheremoneAmount);
