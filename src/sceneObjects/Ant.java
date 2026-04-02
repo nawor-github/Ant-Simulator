@@ -62,7 +62,7 @@ public class Ant extends SceneObject {
 	
 	private float[] timeSinceTarget; //Tracks time since was last at target
 	
-	private final float TRAIL_DEPOSIT_STRENGTH = 0.1f;
+	private final float TRAIL_DEPOSIT_STRENGTH = 1f;
 
 	private final float FOOD_CAPACITY = 1f;
 	private final float FOOD_TAKE_SPEED = 1f;
