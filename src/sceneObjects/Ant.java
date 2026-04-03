@@ -66,8 +66,10 @@ public class Ant extends SceneObject {
 
 	private final float FOOD_CAPACITY = 20f;
 	private final float FOOD_TAKE_SPEED = 10f;
+	
+	private static float decayMult = 0.1f;
 
-	private static float RANDOM_WIGGLE = 0.5f;
+	private static float RANDOM_WIGGLE = 1f;
 	
 	private static float ANTENNAE_ROTATION = TAU / 8f;
 	
@@ -285,7 +287,7 @@ public class Ant extends SceneObject {
 	}
 	
 	private void depositTrail(int antIndex, Square s) { //1 for following food, 0 for following home
-		float decayMult = 0.5f;
+
 		float pheremoneAmount = TRAIL_DEPOSIT_STRENGTH * (float) Math.pow((1f - decayMult),timeSinceTarget.get(antIndex));
 		if (foraging.get(antIndex) == 0) {
 			s.addFoodScent(pheremoneAmount);
