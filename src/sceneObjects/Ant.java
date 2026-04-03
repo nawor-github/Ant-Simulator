@@ -60,12 +60,12 @@ public class Ant extends SceneObject {
 	private final float MOVE_SPEED = 4f;
 	private final float TURN_SPEED = 5f;
 	
-	private float[] timeSinceTarget; //Tracks time since was last at target
+	
 	
 	private final float TRAIL_DEPOSIT_STRENGTH = 100f;
 
-	private final float FOOD_CAPACITY = 1f;
-	private final float FOOD_TAKE_SPEED = 1f;
+	private final float FOOD_CAPACITY = 20f;
+	private final float FOOD_TAKE_SPEED = 10f;
 
 	private static float RANDOM_WIGGLE = 0.5f;
 	
@@ -73,6 +73,7 @@ public class Ant extends SceneObject {
 	
 	ArrayList<Integer> foraging = new ArrayList<Integer>(); //1 for following food, 0 for following home
 	ArrayList<Float> foodAmount = new ArrayList<Float>();
+	ArrayList<Float> timeSinceTarget = new ArrayList<Float>(); //Tracks time since was last at target
 	
 	
 	public Ant(int nAnts, float max_Scale, float min_Scale, float scatter_X, float scatter_Y, Grid g) {
@@ -90,9 +91,7 @@ public class Ant extends SceneObject {
 		scale = new Vector3f[N_Ants];
 		rotation = new Vector3f[N_Ants];
 		heading = new Vector3f[N_Ants];
-		
-		timeSinceTarget = new float[N_Ants];
-		
+				
 		Lheading = new Vector3f[N_Ants]; //Headings either sideo of the main heading
 		Rheading = new Vector3f[N_Ants];
 				
@@ -110,7 +109,7 @@ public class Ant extends SceneObject {
 			float randomRotation = Scene.randBetween(0,TAU);
 			rotation[i] = new Vector3f(randomRotation, 0, 0);
 			heading[i] = calcHeading(rotation[i].x);
-			timeSinceTarget[i] = 0;
+			timeSinceTarget.add(0f);
 			//Antennae calcs
 			Lheading[i] = calcHeading(rotation[i].x + ANTENNAE_ROTATION);
 			Rheading[i] = calcHeading(rotation[i].x - ANTENNAE_ROTATION);
@@ -125,9 +124,10 @@ public class Ant extends SceneObject {
 	public void update(float deltaTime, InputManager input) {
 		for (int i = 0; i < N_Ants; i++) {
 			Square current = getCurrentSquare(i);
-			timeSinceTarget[i] += deltaTime;
+			float time = timeSinceTarget.get(i);
+			timeSinceTarget.set(i, time + deltaTime);
 			if (current.isHome || current.getFood() > 0) { 
-				timeSinceTarget[i] = 0;
+				timeSinceTarget.set(i, 0f);
 			}
 			pickUpFood(i, current);
 			dropOffFood(i, current);
@@ -162,6 +162,7 @@ public class Ant extends SceneObject {
 		Rheading = addToVector3fArray(heading, new Vector3f(0, 1f - ANTENNAE_ROTATION, 0));
 		foraging.add(1);
 		foodAmount.add(0f);
+		timeSinceTarget.add(0f);
 		
 		positionBuffer = GLBuffers.createBuffer(position);
 		scaleBuffer = GLBuffers.createBuffer(scale);
@@ -265,7 +266,7 @@ public class Ant extends SceneObject {
 		}
 		foodAmount.set(antIndex, currentFood);
 		foraging.set(antIndex, 0); //1 for following food, 0 for following home
-		timeSinceTarget[antIndex] = 0; //Reset foraging time
+		timeSinceTarget.set(antIndex, 0f);//Reset foraging time
 	}
 	
 	private void dropOffFood(int antIndex, Square s) {
@@ -279,13 +280,13 @@ public class Ant extends SceneObject {
 			scale[antIndex] = new Vector3f(min_scale,min_scale,min_scale);
 			
 			foraging.set(antIndex, 1); //1 for following food, 0 for following home
-			timeSinceTarget[antIndex] = 0; //Reset foraging time
+			timeSinceTarget.set(antIndex, 0f);//Reset foraging time
 		}
 	}
 	
 	private void depositTrail(int antIndex, Square s) { //1 for following food, 0 for following home
 		float decayMult = 0.5f;
-		float pheremoneAmount = TRAIL_DEPOSIT_STRENGTH * (float) Math.pow((1f - decayMult),timeSinceTarget[antIndex]);
+		float pheremoneAmount = TRAIL_DEPOSIT_STRENGTH * (float) Math.pow((1f - decayMult),timeSinceTarget.get(antIndex));
 		if (foraging.get(antIndex) == 0) {
 			s.addFoodScent(pheremoneAmount);
 			return;
