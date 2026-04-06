@@ -11,4 +11,11 @@ Pink pheremone trails lead to home and are left by ants that have come from home
 
 ## How it works
 Each ant can detect the state of the grid cells from three directions ahead of it. Based on the status of the ant, they will choose the best path forward at that moment. 
-## How it works
+
+## To do
+- Implement proper ant mesh or texture
+- Add food holding representation display
+- Optimise processing by paralleliing
+- Add collision with surfaces
+- Add collision with other ants
+- Add more complex behaviour/prioroties
