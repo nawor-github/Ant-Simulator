@@ -20,6 +20,9 @@ import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
 import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL33.glVertexAttribDivisor;
+
+import java.awt.event.KeyEvent;
+
 import static org.lwjgl.opengl.GL31.glDrawElementsInstanced;
 
 
@@ -46,10 +49,22 @@ public class Grid extends SceneObject {
 	private Vector3f edgeColour = new Vector3f(0,0,0);
 	
 	float foodStored = 0;
+	Scene scene;
 	
+	int brushMode = 0;
+	// 0 Clear
+	// 1 Blocker
+	// 2 Food
+	// 3 Food Scent
+	// 4 Home Scent
+	// 5 Home
+	// 6 Spawn new ants
 	
+	private final float FOOD_AMOUNT = 20000f; //Amount of food to paint
+	private final float SCENT_AMOUNT = 200f; //Amount of scent to paint
 	
-	public Grid(int w, int h, float s, float spacing) {
+	public Grid(int w, int h, float s, float spacing, Scene Scene) {
+		scene = Scene;
 		count_x = w;
 		count_y = h;
 		setScale(s);
@@ -80,6 +95,7 @@ public class Grid extends SceneObject {
 		positionBuffer = GLBuffers.createBuffer(position);
 		colourBuffer = GLBuffers.createBuffer(colour);
 	}
+
 	
 	public Square getSquare(int index) {
 		if (index != -1) {
@@ -91,10 +107,8 @@ public class Grid extends SceneObject {
 				}
 			}
 		}
-		return new Square(-1,-1,-1);
+		return new Square(-1,-1,-1); //Returns a square with an impossible index and coords
 	}
-	
-	
 
 	public void update(float deltaTime, InputManager input) {
 		for (int x = 0; x < count_x; x++) {
@@ -105,6 +119,66 @@ public class Grid extends SceneObject {
 			}
 		}
 		colourBuffer = GLBuffers.createBuffer(colour); // See if this can be removed??
+		
+		if (input.wasKeyPressed(KeyEvent.VK_0)){ //0 = clear
+			brushMode = 0;
+		}
+		if (input.wasKeyPressed(KeyEvent.VK_1)){ //1 = black blocker squares
+			brushMode = 1;
+		}
+		if (input.wasKeyPressed(KeyEvent.VK_2)){ //2 = food
+			brushMode = 2;
+		}
+		if (input.wasKeyPressed(KeyEvent.VK_3)){ //3 = food scent
+			brushMode = 3;
+		}
+		if (input.wasKeyPressed(KeyEvent.VK_4)){ //4 = home scent
+			brushMode = 4;
+		}
+		if (input.wasKeyPressed(KeyEvent.VK_5)){ //5 = home
+			brushMode = 5;
+		}
+		if (input.wasKeyPressed(KeyEvent.VK_6)){ //6 = paint ants
+			brushMode = 6;
+		}
+		
+		Vector4f mousePos = scene.getMousePos();
+		if (input.isMouseDown()) {
+			if (brushMode != 6) {
+				int gridIndex = getCellAtWorldPos(mousePos);
+				//6System.out.println("Grid Index:" + gridIndex);
+				if (gridIndex != -1) {
+					Square s = getSquare(gridIndex);
+					switch(brushMode) {
+						case 0: // clear
+							s.clear();
+							//grid.setColour(gridIndex, clearColour);
+							break;
+						case 1: // blocker
+							s.setBlocker();
+							//grid.setColour(gridIndex, blockerColour);
+							break;
+						case 2: // food
+							s.addFood(FOOD_AMOUNT * deltaTime);
+							//grid.setColour(gridIndex, foodColour);
+							break;
+						case 3: // food scent
+							s.addFoodScent(SCENT_AMOUNT * deltaTime);
+							//grid.setColour(gridIndex, foodScentColour);
+							break;
+						case 4: // home scent
+							s.addHomeScent(SCENT_AMOUNT * deltaTime);
+							//grid.setColour(gridIndex, homeScentColour);
+							break;
+						case 5: //home colour
+							s.setHome();
+							//grid.setColour(gridIndex, homeColour);
+							break;
+					}
+				}
+			}
+		}
+		
 	}
 	
 	public void setColour(int i, Vector3f c) {
@@ -193,5 +267,14 @@ public class Grid extends SceneObject {
 		glVertexAttribDivisor(shader.getAttribute("a_colour"), 0);
 
 
+	}
+	
+	
+	public void setBrushMode(int mode) {
+		brushMode = mode;
+	}
+	
+	public int getBrushMode() {
+		return brushMode;
 	}
 }

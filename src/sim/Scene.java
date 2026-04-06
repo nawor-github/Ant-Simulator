@@ -38,10 +38,7 @@ public class Scene extends SceneObject{
 	private final float ANT_SCALE_MAX = 2f;
 	private final float SCATTER_WIDTH = 2f;
 	private final float SCATTER_HEIGHT = 2f;
-	
-	private final float FOOD_AMOUNT = 20000f;
-	private final float SCENT_AMOUNT = 200f;
-	
+
 	private Simulator sim;
 			
 	public Scene(Simulator s) {
@@ -50,7 +47,7 @@ public class Scene extends SceneObject{
 		screenHeight = sim.screenHeight;
 		theScene = this;
 		
-		grid = new Grid(GRID_SIZE, GRID_SIZE, GRID_SCALE, GRID_SPACING);
+		grid = new Grid(GRID_SIZE, GRID_SIZE, GRID_SCALE, GRID_SPACING, this);
 		grid.setParent(this);		
 		camera = new Camera(MAIN_CAM_ZOOM);
 		camera.setParent(theScene);
@@ -73,69 +70,16 @@ public class Scene extends SceneObject{
 	private Vector4f mousePos = new Vector4f();
 	int screenWidth = 0;
 	int screenHeight = 0;
-	private int brushMode = 0;
 	
-
+	public Vector4f getMousePos() {
+		return mousePos;
+	}
 	
 	public void update(float deltaTime, InputManager input) {
-		if (input.wasKeyPressed(KeyEvent.VK_0)){ //0 = clear
-			brushMode = 0;
-		}
-		if (input.wasKeyPressed(KeyEvent.VK_1)){ //1 = black blocker squares
-			brushMode = 1;
-		}
-		if (input.wasKeyPressed(KeyEvent.VK_2)){ //2 = food
-			brushMode = 2;
-		}
-		if (input.wasKeyPressed(KeyEvent.VK_3)){ //3 = food scent
-			brushMode = 3;
-		}
-		if (input.wasKeyPressed(KeyEvent.VK_4)){ //4 = home scent
-			brushMode = 4;
-		}
-		if (input.wasKeyPressed(KeyEvent.VK_5)){ //5 = home
-			brushMode = 5;
-		}
-		if (input.wasKeyPressed(KeyEvent.VK_6)){ //6 = paint ants
-			brushMode = 6;
-		}
-		
+		mousePos = getMousePosWorld(input);
 		grid.update(deltaTime, input);
 		if (input.isMouseDown()) {
-			mousePos = getMousePosWorld(input);
-			if (brushMode != 6) {
-				int gridIndex = grid.getCellAtWorldPos(mousePos);
-				//6System.out.println("Grid Index:" + gridIndex);
-				if (gridIndex != -1) {
-					Square s = grid.getSquare(gridIndex);
-					switch(brushMode) {
-						case 0: // clear
-							s.clear();
-							//grid.setColour(gridIndex, clearColour);
-							break;
-						case 1: // blocker
-							s.setBlocker();
-							//grid.setColour(gridIndex, blockerColour);
-							break;
-						case 2: // food
-							s.addFood(FOOD_AMOUNT * deltaTime);
-							//grid.setColour(gridIndex, foodColour);
-							break;
-						case 3: // food scent
-							s.addFoodScent(SCENT_AMOUNT * deltaTime);
-							//grid.setColour(gridIndex, foodScentColour);
-							break;
-						case 4: // home scent
-							s.addHomeScent(SCENT_AMOUNT * deltaTime);
-							//grid.setColour(gridIndex, homeScentColour);
-							break;
-						case 5: //home colour
-							s.setHome();
-							//grid.setColour(gridIndex, homeColour);
-							break;
-					}
-				}
-			} else {
+			if (grid.getBrushMode() == 6) {
 				ants.addAnt(mousePos);
 			}
 		}		
