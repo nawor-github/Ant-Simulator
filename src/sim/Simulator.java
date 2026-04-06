@@ -11,8 +11,10 @@ package sim;
 
 	import java.io.File;
 	import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
-	import comp3170.IWindowListener;
+import comp3170.IWindowListener;
 	import comp3170.InputManager;
 	import comp3170.OpenGLException;
 	import comp3170.ShaderLibrary;
@@ -38,6 +40,9 @@ import sceneObjects.Camera;
 		private Matrix4f projectionMatrix = new Matrix4f();
 		private Matrix4f mvpMatrix = new Matrix4f();
 		
+		private final static float clearColour = 0f; //BLACK
+
+		
 		public Simulator() throws OpenGLException {
 			instance = this;
 			window = new Window("Assignment 1", screenWidth, screenHeight, this);
@@ -53,7 +58,7 @@ import sceneObjects.Camera;
 			input = new InputManager(window);
 			scene = new Scene(this);
 
-			glClearColor(0.96f, 0.85f, 0.65f, 1.0f); // SANDY DESERT
+			glClearColor(clearColour, clearColour, clearColour, 1); // BLACK
 			
 			input = new InputManager(window);
 			oldTime = System.currentTimeMillis();
@@ -78,9 +83,7 @@ import sceneObjects.Camera;
 			scene.draw(mvpMatrix);
 			String s = "Saa";
 		}
-		
-		static final private int KEYBIND_NUMBER = 10; // Number of keys to be bound and tracked
-		
+				
 		private void update() {
 			long time = System.currentTimeMillis();
 			float deltaTime = (time - oldTime) / 1000f;

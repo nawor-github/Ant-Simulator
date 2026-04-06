@@ -163,7 +163,7 @@ public class Ant extends SceneObject {
 		Rheading = addToVector3fArray(heading, new Vector3f(0, 1f - ANTENNAE_ROTATION, 0));
 		foraging.add(1);
 		foodAmount.add(0f);
-		timeSinceTarget.add(0f);
+		timeSinceTarget.add(10000f);
 		
 		positionBuffer = GLBuffers.createBuffer(position);
 		scaleBuffer = GLBuffers.createBuffer(scale);
