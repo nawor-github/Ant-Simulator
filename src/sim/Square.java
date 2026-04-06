@@ -10,11 +10,11 @@ public class Square {
 	public int x, y, i;
 	private Vector3f colour;
 	
-	private Vector3f clearColour = new Vector3f(0.05f, 0.1f, 0.2f); //Dark blue clear colour
-	private Vector3f blockerColour = new Vector3f(0f, 0f, 0f); //Pale yellow blocker colour
+	private Vector3f clearColour = new Vector3f(0.5f, 0.5f, 0.5f); //Light coloured clear colour
+	private Vector3f blockerColour = new Vector3f(0f, 0f, 0f); //Black blocker colour
 	private Vector3f foodColour = new Vector3f(0.9f, 0.7f, 0.2f); //Red-orange food colour
 	private Vector3f foodScentColour = new Vector3f(0.3f, 0.8f, 0.5f); //Dark green food scent colour
-	private Vector3f homeScentColour = new Vector3f(0.8f, 0.1f, 0.6f); //Dark red home scent colour
+	private Vector3f homeScentColour = new Vector3f(0.8f, 0.1f, 0.6f); //Magenta home scent colour
 	private Vector3f homeColour = new Vector3f(1f, 1f, 1f); //White home colour
 	
 	private final static float DECAY_SPEED = 0.01f;

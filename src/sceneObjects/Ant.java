@@ -39,8 +39,8 @@ public class Ant extends SceneObject {
 	private int vertexBuffer;
 	private int[] indices;
 	private int indexBuffer;
-	protected Vector3f colour = new Vector3f(0.1f,0.6f,0.3f); //Dark green
-	protected Vector3f stripeColour = new Vector3f(0.05f,0.4f,0.3f); //Darker green, with a blue-ish tinge
+	protected Vector3f colour = new Vector3f(0.1f,0.2f,0.2f); //Dark colour
+	protected Vector3f stripeColour = new Vector3f(0.05f, 0.1f, 0.2f); //Old clear colour now ant colour
 	
 	private Vector3f[] position;
 	private int positionBuffer;
@@ -59,8 +59,6 @@ public class Ant extends SceneObject {
 	
 	private final float MOVE_SPEED = 4f;
 	private final float TURN_SPEED = 5f;
-	
-	
 	
 	private final float TRAIL_DEPOSIT_STRENGTH = 100f;
 
