@@ -156,10 +156,11 @@ public class Ant extends SceneObject {
 		Vector3f p = new Vector3f(pos.x, pos.y, pos.z);
 		N_Ants = N_Ants + 1;
 		position = addToVector3fArray(position, p);
-		float s = Scene.randBetween(min_scale, max_scale);
+		float s = min_scale;
 		scale = addToVector3fArray(scale, new Vector3f(s,s,s));
-		rotation = addToVector3fArray(rotation, new Vector3f(0,0,0));
-		heading = addToVector3fArray(heading, new Vector3f(0, 1f, 0));
+		float randomRotation = Scene.randBetween(0,TAU);
+		rotation = addToVector3fArray(rotation, new Vector3f(randomRotation, 0, 0));
+		heading = addToVector3fArray(heading, new Vector3f(0, rotation[N_Ants-1].x, 0));
 		Lheading = addToVector3fArray(heading, new Vector3f(0, 1f + ANTENNAE_ROTATION, 0));
 		Rheading = addToVector3fArray(heading, new Vector3f(0, 1f - ANTENNAE_ROTATION, 0));
 		foraging.add(1);
