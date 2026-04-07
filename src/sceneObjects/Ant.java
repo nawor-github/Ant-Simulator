@@ -109,7 +109,7 @@ public class Ant extends SceneObject {
 			float randomRotation = Scene.randBetween(0,TAU);
 			rotation[i] = new Vector3f(randomRotation, 0, 0);
 			heading[i] = calcHeading(rotation[i].x);
-			timeSinceTarget.add(0f);
+			timeSinceTarget.add(99999f);
 			//Antennae calcs
 			Lheading[i] = calcHeading(rotation[i].x + ANTENNAE_ROTATION);
 			Rheading[i] = calcHeading(rotation[i].x - ANTENNAE_ROTATION);

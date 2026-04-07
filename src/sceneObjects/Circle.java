@@ -30,70 +30,14 @@ import static org.lwjgl.opengl.GL33.glVertexAttribDivisor;
 import static org.lwjgl.opengl.GL31.glDrawElementsInstanced;
 
 
-public class Circle extends SceneObject {
+public class Circle extends InstancedObject {
 	final private String VERTEX_SHADER = "instanced_circle_vertex.glsl";
 	final private String FRAGMENT_SHADER = "instanced_circle_fragment.glsl";
 	private Shader shader;
-	private int N_Circles;
-	
-	private Vector4f[] vertices;
-	private int vertexBuffer;
-	private int[] indices;
-	private int indexBuffer;
-	
-	private Vector3f[] position, scale, colour;
-	private int positionBuffer, scaleBuffer, colourBuffer;
-	
-	private static Vector3f defaultColour = new Vector3f(0,1,0);
-	
+		
 	public Circle(int n) {
-		N_Circles = n;
+		super(n);
 		shader = ShaderLibrary.instance.compileShader(VERTEX_SHADER, FRAGMENT_SHADER);
-
-		indices = new int[0];
-		indexBuffer = GLBuffers.createIndexBuffer(indices);
-		vertexBuffer = GLBuffers.createBuffer(vertices);
-
-		
-		position = new Vector3f[N_Circles];
-		scale = new Vector3f[N_Circles];
-		colour = new Vector3f[N_Circles];
-		
-		positionBuffer = GLBuffers.createBuffer(position);
-		scaleBuffer = GLBuffers.createBuffer(scale);
-		colourBuffer = GLBuffers.createBuffer(colour); 
-	}
-	
-	public void update(float deltaTime, InputManager input) {
-		for (int i = 0; i < N_Circles; i++) {
-		}
-		positionBuffer = GLBuffers.createBuffer(position);
-		scaleBuffer = GLBuffers.createBuffer(scale);
-		colourBuffer = GLBuffers.createBuffer(colour);
-	}
-	
-
-	
-	public void addCircle(Vector4f pos, Vector3f c, Vector3f s) {
-		Vector3f p = new Vector3f(pos.x, pos.y, pos.z);
-		N_Circles++;
-		position = addToVector3fArray(position, p);
-		
-		scale = addToVector3fArray(scale, s);
-		colour = addToVector3fArray(colour, c);
-		
-		positionBuffer = GLBuffers.createBuffer(position);
-		scaleBuffer = GLBuffers.createBuffer(scale);
-		colourBuffer = GLBuffers.createBuffer(colour);
-	}
-	
-	private Vector3f[] addToVector3fArray(Vector3f[] base, Vector3f addition) {
-		Vector3f[] result = new Vector3f[base.length + 1];
-		for (int i = 0; i < base.length; i++) {
-			result[i] = base[i];
-		}
-		result[base.length] = addition;
-		return result;
 	}
 	
 	@Override
@@ -121,7 +65,7 @@ public class Circle extends SceneObject {
 		   ()==(                (@==()
 		        '---------------'
 		*/
-	    glDrawElementsInstanced(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0, N_Circles);	
+	    glDrawElementsInstanced(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0, N_Objects);	
 	    
 	    // disable instance-based drawing (very important to a guy like me)
 		glVertexAttribDivisor(shader.getAttribute("a_worldPos"), 0);

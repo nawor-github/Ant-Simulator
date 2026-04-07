@@ -100,11 +100,13 @@ public class Square {
 	}
 	
 	public void setBlocker() {
+		clear();
 		isBlocker = true;
 		calculateColour();
 	}
 	
 	public void setHome() {
+		clear();
 		isHome = true;
 		calculateColour();
 	}

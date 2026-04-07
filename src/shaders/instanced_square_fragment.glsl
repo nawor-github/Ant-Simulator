@@ -10,7 +10,7 @@ layout(location = 0) out vec4 o_colour;	// RGBA output to colour buffer
 
 
 void main() {
-	if (v_localCoord.x < 0.1 || v_localCoord.x > 0.9 || v_localCoord.y < 0.1 || v_localCoord.y > 0.9) {
+	if (v_localCoord.x < 0.05 || v_localCoord.x > 0.95 || v_localCoord.y < 0.05 || v_localCoord.y > 0.95) {
 		o_colour = vec4(u_edgeColour, 1);
 	}
 	else {
