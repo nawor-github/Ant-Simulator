@@ -72,11 +72,6 @@ public class Ant extends InstancedObject {
 		min_scale = min_Scale;
 		max_scale = max_Scale;
 		grid = g;
-		
-		shader = ShaderLibrary.instance.compileShader(VERTEX_SHADER, FRAGMENT_SHADER);
-
-		// Make one copy of the mesh
-		makeMesh();
 	}
 	
 	@Override
@@ -103,11 +98,6 @@ public class Ant extends InstancedObject {
 	public void assignBuffers() {
 		super.assignBuffers();
 		rotationBuffer = GLBuffers.createBuffer(rotation); 
-	}
-	
-	@Override
-	public void addDefaultObject() {
-		addObject(genPosition(), genColour(), genScale());
 	}
 	
 	@Override

@@ -49,7 +49,7 @@ public class InstancedObject extends SceneObject {
 		for (int i = 0; i < N_Objects; i++) {
 			addDefaultObject();
 		}
-		assignBuffers(); //Assigns all buffes used by GLSL
+		assignBuffers(); //Assigns all buffers used by GLSL
 	}
 	
 	public void makeEmptyArrays() {
