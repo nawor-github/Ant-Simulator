@@ -306,26 +306,29 @@ public class Ant extends SceneObject {
 		vertices = new Vector4f[] {
 			//Main body
 			new Vector4f( 0, 0, 0, 1), //P0 body vertices start
-			new Vector4f( 0.2f, 0, 0, 1), //P1
-			new Vector4f( 0.2f, 0.7f, 0, 1), //P2
-			new Vector4f( 0.15f, 0.9f, 0, 1), //P3
-			new Vector4f( 0.1f, 1, 0, 1), //P4
-			new Vector4f( 0.05f, 1, 0, 1), //P5
-			new Vector4f( 0f, 0.8f, 0, 1), //P6 body vertices end
-			new Vector4f( 0f, 0.4f, 0, 1), //P7 left arm vertices start
-			new Vector4f( 0f, 0.6f, 0, 1), //P8
-			new Vector4f( -0.1f, 0.6f, 0, 1), //P9
-			new Vector4f( -0.1f, 0.7f, 0, 1), //P10
-			new Vector4f( -0.2f, 0.7f, 0, 1), //P11
-			new Vector4f( -0.2f, 0.5f, 0, 1), //P12 left arm vertices end
-			new Vector4f( 0.2f, 0.2f, 0, 1), //P13 right arm vertices start
-			new Vector4f( 0.4f, 0.4f, 0, 1), //P14
-			new Vector4f( 0.4f, 0.6f, 0, 1), //P15
-			new Vector4f( 0.3f, 0.6f, 0, 1), //P16
-			new Vector4f( 0.3f, 0.5f, 0, 1), //P17
-			new Vector4f( 0.2f, 0.4f, 0, 1), //P18 right arm vertices end
-			new Vector4f( -0.15f, 0.75f, 0, 1), //P19 left arm tip
-			new Vector4f( 0.35f, 0.65f, 0, 1), //P20 right arm tip
+			new Vector4f( 1, -1, 0, 1), //P1
+			new Vector4f( 0, -2, 0, 1), //P2
+			new Vector4f( -1, -1, 0, 1), //P3
+			new Vector4f( -3, -3, 0, 1), //P4
+			new Vector4f( -4, -4, 0, 1), //P5
+			new Vector4f( -4, -6, 0, 1), //P6
+			new Vector4f( -1, -10, 0, 1), //P7
+			new Vector4f( 1, -10, 0, 1), //P8
+			new Vector4f( 4, -6, 0, 1), //P9
+			new Vector4f( 4, -4, 0, 1), //P10
+			new Vector4f( 3, -3, 0, 1), //P11
+			new Vector4f( 0, -6, 0, 1), //P12
+			new Vector4f( 2, 3, 0, 1), //P13
+			new Vector4f( 0, 6, 0, 1), //P14
+			new Vector4f( -2, 3, 0, 1), //P15
+			new Vector4f( 2, 5, 0, 1), //P16
+			new Vector4f( 3, 6, 0, 1), //P17
+			new Vector4f( 3, 7, 0, 1), //P18
+			new Vector4f( 1, 9, 0, 1), //P19
+			new Vector4f( -1, 9, 0, 1), //P20
+			new Vector4f( -3, 7, 0, 1), //P21
+			new Vector4f( -3, 6, 0, 1), //P22
+			new Vector4f( -2, 5, 0, 1), //P23
 		};
 		vertexBuffer = GLBuffers.createBuffer(vertices);
 
