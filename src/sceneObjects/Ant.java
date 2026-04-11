@@ -30,23 +30,12 @@ import static org.lwjgl.opengl.GL33.glVertexAttribDivisor;
 import static org.lwjgl.opengl.GL31.glDrawElementsInstanced;
 
 
-public class Ant extends SceneObject {
-	final private String VERTEX_SHADER = "instanced_vertex.glsl";
-	final private String FRAGMENT_SHADER = "instanced_fragment.glsl";
-	private Shader shader;
+public class Ant extends InstancedObject {
+	final protected String VERTEX_SHADER = "instanced_vertex.glsl";
+	final protected String FRAGMENT_SHADER = "instanced_fragment.glsl";
 	
-	private Vector4f[] vertices;
-	private int vertexBuffer;
-	private int[] indices;
-	private int indexBuffer;
 	protected Vector3f colour = new Vector3f(0.1f,0.2f,0.2f); //Dark colour
 	protected Vector3f stripeColour = new Vector3f(0.05f, 0.1f, 0.2f); //Old clear colour now ant colour
-	
-	private Vector3f[] position;
-	private int positionBuffer;
-	
-	private Vector3f[] scale;
-	private int scaleBuffer;
 	
 	private Vector3f[] rotation, heading, Lheading, Rheading;
 	private int rotationBuffer;
@@ -75,8 +64,13 @@ public class Ant extends SceneObject {
 	ArrayList<Float> foodAmount = new ArrayList<Float>();
 	ArrayList<Float> timeSinceTarget = new ArrayList<Float>(); //Tracks time since was last at target
 	
+	private float scatter_X, scatter_Y;
 	
-	public Ant(int nAnts, float max_Scale, float min_Scale, float scatter_X, float scatter_Y, Grid g) {
+	public Ant(int nAnts, float max_Scale, float min_Scale, float s_X, float s_Y, Grid g) {
+		super(nAnts);
+		
+		scatter_X = s_X;
+		scatter_Y = s_Y;
 		min_scale = min_Scale;
 		max_scale = max_Scale;
 		N_Ants = nAnts;
@@ -94,11 +88,6 @@ public class Ant extends SceneObject {
 				
 		Lheading = new Vector3f[N_Ants]; //Headings either sideo of the main heading
 		Rheading = new Vector3f[N_Ants];
-				
-		float min_X = -scatter_X/2f;
-		float max_X = scatter_X/2f;
-		float min_Y = -scatter_Y/2f;
-		float max_Y = scatter_Y/2f;
 		
 		for (int i = 0; i < N_Ants; i++) {
 			float x = Scene.randBetween(min_X, max_X);
@@ -119,6 +108,22 @@ public class Ant extends SceneObject {
 		positionBuffer = GLBuffers.createBuffer(position);
 		scaleBuffer = GLBuffers.createBuffer(scale);
 		rotationBuffer = GLBuffers.createBuffer(rotation); 
+	}
+	
+	@Override
+	protected Vector3f genPosition() {
+		float min_X = -scatter_X/2f;
+		float max_X = scatter_X/2f;
+		float min_Y = -scatter_Y/2f;
+		float max_Y = scatter_Y/2f;
+		float x = Scene.randBetween(min_X, max_X);
+		float y = Scene.randBetween(min_Y, max_Y);
+		return new Vector3f(x,y,0);
+	}
+	
+	@Override
+	protected Vector3f genScale() {
+		return new Vector3f(0,0,0);
 	}
 	
 	public void update(float deltaTime, InputManager input) {
@@ -169,15 +174,6 @@ public class Ant extends SceneObject {
 		scaleBuffer = GLBuffers.createBuffer(scale);
 		rotationBuffer = GLBuffers.createBuffer(rotation); 
 		//System.out.println("Ant created at: " + pos.x + ", " + pos.y);
-	}
-	
-	private Vector3f[] addToVector3fArray(Vector3f[] base, Vector3f addition) {
-		Vector3f[] result = new Vector3f[base.length + 1];
-		for (int i = 0; i < base.length; i++) {
-			result[i] = base[i];
-		}
-		result[base.length] = addition;
-		return result;
 	}
 	
 	public Vector3f getAntennaeWorldPos(int antIndex, boolean leftAnntennae) {

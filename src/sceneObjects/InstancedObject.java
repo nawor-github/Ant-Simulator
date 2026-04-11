@@ -21,8 +21,8 @@ import static org.lwjgl.opengl.GL31.glDrawElementsInstanced;
 
 
 public class InstancedObject extends SceneObject {
-	final private String VERTEX_SHADER = "instanced_circle_vertex.glsl";
-	final private String FRAGMENT_SHADER = "instanced_circle_fragment.glsl";
+	final protected String VERTEX_SHADER = "instanced_circle_vertex.glsl";
+	final protected String FRAGMENT_SHADER = "instanced_circle_fragment.glsl";
 	protected Shader shader;
 	protected int N_Objects;
 	
@@ -35,28 +35,63 @@ public class InstancedObject extends SceneObject {
 	
 	protected static Vector3f defaultColour = new Vector3f(0,1,0);
 	
+	protected void setShader(String vertex, String fragment) {
+		shader = ShaderLibrary.instance.compileShader(vertex, fragment);
+	}
+	
 	public InstancedObject(int n) {
 		N_Objects = n;
-		shader = ShaderLibrary.instance.compileShader(VERTEX_SHADER, FRAGMENT_SHADER);
+		setShader(VERTEX_SHADER, FRAGMENT_SHADER);
 
-		this.makeMesh();
-		indices = new int[0];
-		indexBuffer = GLBuffers.createIndexBuffer(indices);
-		vertexBuffer = GLBuffers.createBuffer(vertices);
-
+		makeMesh(); //Generates mesh and VERTEX AND INDEX BUFFERS
+		makeEmptyArrays(); //Generates and assigns all buffers
 		
+		for (int i = 0; i < N_Objects; i++) {
+			addDefaultObject();
+		}
+		
+		assignBuffers();
+	}
+	
+	public void makeEmptyArrays() {
 		position = new Vector3f[N_Objects];
 		scale = new Vector3f[N_Objects];
 		colour = new Vector3f[N_Objects];
-		for (int i = 0; i < N_Objects; i++) {
-			position[i] = new Vector3f(0,0,0);
-			scale[i] = new Vector3f(0,0,0);
-			colour[i] = defaultColour;
-		}
-		
+	}
+	
+	public void assignBuffers() {
 		positionBuffer = GLBuffers.createBuffer(position);
 		scaleBuffer = GLBuffers.createBuffer(scale);
 		colourBuffer = GLBuffers.createBuffer(colour); 
+	}
+	
+	public void addDefaultObject() {
+		addObject(genPosition(), genColour(), genScale());
+	}
+	
+	public void addObject(Vector3f new_pos, Vector3f new_colour, Vector3f new_scale) {
+		Vector3f p = new Vector3f(new_pos.x, new_pos.y, new_pos.z);
+		N_Objects++;
+		
+		position = addToVector3fArray(position, p);
+		scale = addToVector3fArray(scale, new_scale);
+		colour = addToVector3fArray(colour, new_colour);
+		
+		positionBuffer = GLBuffers.createBuffer(position);
+		scaleBuffer = GLBuffers.createBuffer(scale);
+		colourBuffer = GLBuffers.createBuffer(colour);
+	}
+	
+	protected Vector3f genPosition() {
+		return new Vector3f(0,0,0);
+	}
+	
+	protected Vector3f genScale() {
+		return new Vector3f(0,0,0);
+	}
+	
+	protected Vector3f genColour() {
+		return defaultColour;
 	}
 	
 	private void makeMesh() {	 //Cactus is default mesh
@@ -114,22 +149,7 @@ public class InstancedObject extends SceneObject {
 		colourBuffer = GLBuffers.createBuffer(colour);
 	}
 	
-
-	
-	public void addObject(Vector4f new_pos, Vector3f new_colour, Vector3f new_scale) {
-		Vector3f p = new Vector3f(new_pos.x, new_pos.y, new_pos.z);
-		N_Objects++;
-		
-		position = addToVector3fArray(position, p);
-		scale = addToVector3fArray(scale, new_scale);
-		colour = addToVector3fArray(colour, new_colour);
-		
-		positionBuffer = GLBuffers.createBuffer(position);
-		scaleBuffer = GLBuffers.createBuffer(scale);
-		colourBuffer = GLBuffers.createBuffer(colour);
-	}
-	
-	private Vector3f[] addToVector3fArray(Vector3f[] base, Vector3f addition) {
+	protected Vector3f[] addToVector3fArray(Vector3f[] base, Vector3f addition) {
 		Vector3f[] result = new Vector3f[base.length + 1];
 		for (int i = 0; i < base.length; i++) {
 			result[i] = base[i];
