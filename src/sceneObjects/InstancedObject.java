@@ -44,19 +44,18 @@ public class InstancedObject extends SceneObject {
 		setShader(VERTEX_SHADER, FRAGMENT_SHADER);
 
 		makeMesh(); //Generates mesh and VERTEX AND INDEX BUFFERS
-		makeEmptyArrays(); //Generates and assigns all buffers
+		makeEmptyArrays(); //Generates all empty arrays and buffers
 		
 		for (int i = 0; i < N_Objects; i++) {
 			addDefaultObject();
 		}
-		
-		assignBuffers();
+		assignBuffers(); //Assigns all buffes used by GLSL
 	}
 	
 	public void makeEmptyArrays() {
-		position = new Vector3f[N_Objects];
-		scale = new Vector3f[N_Objects];
-		colour = new Vector3f[N_Objects];
+		position = new Vector3f[0];
+		scale = new Vector3f[0];
+		colour = new Vector3f[0];
 	}
 	
 	public void assignBuffers() {
@@ -77,9 +76,6 @@ public class InstancedObject extends SceneObject {
 		scale = addToVector3fArray(scale, new_scale);
 		colour = addToVector3fArray(colour, new_colour);
 		
-		positionBuffer = GLBuffers.createBuffer(position);
-		scaleBuffer = GLBuffers.createBuffer(scale);
-		colourBuffer = GLBuffers.createBuffer(colour);
 	}
 	
 	protected Vector3f genPosition() {

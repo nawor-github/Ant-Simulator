@@ -34,13 +34,11 @@ public class Ant extends InstancedObject {
 	final protected String VERTEX_SHADER = "instanced_vertex.glsl";
 	final protected String FRAGMENT_SHADER = "instanced_fragment.glsl";
 	
-	protected Vector3f colour = new Vector3f(0.1f,0.2f,0.2f); //Dark colour
+	protected Vector3f antColour = new Vector3f(0.1f,0.2f,0.2f); //Dark colour
 	protected Vector3f stripeColour = new Vector3f(0.05f, 0.1f, 0.2f); //Old clear colour now ant colour
 	
 	private Vector3f[] rotation, heading, Lheading, Rheading;
 	private int rotationBuffer;
-	
-	private int N_Ants;
 	
 	private float max_scale, min_scale;
 	
@@ -73,41 +71,67 @@ public class Ant extends InstancedObject {
 		scatter_Y = s_Y;
 		min_scale = min_Scale;
 		max_scale = max_Scale;
-		N_Ants = nAnts;
 		grid = g;
 		
 		shader = ShaderLibrary.instance.compileShader(VERTEX_SHADER, FRAGMENT_SHADER);
 
 		// Make one copy of the mesh
 		makeMesh();
+	}
+	
+	@Override
+	protected void setShader(String vertex, String fragment) {
+		shader = ShaderLibrary.instance.compileShader("instanced_vertex.glsl", "instanced_fragment.glsl");
+	}
+	
+	@Override
+	public void makeEmptyArrays() {
+		super.makeEmptyArrays();
 		
-		position = new Vector3f[N_Ants];
-		scale = new Vector3f[N_Ants];
-		rotation = new Vector3f[N_Ants];
-		heading = new Vector3f[N_Ants];
+		rotation = new Vector3f[0];
+		heading = new Vector3f[0];
 				
-		Lheading = new Vector3f[N_Ants]; //Headings either sideo of the main heading
-		Rheading = new Vector3f[N_Ants];
+		Lheading = new Vector3f[0]; //Headings either sideo of the main heading
+		Rheading = new Vector3f[0];
 		
-		for (int i = 0; i < N_Ants; i++) {
-			float x = Scene.randBetween(min_X, max_X);
-			float y = Scene.randBetween(min_Y, max_Y);
-			position[i] = new Vector3f(x, y, 0f);
-			float s = min_scale;
-			scale[i] = new Vector3f(s, s, s);
-			float randomRotation = Scene.randBetween(0,TAU);
-			rotation[i] = new Vector3f(randomRotation, 0, 0);
-			heading[i] = calcHeading(rotation[i].x);
-			timeSinceTarget.add(99999f);
-			//Antennae calcs
-			Lheading[i] = calcHeading(rotation[i].x + ANTENNAE_ROTATION);
-			Rheading[i] = calcHeading(rotation[i].x - ANTENNAE_ROTATION);
-			foraging.add(1);
-			foodAmount.add(0f);
-		}
-		positionBuffer = GLBuffers.createBuffer(position);
-		scaleBuffer = GLBuffers.createBuffer(scale);
+		foraging = new ArrayList<Integer>();
+		foodAmount = new ArrayList<Float>();
+		timeSinceTarget = new ArrayList<Float>();
+	}
+	
+	@Override
+	public void assignBuffers() {
+		super.assignBuffers();
 		rotationBuffer = GLBuffers.createBuffer(rotation); 
+	}
+	
+	@Override
+	public void addDefaultObject() {
+		addObject(genPosition(), genColour(), genScale());
+	}
+	
+	@Override
+	public void addObject(Vector3f new_pos, Vector3f new_colour, Vector3f new_scale) {
+		super.addObject(new_pos, new_colour, new_scale);
+		float randomRotation = Scene.randBetween(0,TAU);
+		Vector3f newHeading = calcHeading(randomRotation);
+		Vector3f newLheading = calcHeading(randomRotation + ANTENNAE_ROTATION);
+		Vector3f newRheading = calcHeading(randomRotation - ANTENNAE_ROTATION);
+		
+		rotation = addToVector3fArray(rotation, new Vector3f(randomRotation, 0, 0));
+		heading = addToVector3fArray(heading, newHeading);
+		Lheading = addToVector3fArray(Lheading, newLheading);
+		Rheading = addToVector3fArray(Rheading, newRheading);
+		
+		foraging.add(1);
+		foodAmount.add(0f);
+		timeSinceTarget.add(10000f);
+	}
+	
+	public void addAnt(Vector4f pos) {
+		Vector3f p = new Vector3f(pos.x, pos.y, pos.z);
+		addObject(p, genColour(), genScale());
+		assignBuffers(); //Assigns all buffes used by GLSL
 	}
 	
 	@Override
@@ -123,11 +147,17 @@ public class Ant extends InstancedObject {
 	
 	@Override
 	protected Vector3f genScale() {
-		return new Vector3f(0,0,0);
+		float s = min_scale;
+		return new Vector3f(s, s, s);
+	}
+	
+	@Override
+	protected Vector3f genColour() {
+		return antColour;
 	}
 	
 	public void update(float deltaTime, InputManager input) {
-		for (int i = 0; i < N_Ants; i++) {
+		for (int i = 0; i < N_Objects; i++) {
 			Square current = getCurrentSquare(i);
 			float time = timeSinceTarget.get(i);
 			timeSinceTarget.set(i, time + deltaTime);
@@ -150,30 +180,6 @@ public class Ant extends InstancedObject {
 		positionBuffer = GLBuffers.createBuffer(position);
 		rotationBuffer = GLBuffers.createBuffer(rotation);
 		scaleBuffer = GLBuffers.createBuffer(scale);
-
-	}
-	
-
-	
-	public void addAnt(Vector4f pos) {
-		Vector3f p = new Vector3f(pos.x, pos.y, pos.z);
-		N_Ants = N_Ants + 1;
-		position = addToVector3fArray(position, p);
-		float s = min_scale;
-		scale = addToVector3fArray(scale, new Vector3f(s,s,s));
-		float randomRotation = Scene.randBetween(0,TAU);
-		rotation = addToVector3fArray(rotation, new Vector3f(randomRotation, 0, 0));
-		heading = addToVector3fArray(heading, new Vector3f(0, rotation[N_Ants-1].x, 0));
-		Lheading = addToVector3fArray(heading, new Vector3f(0, 1f + ANTENNAE_ROTATION, 0));
-		Rheading = addToVector3fArray(heading, new Vector3f(0, 1f - ANTENNAE_ROTATION, 0));
-		foraging.add(1);
-		foodAmount.add(0f);
-		timeSinceTarget.add(10000f);
-		
-		positionBuffer = GLBuffers.createBuffer(position);
-		scaleBuffer = GLBuffers.createBuffer(scale);
-		rotationBuffer = GLBuffers.createBuffer(rotation); 
-		//System.out.println("Ant created at: " + pos.x + ", " + pos.y);
 	}
 	
 	public Vector3f getAntennaeWorldPos(int antIndex, boolean leftAnntennae) {
@@ -371,7 +377,7 @@ public class Ant extends InstancedObject {
 	    shader.setAttribute("a_position", vertexBuffer);
 	    
 	    //Setting our awesome colour uniforms to be passed to the fragment shader
-	    shader.setUniform("u_colour", colour);	 
+	    shader.setUniform("u_colour", antColour);	 
 	    shader.setUniform("u_stripeColour", stripeColour);	    
 
 	    
@@ -386,7 +392,7 @@ public class Ant extends InstancedObject {
 		   ()==(                (@==()
 		        '---------------'
 		*/
-	    glDrawElementsInstanced(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0, N_Ants);	
+	    glDrawElementsInstanced(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0, N_Objects);	
 	    
 	    // disable instance-based drawing (very important to a guy like me)
 		glVertexAttribDivisor(shader.getAttribute("a_worldPos"), 0);
