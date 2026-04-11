@@ -333,21 +333,26 @@ public class Ant extends SceneObject {
 		vertexBuffer = GLBuffers.createBuffer(vertices);
 
 		indices = new int[] {  
-			0,1,2,
-			0,2,6,
-			2,3,6,
-			3,4,5,
-			3,5,6,
-			7,8,9,
-			7,9,12,
-			9,10,11,
-			9,11,12,
-			13,14,18,
-			14,17,18,
-			14,15,17,
-			15,16,17,
-			15,16,20,
-			10,11,19,
+			0,1,2, //Petiole tris
+			0,2,3,
+			12,2,11,//Gaster tris
+			12,11,10,
+			12,10,9,
+			12,9,8,
+			12,8,7,
+			12,7,6,
+			12,6,5,
+			12,5,4,
+			12,4,2,
+			0,14,13, //Mesosoma tris
+			0,14,15,
+			14,17,16, //Head tris
+			22,14,23,
+			14,18,17,
+			14,19,18,
+			14,20,19,
+			14,20,21,
+			14,21,22,
 		};
 		indexBuffer = GLBuffers.createIndexBuffer(indices);
 	}
