@@ -58,9 +58,8 @@ public class Ant extends InstancedObject {
 	
 	private static float ANTENNAE_ROTATION = TAU / 8f;
 	
-	ArrayList<Integer> foraging = new ArrayList<Integer>(); //1 for following food, 0 for following home
-	ArrayList<Float> foodAmount = new ArrayList<Float>();
-	ArrayList<Float> timeSinceTarget = new ArrayList<Float>(); //Tracks time since was last at target
+	ArrayList<Integer> foraging; //1 for following food, 0 for following home
+	ArrayList<Float> foodAmount, timeSinceTarget; //Tracks food amount carried and time since was last at target
 	
 	private float scatter_X, scatter_Y;
 	
@@ -119,6 +118,7 @@ public class Ant extends InstancedObject {
 		foraging.add(1);
 		foodAmount.add(0f);
 		timeSinceTarget.add(10000f);
+		System.out.println("Time since target length is " + timeSinceTarget.size());
 	}
 	
 	public void addAnt(Vector4f pos) {
@@ -151,13 +151,14 @@ public class Ant extends InstancedObject {
 	@Override
 	protected Vector3f genColour() {
 		System.out.println("Initializing ant colour");
-
-		return antColour;
+		return new Vector3f(0,1,0);
+		//return antColour;
 	}
 	
 	public void update(float deltaTime, InputManager input) {
 		for (int i = 0; i < N_Objects; i++) {
 			Square current = getCurrentSquare(i);
+			System.out.println("Time since target length is " + timeSinceTarget.size());
 			float time = timeSinceTarget.get(i);
 			timeSinceTarget.set(i, time + deltaTime);
 			if (current.isHome || current.getFood() > 0) { 

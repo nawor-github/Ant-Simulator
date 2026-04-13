@@ -73,10 +73,8 @@ public class InstancedObject extends SceneObject {
 		System.out.println("Generating a new object at index: " + index);
 	}
 	
-	public void addObject(Vector3f new_pos, Vector3f new_colour, Vector3f new_scale) {
-		Vector3f p = new Vector3f(new_pos.x, new_pos.y, new_pos.z);
-		
-		position = addToVector3fArray(position, p);
+	public void addObject(Vector3f new_pos, Vector3f new_colour, Vector3f new_scale) {		
+		position = addToVector3fArray(position, new_pos);
 		scale = addToVector3fArray(scale, new_scale);
 		colour = addToVector3fArray(colour, new_colour);
 		index++;
