@@ -4,8 +4,11 @@ in vec4 a_position; // The vertex position from our java class
 in vec3 a_worldPos; // The world coordinates at which to place the point
 in vec3 a_scale; //The scale to draw at
 in vec3 a_rotation; //The rotation around the z axis, I guess
+in vec3 a_colour; //The colour of this instance
+
 
 out float v_xCoord; //xCoordinate of point
+out vec3 v_colour; //Colour of this ant
 
 uniform mat4 u_mvpMatrix;
 
@@ -19,5 +22,7 @@ void main() {
 	gl_Position = modelMatrix * a_position;
 	
 	v_xCoord = a_position.x;
+	
+	v_colour = a_colour;
 	
 }

@@ -31,8 +31,8 @@ import static org.lwjgl.opengl.GL31.glDrawElementsInstanced;
 
 
 public class Ant extends InstancedObject {
-	final protected String VERTEX_SHADER = "instanced_vertex.glsl";
-	final protected String FRAGMENT_SHADER = "instanced_fragment.glsl";
+	final protected String VERTEX_SHADER = "instanced_ant_vertex.glsl";
+	final protected String FRAGMENT_SHADER = "instanced_ant_fragment.glsl";
 	
 	protected Vector3f antColour = new Vector3f(0.1f,0.2f,0.2f); //Dark colour
 	protected Vector3f stripeColour = new Vector3f(0.05f, 0.1f, 0.2f); //Old clear colour now ant colour
@@ -71,11 +71,14 @@ public class Ant extends InstancedObject {
 		min_scale = min_Scale;
 		max_scale = max_Scale;
 		grid = g;
+		
+		System.out.println("John the ant is ant number 0. His position is: " + position[0].x + ", " +  position[0].y);
+		System.out.println("Scale: " + scale[0].x + ". Colour: " + colour[0].x + ", " +   colour[0].y + ", " +   colour[0].z);
 	}
 	
 	@Override
 	protected void setShader(String vertex, String fragment) {
-		shader = ShaderLibrary.instance.compileShader("instanced_vertex.glsl", "instanced_fragment.glsl");
+		shader = ShaderLibrary.instance.compileShader(VERTEX_SHADER, FRAGMENT_SHADER);
 	}
 	
 	@Override
@@ -122,6 +125,7 @@ public class Ant extends InstancedObject {
 	}
 	
 	public void addAnt(Vector4f pos) {
+		System.out.println("Adding new ant at pos: " + pos.x + ", " + pos.y);
 		Vector3f p = new Vector3f(pos.x, pos.y, pos.z);
 		addObject(p, genColour(), genScale());
 		assignBuffers(); //Assigns all buffes used by GLSL
@@ -144,7 +148,7 @@ public class Ant extends InstancedObject {
 	protected Vector3f genScale() {
 		System.out.println("Initializing ant scale");
 
-		float s = min_scale;
+		float s = 1;
 		return new Vector3f(s, s, s);
 	}
 	
@@ -363,7 +367,7 @@ public class Ant extends InstancedObject {
 	
 	@Override
 	public void drawSelf(Matrix4f mvpMatrix) {
-		System.out.println("Drawing ants!");
+		//System.out.println("Drawing ants!");
 		shader.enable();
 		
 		shader.setUniform("u_mvpMatrix", mvpMatrix);
@@ -380,12 +384,7 @@ public class Ant extends InstancedObject {
 		glVertexAttribDivisor(shader.getAttribute("a_rotation"), 1);
 		
 		//This one isn't set as an attribute divisor as it is the same for all cacti (they use the same mesh)
-	    shader.setAttribute("a_position", vertexBuffer);
-	    
-	    //Setting our awesome colour uniforms to be passed to the fragment shader
-	    shader.setUniform("u_colour", antColour);	 
-	    shader.setUniform("u_stripeColour", stripeColour);	    
-
+	    shader.setAttribute("a_position", vertexBuffer);   
 	    
 	    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 	    /*
