@@ -37,10 +37,11 @@ public class Ant extends InstancedObject {
 	protected Vector3f antColour = new Vector3f(0.1f,0.2f,0.2f); //Dark colour
 	protected Vector3f stripeColour = new Vector3f(0.05f, 0.1f, 0.2f); //Old clear colour now ant colour
 	
+	protected Vector3f homeAntColour = new Vector3f(0.8f, 0.2f, 0.6f); //Magenta home scent colour
+	protected Vector3f foodAntColour = new Vector3f(0.3f, 0.8f, 0.5f); //Dark green food scent colour
+	
 	private Vector3f[] rotation, heading, Lheading, Rheading;
 	private int rotationBuffer;
-	
-	private float max_scale, min_scale;
 	
 	private Grid grid;
 	
@@ -60,16 +61,10 @@ public class Ant extends InstancedObject {
 	
 	ArrayList<Integer> foraging; //1 for following food, 0 for following home
 	ArrayList<Float> foodAmount, timeSinceTarget; //Tracks food amount carried and time since was last at target
-	
-	private float scatter_X, scatter_Y;
-	
-	public Ant(int nAnts, float max_Scale, float min_Scale, float s_X, float s_Y, Grid g) {
-		super(nAnts);
 		
-		scatter_X = s_X;
-		scatter_Y = s_Y;
-		min_scale = min_Scale;
-		max_scale = max_Scale;
+	public Ant(int nAnts, float max_Scale, float min_Scale, float s_X, float s_Y, Grid g) {
+		super(nAnts, max_Scale, min_Scale, s_X, s_Y);
+	
 		grid = g;
 		
 		System.out.println("John the ant is ant number 0. His position is: " + position[0].x + ", " +  position[0].y);
@@ -128,35 +123,31 @@ public class Ant extends InstancedObject {
 		System.out.println("Adding new ant at pos: " + pos.x + ", " + pos.y);
 		Vector3f p = new Vector3f(pos.x, pos.y, pos.z);
 		addObject(p, genColour(), genScale());
-		assignBuffers(); //Assigns all buffes used by GLSL
-	}
-	
-	@Override
-	protected Vector3f genPosition() {
-		System.out.println("Initializing ant position");
-
-		float min_X = -scatter_X/2f;
-		float max_X = scatter_X/2f;
-		float min_Y = -scatter_Y/2f;
-		float max_Y = scatter_Y/2f;
-		float x = Scene.randBetween(min_X, max_X);
-		float y = Scene.randBetween(min_Y, max_Y);
-		return new Vector3f(x,y,0);
+		assignBuffers(); //Assigns all buffers used by GLSL
 	}
 	
 	@Override
 	protected Vector3f genScale() {
 		System.out.println("Initializing ant scale");
-
-		float s = 1;
+		float s = max_scale;
 		return new Vector3f(s, s, s);
 	}
 	
 	@Override
 	protected Vector3f genColour() {
 		System.out.println("Initializing ant colour");
-		return new Vector3f(0,1,0);
+		float r = Scene.randBetween(0f, 1f);
+		float g = Scene.randBetween(0f, 1f);
+		float b = Scene.randBetween(0f, 1f);
+		return new Vector3f(r,g,b);
 		//return antColour;
+	}
+	
+	private void setColour(int i) {
+		if (foraging.get(i) == 1) {
+			colour[i] = foodAntColour;
+		}
+		colour[i] = homeAntColour;
 	}
 	
 	public void update(float deltaTime, InputManager input) {
@@ -171,6 +162,7 @@ public class Ant extends InstancedObject {
 			pickUpFood(i, current);
 			dropOffFood(i, current);
 			depositTrail(i, current);
+			setColour(i);
 			float turnMult = turnDirection(i);
 			rotation[i].x += (turnMult + (RANDOM_WIGGLE*Scene.randBetween(-1,1))) * TURN_SPEED * deltaTime;
 
@@ -181,9 +173,7 @@ public class Ant extends InstancedObject {
 			position[i].x += heading[i].x * MOVE_SPEED * deltaTime;
 			position[i].y += heading[i].y * MOVE_SPEED * deltaTime;
 		}
-		positionBuffer = GLBuffers.createBuffer(position);
-		rotationBuffer = GLBuffers.createBuffer(rotation);
-		scaleBuffer = GLBuffers.createBuffer(scale);
+		assignBuffers();
 	}
 	
 	public Vector3f getAntennaeWorldPos(int antIndex, boolean leftAnntennae) {
@@ -405,6 +395,4 @@ public class Ant extends InstancedObject {
 		glVertexAttribDivisor(shader.getAttribute("a_colour"), 0);
 		glVertexAttribDivisor(shader.getAttribute("a_rotation"), 0);
 	}
-	
-	
 }

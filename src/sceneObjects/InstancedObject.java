@@ -8,6 +8,7 @@ import comp3170.InputManager;
 import comp3170.SceneObject;
 import comp3170.Shader;
 import comp3170.ShaderLibrary;
+import sim.Scene;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -33,6 +34,8 @@ public class InstancedObject extends SceneObject {
 	protected Vector3f[] position, scale, colour;
 	protected int positionBuffer, scaleBuffer, colourBuffer;
 	
+	protected float max_scale, min_scale, scatter_X, scatter_Y;;
+	
 	protected static Vector3f defaultColour = new Vector3f(0,1,0);
 	
 	protected int index = 0;
@@ -41,7 +44,11 @@ public class InstancedObject extends SceneObject {
 		shader = ShaderLibrary.instance.compileShader(vertex, fragment);
 	}
 	
-	public InstancedObject(int n) {
+	public InstancedObject(int n, float max_s, float min_s, float spread_X, float spread_Y) {
+		max_scale = max_s;
+		min_scale = min_s;
+		scatter_X = spread_X;
+		scatter_Y = spread_Y;
 		N_Objects = n;
 		setShader(VERTEX_SHADER, FRAGMENT_SHADER);
 
@@ -81,13 +88,21 @@ public class InstancedObject extends SceneObject {
 	}
 	
 	protected Vector3f genPosition() {
-		System.out.println("Initializing default position");
-		return new Vector3f(0,0,0);
+		System.out.println("Initializing ant position");
+
+		float min_X = -scatter_X/2f;
+		float max_X = scatter_X/2f;
+		float min_Y = -scatter_Y/2f;
+		float max_Y = scatter_Y/2f;
+		float x = Scene.randBetween(min_X, max_X);
+		float y = Scene.randBetween(min_Y, max_Y);
+		return new Vector3f(x,y,0);
 	}
 	
 	protected Vector3f genScale() {
 		System.out.println("Initializing default scale");
-		return new Vector3f(0,0,0);
+		float s = Scene.randBetween(min_scale, max_scale);
+		return new Vector3f(s,0,0);
 	}
 	
 	protected Vector3f genColour() {

@@ -34,8 +34,8 @@ public class Scene extends SceneObject{
 	private final float GRID_SCALE = 1;
 	
 	private final int ANT_COUNT = 100;
-	private final float ANT_SCALE_MIN = 1f;
-	private final float ANT_SCALE_MAX = 2f;
+	private final float ANT_SCALE_MIN = 0.5f;
+	private final float ANT_SCALE_MAX = 1f;
 	private final float SCATTER_WIDTH = 2f;
 	private final float SCATTER_HEIGHT = 2f;
 
