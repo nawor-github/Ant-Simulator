@@ -35,6 +35,8 @@ public class InstancedObject extends SceneObject {
 	
 	protected static Vector3f defaultColour = new Vector3f(0,1,0);
 	
+	protected int index = 0;
+	
 	protected void setShader(String vertex, String fragment) {
 		shader = ShaderLibrary.instance.compileShader(vertex, fragment);
 	}
@@ -53,12 +55,14 @@ public class InstancedObject extends SceneObject {
 	}
 	
 	public void makeEmptyArrays() {
+		System.out.println("Making empty arrays :D");
 		position = new Vector3f[0];
 		scale = new Vector3f[0];
 		colour = new Vector3f[0];
 	}
 	
 	public void assignBuffers() {
+		System.out.println("Assigning buffers :D");
 		positionBuffer = GLBuffers.createBuffer(position);
 		scaleBuffer = GLBuffers.createBuffer(scale);
 		colourBuffer = GLBuffers.createBuffer(colour); 
@@ -66,16 +70,16 @@ public class InstancedObject extends SceneObject {
 	
 	public void addDefaultObject() {
 		addObject(genPosition(), genColour(), genScale());
+		System.out.println("Generating a new object at index: " + index);
 	}
 	
 	public void addObject(Vector3f new_pos, Vector3f new_colour, Vector3f new_scale) {
 		Vector3f p = new Vector3f(new_pos.x, new_pos.y, new_pos.z);
-		N_Objects++;
 		
 		position = addToVector3fArray(position, p);
 		scale = addToVector3fArray(scale, new_scale);
 		colour = addToVector3fArray(colour, new_colour);
-		
+		index++;
 	}
 	
 	protected Vector3f genPosition() {
@@ -90,7 +94,8 @@ public class InstancedObject extends SceneObject {
 		return defaultColour;
 	}
 	
-	private void makeMesh() {	 //Cactus is default mesh
+	protected void makeMesh() {	 //Cactus is default mesh
+		System.out.println("Generating default (cactus) mesh");
 		vertices = new Vector4f[] {
 			//Main body
 			new Vector4f( 0, 0, 0, 1), //P0 body vertices start

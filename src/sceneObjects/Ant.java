@@ -294,7 +294,9 @@ public class Ant extends InstancedObject {
 		return result.normalize();
 	}
 	
-	private void makeMesh() {	
+	@Override
+	protected void makeMesh() {	
+		System.out.println("Generating ant mesh");
 		vertices = new Vector4f[] {
 			//Main body
 			new Vector4f( 0, 0, 0, 1), //P0 body vertices start
