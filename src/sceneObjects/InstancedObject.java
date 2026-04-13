@@ -83,15 +83,19 @@ public class InstancedObject extends SceneObject {
 	}
 	
 	protected Vector3f genPosition() {
+		System.out.println("Initializing default position");
 		return new Vector3f(0,0,0);
 	}
 	
 	protected Vector3f genScale() {
+		System.out.println("Initializing default scale");
 		return new Vector3f(0,0,0);
 	}
 	
 	protected Vector3f genColour() {
-		return defaultColour;
+		System.out.println("Initializing default colour");
+		return new Vector3f(0,1,0);
+		//return defaultColour;
 	}
 	
 	protected void makeMesh() {	 //Cactus is default mesh

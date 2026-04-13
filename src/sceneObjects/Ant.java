@@ -96,12 +96,15 @@ public class Ant extends InstancedObject {
 	
 	@Override
 	public void assignBuffers() {
+		System.out.println("Assigning ant-specific buffers (rotation) :D");
 		super.assignBuffers();
 		rotationBuffer = GLBuffers.createBuffer(rotation); 
 	}
 	
 	@Override
 	public void addObject(Vector3f new_pos, Vector3f new_colour, Vector3f new_scale) {
+		System.out.println("Adding a new ant");
+		
 		super.addObject(new_pos, new_colour, new_scale);
 		float randomRotation = Scene.randBetween(0,TAU);
 		Vector3f newHeading = calcHeading(randomRotation);
@@ -126,6 +129,8 @@ public class Ant extends InstancedObject {
 	
 	@Override
 	protected Vector3f genPosition() {
+		System.out.println("Initializing ant position");
+
 		float min_X = -scatter_X/2f;
 		float max_X = scatter_X/2f;
 		float min_Y = -scatter_Y/2f;
@@ -137,12 +142,16 @@ public class Ant extends InstancedObject {
 	
 	@Override
 	protected Vector3f genScale() {
+		System.out.println("Initializing ant scale");
+
 		float s = min_scale;
 		return new Vector3f(s, s, s);
 	}
 	
 	@Override
 	protected Vector3f genColour() {
+		System.out.println("Initializing ant colour");
+
 		return antColour;
 	}
 	
