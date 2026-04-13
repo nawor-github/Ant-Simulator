@@ -146,8 +146,20 @@ public class Ant extends InstancedObject {
 	private void setColour(int i) {
 		if (foraging.get(i) == 1) {
 			colour[i] = foodAntColour;
+			return;
 		}
 		colour[i] = homeAntColour;
+	}
+	
+	private void switchForagingMode(int antIndex) {
+		if (foraging.get(antIndex) == 1) { //If this man has just found food
+			foraging.set(antIndex, 0); //1 for following food, 0 for following home
+			setColour(antIndex);
+		} else { //If this man is dropping off food
+			foraging.set(antIndex, 1); //1 for following food, 0 for following home
+			setColour(antIndex);
+		}
+		timeSinceTarget.set(antIndex, 0f);//Reset foraging time
 	}
 	
 	public void update(float deltaTime, InputManager input) {
@@ -162,7 +174,6 @@ public class Ant extends InstancedObject {
 			pickUpFood(i, current);
 			dropOffFood(i, current);
 			depositTrail(i, current);
-			setColour(i);
 			float turnMult = turnDirection(i);
 			rotation[i].x += (turnMult + (RANDOM_WIGGLE*Scene.randBetween(-1,1))) * TURN_SPEED * deltaTime;
 
@@ -262,8 +273,7 @@ public class Ant extends InstancedObject {
 			currentFood = FOOD_CAPACITY;
 		}
 		foodAmount.set(antIndex, currentFood);
-		foraging.set(antIndex, 0); //1 for following food, 0 for following home
-		timeSinceTarget.set(antIndex, 0f);//Reset foraging time
+		switchForagingMode(antIndex);
 	}
 	
 	private void dropOffFood(int antIndex, Square s) {
@@ -276,8 +286,7 @@ public class Ant extends InstancedObject {
 			foodAmount.set(antIndex, 0f);
 			scale[antIndex] = new Vector3f(min_scale,min_scale,min_scale);
 			
-			foraging.set(antIndex, 1); //1 for following food, 0 for following home
-			timeSinceTarget.set(antIndex, 0f);//Reset foraging time
+			switchForagingMode(antIndex);
 		}
 	}
 	
