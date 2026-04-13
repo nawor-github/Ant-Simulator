@@ -158,7 +158,7 @@ public class Ant extends InstancedObject {
 	public void update(float deltaTime, InputManager input) {
 		for (int i = 0; i < N_Objects; i++) {
 			Square current = getCurrentSquare(i);
-			System.out.println("Time since target length is " + timeSinceTarget.size());
+			//System.out.println("Time since target length is " + timeSinceTarget.size());
 			float time = timeSinceTarget.get(i);
 			timeSinceTarget.set(i, time + deltaTime);
 			if (current.isHome || current.getFood() > 0) { 
@@ -363,15 +363,19 @@ public class Ant extends InstancedObject {
 	
 	@Override
 	public void drawSelf(Matrix4f mvpMatrix) {
+		System.out.println("Drawing ants!");
 		shader.enable();
 		
 		shader.setUniform("u_mvpMatrix", mvpMatrix);
 
 		//Passing our instanced variables (yippee!)
-		shader.setAttribute("a_worldPos", positionBuffer);
+		shader.setAttribute("a_worldPos", super.positionBuffer);
 		glVertexAttribDivisor(shader.getAttribute("a_worldPos"), 1);
-		shader.setAttribute("a_scale", scaleBuffer);
+		shader.setAttribute("a_scale", super.scaleBuffer);
 		glVertexAttribDivisor(shader.getAttribute("a_scale"), 1);
+		shader.setAttribute("a_colour", super.colourBuffer);
+		glVertexAttribDivisor(shader.getAttribute("a_colour"), 1);
+		
 		shader.setAttribute("a_rotation", rotationBuffer);
 		glVertexAttribDivisor(shader.getAttribute("a_rotation"), 1);
 		
@@ -399,6 +403,8 @@ public class Ant extends InstancedObject {
 	    // disable instance-based drawing (very important to a guy like me)
 		glVertexAttribDivisor(shader.getAttribute("a_worldPos"), 0);
 		glVertexAttribDivisor(shader.getAttribute("a_scale"), 0);
+		glVertexAttribDivisor(shader.getAttribute("a_colour"), 0);
+		glVertexAttribDivisor(shader.getAttribute("a_rotation"), 0);
 	}
 	
 	
