@@ -44,6 +44,23 @@ public class InstancedObject extends SceneObject {
 		shader = ShaderLibrary.instance.compileShader(vertex, fragment);
 	}
 	
+	public InstancedObject() {
+		max_scale = 1;
+		min_scale = 1;
+		scatter_X = 0;
+		scatter_Y = 0;
+		N_Objects = 0;
+		setShader(VERTEX_SHADER, FRAGMENT_SHADER);
+
+		makeMesh(); //Generates mesh and VERTEX AND INDEX BUFFERS
+		makeEmptyArrays(); //Generates all empty arrays and buffers
+		
+		for (int i = 0; i < N_Objects; i++) {
+			addDefaultObject();
+		}
+		assignBuffers(); //Assigns all buffers used by GLSL
+	}
+	
 	public InstancedObject(int n, float max_s, float min_s, float spread_X, float spread_Y) {
 		max_scale = max_s;
 		min_scale = min_s;

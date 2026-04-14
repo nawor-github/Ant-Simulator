@@ -34,14 +34,9 @@ public class Circle extends InstancedObject {
 	final private String VERTEX_SHADER = "instanced_circle_vertex.glsl";
 	final private String FRAGMENT_SHADER = "instanced_circle_fragment.glsl";
 	private Shader shader;
-	
-	private static final float SCALE_MIN = 0.5f;
-	private static final float SCALE_MAX = 1f;
-	private static final float SCATTER_WIDTH = 2f;
-	private static final float SCATTER_HEIGHT = 2f;
 		
-	public Circle(int n) {
-		super(n, SCALE_MAX, SCALE_MIN, SCATTER_WIDTH, SCATTER_HEIGHT);
+	public Circle() {
+		super();
 		shader = ShaderLibrary.instance.compileShader(VERTEX_SHADER, FRAGMENT_SHADER);
 	}
 	

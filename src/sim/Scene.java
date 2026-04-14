@@ -24,7 +24,7 @@ public class Scene extends SceneObject{
 	private Camera currentCamera;
 	
 	private Ant ants;
-
+	private Circle food;
 
 	private Grid grid;
 	
@@ -55,6 +55,9 @@ public class Scene extends SceneObject{
 		
 		ants = new Ant(ANT_COUNT, ANT_SCALE_MAX, ANT_SCALE_MIN, SCATTER_WIDTH, SCATTER_HEIGHT, grid);
 		ants.setParent(this);
+		
+		food = new Circle();
+		food.setParent(this);
 	}
 	
 	public static float randBetween(float min, float max) { //Awesome function that is used in other classes
