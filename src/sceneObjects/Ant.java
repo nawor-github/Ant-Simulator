@@ -126,6 +126,7 @@ public class Ant extends InstancedObject {
 		addDefaultObject();
 		addObject(p, genColour(), genScale());
 		assignBuffers(); //Assigns all buffers used by GLSL
+		setForagingMode(index, 1);
 		System.out.println("Generating a new ant at index: " + index);
 	}
 	
@@ -139,7 +140,7 @@ public class Ant extends InstancedObject {
 	@Override
 	protected Vector3f genColour() {
 		System.out.println("Initializing ant colour");
-		return new Vector3f(foodAntColour.x, foodAntColour.y, foodAntColour.z);
+		return new Vector3f(debugColour.x, debugColour.y, debugColour.z);
 		//float r = Scene.randBetween(0f, 1f);
 		//float g = Scene.randBetween(0f, 1f);
 		//float b = Scene.randBetween(0f, 1f);
@@ -173,6 +174,7 @@ public class Ant extends InstancedObject {
 	}
 	
 	private void pickUpFood(int antIndex, Square s) {
+		
 		float currentFood = foodAmount.get(antIndex);
 		if (currentFood == FOOD_CAPACITY) {
 			return;
@@ -193,31 +195,35 @@ public class Ant extends InstancedObject {
 	
 	private void dropOffFood(int antIndex, Square s) {
 		if (s.isHome) {
+			setForagingMode(antIndex, 1); //Set to follow food
 			float currentFood = foodAmount.get(antIndex);
 			if (currentFood == 0) {
 				return;
 			}
 			grid.foodStored += currentFood;
 			foodAmount.set(antIndex, 0f);
-			scale[antIndex] = new Vector3f(min_scale,min_scale,min_scale);
 			
-			setForagingMode(antIndex, 1); //Set to follow food
+			
+			
 		}
 	}
 	
 	private void setForagingMode(int antIndex, int mode) { //1 for following food, 0 for following home
 		switch (mode) {
 			case 1:
-				foraging.set(antIndex, 1); 
+				foraging.set(antIndex, 1); //Following home, large and holding food
 				setColour(antIndex, homeAntColour);
+				scale[antIndex] = new Vector3f(max_scale,max_scale,max_scale);
 				break;
 			case 0:
-				foraging.set(antIndex, 0); 
+				foraging.set(antIndex, 0); //Following food, small and hungry
 				setColour(antIndex, foodAntColour);
+				scale[antIndex] = new Vector3f(min_scale,min_scale,min_scale);
 				break;
 			default:
 				foraging.set(antIndex, -1); 
 				setColour(antIndex, debugColour);
+				scale[antIndex] = new Vector3f(min_scale,min_scale,min_scale);
 		}
 		timeSinceTarget.set(antIndex, 0f);//Reset foraging time
 	}
