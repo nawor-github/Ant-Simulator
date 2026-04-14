@@ -41,6 +41,8 @@ public class Ant extends InstancedObject {
 	protected final static Vector3f foodAntColour = new Vector3f(0.1f, 0.5f, 0.4f); //Dark green food scent colour
 	protected final static Vector3f debugColour = new Vector3f(0.1f, 1f, 0.4f); //Dark green food scent colour
 	
+	private static final float ROTATION_ADJUSTMENT_FACTOR = 1.5708f; //magic number to make ants walk straight
+	
 	private Vector3f[] rotation, heading, Lheading, Rheading;
 	private int rotationBuffer;
 	
@@ -116,7 +118,9 @@ public class Ant extends InstancedObject {
 		
 		foraging.add(1);
 		foodAmount.add(0f);
-		timeSinceTarget.add(10000f);
+		timeSinceTarget.add(0f);
+		setForagingMode(index-1, 1);
+		timeSinceTarget.set(index-1, 1000000f);
 		System.out.println("Time since target length is " + timeSinceTarget.size());
 	}
 	
@@ -126,7 +130,7 @@ public class Ant extends InstancedObject {
 		addDefaultObject();
 		addObject(p, genColour(), genScale());
 		assignBuffers(); //Assigns all buffers used by GLSL
-		setForagingMode(index, 1);
+		
 		System.out.println("Generating a new ant at index: " + index);
 	}
 	
@@ -202,9 +206,6 @@ public class Ant extends InstancedObject {
 			}
 			grid.foodStored += currentFood;
 			foodAmount.set(antIndex, 0f);
-			
-			
-			
 		}
 	}
 	
@@ -213,12 +214,12 @@ public class Ant extends InstancedObject {
 			case 1:
 				foraging.set(antIndex, 1); //Following home, large and holding food
 				setColour(antIndex, homeAntColour);
-				scale[antIndex] = new Vector3f(max_scale,max_scale,max_scale);
+				scale[antIndex] = new Vector3f(min_scale,min_scale,min_scale);
 				break;
 			case 0:
 				foraging.set(antIndex, 0); //Following food, small and hungry
 				setColour(antIndex, foodAntColour);
-				scale[antIndex] = new Vector3f(min_scale,min_scale,min_scale);
+				scale[antIndex] = new Vector3f(max_scale,max_scale,max_scale);
 				break;
 			default:
 				foraging.set(antIndex, -1); 
@@ -242,7 +243,9 @@ public class Ant extends InstancedObject {
 		s.addHomeScent(pheremoneAmount);
 	}
 	
+	
 	private Vector3f calcHeading(float r) { //The rotation as a number expressed in radians
+		r += ROTATION_ADJUSTMENT_FACTOR;
 		float x = (float) Math.cos(r);
 		float y = (float) Math.sin(r);
 		Vector3f result = new Vector3f(x, y, 0);

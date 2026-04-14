@@ -10,7 +10,7 @@ public class Square {
 	public int x, y, i;
 	private Vector3f colour;
 	
-	private Vector3f clearColour = new Vector3f(0.9f, 0.9f, 0.9f); //Light coloured clear colour
+	private Vector3f clearColour = new Vector3f(0.1f, 0.15f, 0.2f); //Light coloured clear colour
 	private Vector3f blockerColour = new Vector3f(0f, 0f, 0f); //Black blocker colour
 	private Vector3f foodColour = new Vector3f(0.9f, 0.7f, 0.2f); //Red-orange food colour
 	private Vector3f foodScentColour = new Vector3f(0.3f, 0.8f, 0.5f); //Dark green food scent colour
@@ -23,6 +23,8 @@ public class Square {
 	private final static float FOOD_SCENT_MAX_DISPLAY = 100f;
 	private final static float HOME_SCENT_MAX_DISPLAY = 100f;
 	private final static float FOOD_MAX_DISPLAY = 2000f;
+	
+	private final static float MINIMUM_SCENT_AMOUNT = 0.00001f; //Sets a floor on this sucka
 	
 	public Square(int X, int Y, int I) {
 		x = X;
@@ -156,10 +158,10 @@ public class Square {
 		float decayProportion = (float) Math.pow((1 - DECAY_SPEED), deltaTime);
 		foodScent *= decayProportion;
 		homeScent *= decayProportion;
-		if (foodScent < 0) {
+		if (foodScent < MINIMUM_SCENT_AMOUNT) {
 			foodScent = 0;
 		}
-		if (homeScent < 0) {
+		if (homeScent < MINIMUM_SCENT_AMOUNT) {
 			homeScent = 0;
 		}
 	}
