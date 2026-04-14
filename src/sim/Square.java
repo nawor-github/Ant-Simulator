@@ -50,7 +50,7 @@ public class Square {
 			if (foodWeight > FOOD_MAX_DISPLAY) {
 				foodWeight = 1;
 			}
-			colour = blendBetween(foodColour, clearColour, 1);
+			colour = blendBetween(foodColour, clearColour, foodWeight);
 			return colour;
 		}
 		float foodScentWeight = foodScent / FOOD_SCENT_MAX_DISPLAY;

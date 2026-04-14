@@ -157,7 +157,7 @@ public class Ant extends InstancedObject {
 			
 			Square current = getCurrentSquare(i);
 			//System.out.println("Time since target length is " + timeSinceTarget.size());
-			System.out.println("Ant number " + i + " is at square " + current.i + ": " + current.x + ", " + current.y + " and position " + position[i].x + ", " + position[i].y);
+			//System.out.println("Ant number " + i + " is at square " + current.i + ": " + current.x + ", " + current.y + " and position " + position[i].x + ", " + position[i].y);
 			float time = timeSinceTarget.get(i);
 			timeSinceTarget.set(i, time + deltaTime);
 			if (current.isHome || current.getFood() > 0) { 
