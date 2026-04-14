@@ -64,6 +64,7 @@ public class Ant extends InstancedObject {
 	
 	ArrayList<Integer> foraging; //1 for following food, 0 for following home
 	ArrayList<Float> foodAmount, timeSinceTarget; //Tracks food amount carried and time since was last at target
+	ArrayList<Vector3f> frontPos, leftPos, rightPos; //Positions of projected positions and antennae positions
 		
 	public Ant(int nAnts, float max_Scale, float min_Scale, float s_X, float s_Y, Grid g) {
 		super(nAnts, max_Scale, min_Scale, s_X, s_Y);
@@ -92,6 +93,9 @@ public class Ant extends InstancedObject {
 		foraging = new ArrayList<Integer>();
 		foodAmount = new ArrayList<Float>();
 		timeSinceTarget = new ArrayList<Float>();
+		frontPos = new ArrayList<Vector3f>();
+		leftPos = new ArrayList<Vector3f>();
+		rightPos = new ArrayList<Vector3f>();
 	}
 	
 	@Override
@@ -264,17 +268,26 @@ public class Ant extends InstancedObject {
 		Vector3f anntennaePos = Lheading[antIndex];
 		anntennaePos.x += antPos.x;
 		anntennaePos.y += antPos.y;
+		if (leftAnntennae) {
+			leftPos.set(antIndex, anntennaePos);
+		} else {
+			rightPos.set(antIndex, anntennaePos);
+		}
 		return anntennaePos;
 	}
-
-	private float turnDirection(int antIndex) {
+	
+	private Vector3f calcFrontPos(int antIndex) {
 		Vector3f antPos = position[antIndex];
-		//Vector3f projectedPos = heading[index].add(antPos).mul(grid.getScale()); //Project forward direction, corrected for changing grid scale from 1
 		heading[antIndex] = calcHeading(rotation[antIndex].x);
 		Vector3f projectedPos = heading[antIndex];
 		projectedPos.x += antPos.x;
 		projectedPos.y += antPos.y;
-		
+		frontPos.set(antIndex, projectedPos);
+		return frontPos.get(antIndex);
+	}
+
+	private float turnDirection(int antIndex) {
+		Vector3f projectedPos = calcFrontPos(antIndex);
 		Vector3f L_AnntennaePos = getAntennaeWorldPos(antIndex, true);
 		Vector3f R_AnntennaePos = getAntennaeWorldPos(antIndex, false);
 		

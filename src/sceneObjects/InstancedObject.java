@@ -207,6 +207,10 @@ public class InstancedObject extends SceneObject {
 		shader.setAttribute("a_colour", colourBuffer);
 		glVertexAttribDivisor(shader.getAttribute("a_colour"), 1);
 	    
+	    
+	  //This one isn't set as an attribute divisor as it is the same for all cacti (they use the same mesh)
+	    shader.setAttribute("a_position", vertexBuffer);  
+	    
 	    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 	    /*
 		        ________________
@@ -223,6 +227,7 @@ public class InstancedObject extends SceneObject {
 	    // disable instance-based drawing (very important to a guy like me)
 		glVertexAttribDivisor(shader.getAttribute("a_worldPos"), 0);
 		glVertexAttribDivisor(shader.getAttribute("a_scale"), 0);
+		glVertexAttribDivisor(shader.getAttribute("a_colour"), 0);
 	}
 	
 	
