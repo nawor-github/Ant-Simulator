@@ -39,6 +39,7 @@ public class Ant extends InstancedObject {
 	
 	protected final static Vector3f homeAntColour = new Vector3f(0.5f, 0.1f, 0.3f); //Magenta home scent colour
 	protected final static Vector3f foodAntColour = new Vector3f(0.1f, 0.5f, 0.4f); //Dark green food scent colour
+	protected final static Vector3f debugColour = new Vector3f(0.1f, 1f, 0.4f); //Dark green food scent colour
 	
 	private Vector3f[] rotation, heading, Lheading, Rheading;
 	private int rotationBuffer;
@@ -146,25 +147,6 @@ public class Ant extends InstancedObject {
 		//return antColour;
 	}
 	
-	private void setColour(int i) {
-		if (foraging.get(i) == 1) {
-			colour[i] = foodAntColour;
-			return;
-		}
-		colour[i] = homeAntColour;
-	}
-	
-	private void switchForagingMode(int antIndex) { //1 for following food, 0 for following home
-		if (foraging.get(antIndex) == 1) { //If this man has just found food
-			foraging.set(antIndex, 0); 
-			setColour(antIndex);
-		} else { //If this man is dropping off food
-			foraging.set(antIndex, 1); 
-			setColour(antIndex);
-		}
-		timeSinceTarget.set(antIndex, 0f);//Reset foraging time
-	}
-	
 	public void update(float deltaTime, InputManager input) {
 		for (int i = 0; i < N_Objects; i++) {
 			Square current = getCurrentSquare(i);
@@ -188,6 +170,77 @@ public class Ant extends InstancedObject {
 			position[i].y += heading[i].y * MOVE_SPEED * deltaTime;
 		}
 		assignBuffers();
+	}
+	
+	private void pickUpFood(int antIndex, Square s) {
+		float currentFood = foodAmount.get(antIndex);
+		if (currentFood == FOOD_CAPACITY) {
+			return;
+		}
+		float foodGrabbed = s.takeFood(FOOD_TAKE_SPEED);
+		if (foodGrabbed == 0) {
+			return;
+		}
+		currentFood += foodGrabbed;
+		scale[antIndex] = new Vector3f(max_scale,max_scale,max_scale);
+		if (currentFood > FOOD_CAPACITY) {
+			s.addFood(currentFood-FOOD_CAPACITY);
+			currentFood = FOOD_CAPACITY;
+		}
+		foodAmount.set(antIndex, currentFood);
+		setForagingMode(antIndex, 0); //Set to follow home
+	}
+	
+	private void dropOffFood(int antIndex, Square s) {
+		if (s.isHome) {
+			float currentFood = foodAmount.get(antIndex);
+			if (currentFood == 0) {
+				return;
+			}
+			grid.foodStored += currentFood;
+			foodAmount.set(antIndex, 0f);
+			scale[antIndex] = new Vector3f(min_scale,min_scale,min_scale);
+			
+			setForagingMode(antIndex, 1); //Set to follow food
+		}
+	}
+	
+	private void setForagingMode(int antIndex, int mode) { //1 for following food, 0 for following home
+		switch (mode) {
+			case 1:
+				foraging.set(antIndex, 1); 
+				setColour(antIndex, homeAntColour);
+				break;
+			case 0:
+				foraging.set(antIndex, 0); 
+				setColour(antIndex, foodAntColour);
+				break;
+			default:
+				foraging.set(antIndex, -1); 
+				setColour(antIndex, debugColour);
+		}
+		timeSinceTarget.set(antIndex, 0f);//Reset foraging time
+	}
+	
+	private void setColour(int antIndex, Vector3f c) {
+		colour[antIndex] = c;
+	}
+	
+	private void depositTrail(int antIndex, Square s) { //1 for following food, 0 for following home
+
+		float pheremoneAmount = TRAIL_DEPOSIT_STRENGTH * (float) Math.pow((1f - decayMult),timeSinceTarget.get(antIndex));
+		if (foraging.get(antIndex) == 0) {
+			s.addFoodScent(pheremoneAmount);
+			return;
+		}
+		s.addHomeScent(pheremoneAmount);
+	}
+	
+	private Vector3f calcHeading(float r) { //The rotation as a number expressed in radians
+		float x = (float) Math.cos(r);
+		float y = (float) Math.sin(r);
+		Vector3f result = new Vector3f(x, y, 0);
+		return result.normalize();
 	}
 	
 	public Vector3f getAntennaeWorldPos(int antIndex, boolean leftAnntennae) {
@@ -258,56 +311,6 @@ public class Ant extends InstancedObject {
 		Vector3f antPos = position[antIndex];
 		int currentIndex = grid.getCellAtWorldPos(new Vector4f(antPos.x, antPos.y, antPos.z, 1));
 		return grid.getSquare(currentIndex);
-	}
-	
-	private void pickUpFood(int antIndex, Square s) {
-		float currentFood = foodAmount.get(antIndex);
-		if (currentFood == FOOD_CAPACITY) {
-			return;
-		}
-		float foodGrabbed = s.takeFood(FOOD_TAKE_SPEED);
-		if (foodGrabbed == 0) {
-			return;
-		}
-		currentFood += foodGrabbed;
-		scale[antIndex] = new Vector3f(max_scale,max_scale,max_scale);
-		if (currentFood > FOOD_CAPACITY) {
-			s.addFood(currentFood-FOOD_CAPACITY);
-			currentFood = FOOD_CAPACITY;
-		}
-		foodAmount.set(antIndex, currentFood);
-		switchForagingMode(antIndex);
-	}
-	
-	private void dropOffFood(int antIndex, Square s) {
-		if (s.isHome) {
-			float currentFood = foodAmount.get(antIndex);
-			if (currentFood == 0) {
-				return;
-			}
-			grid.foodStored += currentFood;
-			foodAmount.set(antIndex, 0f);
-			scale[antIndex] = new Vector3f(min_scale,min_scale,min_scale);
-			
-			switchForagingMode(antIndex);
-		}
-	}
-	
-	private void depositTrail(int antIndex, Square s) { //1 for following food, 0 for following home
-
-		float pheremoneAmount = TRAIL_DEPOSIT_STRENGTH * (float) Math.pow((1f - decayMult),timeSinceTarget.get(antIndex));
-		if (foraging.get(antIndex) == 0) {
-			s.addFoodScent(pheremoneAmount);
-			return;
-		}
-		s.addHomeScent(pheremoneAmount);
-	}
-	
-	private Vector3f calcHeading(float r) { //The rotation as a number expressed in radians
-		float x = (float) Math.cos(r);
-		float y = (float) Math.sin(r);
-		Vector3f result = new Vector3f(x, y, 0);
-		return result.normalize();
 	}
 	
 	@Override
