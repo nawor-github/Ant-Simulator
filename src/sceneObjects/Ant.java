@@ -127,9 +127,9 @@ public class Ant extends InstancedObject {
 	public void addAnt(Vector4f pos) {
 		System.out.println("Adding new ant at pos: " + pos.x + ", " + pos.y);
 		Vector3f p = new Vector3f(pos.x, pos.y, pos.z);
-		addDefaultObject();
 		addObject(p, genColour(), genScale());
-		assignBuffers(); //Assigns all buffers used by GLSL
+		N_Objects++;
+		//assignBuffers(); //Assigns all buffers used by GLSL
 		
 		System.out.println("Generating a new ant at index: " + index);
 	}
@@ -154,8 +154,10 @@ public class Ant extends InstancedObject {
 	
 	public void update(float deltaTime, InputManager input) {
 		for (int i = 0; i < N_Objects; i++) {
+			
 			Square current = getCurrentSquare(i);
 			//System.out.println("Time since target length is " + timeSinceTarget.size());
+			System.out.println("Ant number " + i + " is at square " + current.i + ": " + current.x + ", " + current.y + " and position " + position[i].x + ", " + position[i].y);
 			float time = timeSinceTarget.get(i);
 			timeSinceTarget.set(i, time + deltaTime);
 			if (current.isHome || current.getFood() > 0) { 
