@@ -69,7 +69,7 @@ public class InstancedObject extends SceneObject {
 	}
 	
 	public void assignBuffers() {
-		System.out.println("Assigning buffers :D");
+		//System.out.println("Assigning buffers :D");
 		positionBuffer = GLBuffers.createBuffer(position);
 		scaleBuffer = GLBuffers.createBuffer(scale);
 		colourBuffer = GLBuffers.createBuffer(colour); 
@@ -77,7 +77,7 @@ public class InstancedObject extends SceneObject {
 	
 	public void addDefaultObject() {
 		addObject(genPosition(), genColour(), genScale());
-		System.out.println("Generating a new object at index: " + index);
+		System.out.println("Generating a new default object at index: " + index);
 	}
 	
 	public void addObject(Vector3f new_pos, Vector3f new_colour, Vector3f new_scale) {		

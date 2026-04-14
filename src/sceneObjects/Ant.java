@@ -37,8 +37,8 @@ public class Ant extends InstancedObject {
 	protected Vector3f antColour = new Vector3f(0.1f,0.2f,0.2f); //Dark colour
 	protected Vector3f stripeColour = new Vector3f(0.05f, 0.1f, 0.2f); //Old clear colour now ant colour
 	
-	protected Vector3f homeAntColour = new Vector3f(0.8f, 0.2f, 0.6f); //Magenta home scent colour
-	protected Vector3f foodAntColour = new Vector3f(0.3f, 0.8f, 0.5f); //Dark green food scent colour
+	protected final static Vector3f homeAntColour = new Vector3f(0.5f, 0.1f, 0.3f); //Magenta home scent colour
+	protected final static Vector3f foodAntColour = new Vector3f(0.1f, 0.5f, 0.4f); //Dark green food scent colour
 	
 	private Vector3f[] rotation, heading, Lheading, Rheading;
 	private int rotationBuffer;
@@ -93,7 +93,7 @@ public class Ant extends InstancedObject {
 	
 	@Override
 	public void assignBuffers() {
-		System.out.println("Assigning ant-specific buffers (rotation) :D");
+		//System.out.println("Assigning ant-specific buffers (rotation) :D");
 		super.assignBuffers();
 		rotationBuffer = GLBuffers.createBuffer(rotation); 
 	}
@@ -122,8 +122,10 @@ public class Ant extends InstancedObject {
 	public void addAnt(Vector4f pos) {
 		System.out.println("Adding new ant at pos: " + pos.x + ", " + pos.y);
 		Vector3f p = new Vector3f(pos.x, pos.y, pos.z);
+		addDefaultObject();
 		addObject(p, genColour(), genScale());
 		assignBuffers(); //Assigns all buffers used by GLSL
+		System.out.println("Generating a new ant at index: " + index);
 	}
 	
 	@Override
@@ -136,10 +138,11 @@ public class Ant extends InstancedObject {
 	@Override
 	protected Vector3f genColour() {
 		System.out.println("Initializing ant colour");
-		float r = Scene.randBetween(0f, 1f);
-		float g = Scene.randBetween(0f, 1f);
-		float b = Scene.randBetween(0f, 1f);
-		return new Vector3f(r,g,b);
+		return new Vector3f(foodAntColour.x, foodAntColour.y, foodAntColour.z);
+		//float r = Scene.randBetween(0f, 1f);
+		//float g = Scene.randBetween(0f, 1f);
+		//float b = Scene.randBetween(0f, 1f);
+		//return new Vector3f(r,g,b);
 		//return antColour;
 	}
 	
@@ -151,12 +154,12 @@ public class Ant extends InstancedObject {
 		colour[i] = homeAntColour;
 	}
 	
-	private void switchForagingMode(int antIndex) {
+	private void switchForagingMode(int antIndex) { //1 for following food, 0 for following home
 		if (foraging.get(antIndex) == 1) { //If this man has just found food
-			foraging.set(antIndex, 0); //1 for following food, 0 for following home
+			foraging.set(antIndex, 0); 
 			setColour(antIndex);
 		} else { //If this man is dropping off food
-			foraging.set(antIndex, 1); //1 for following food, 0 for following home
+			foraging.set(antIndex, 1); 
 			setColour(antIndex);
 		}
 		timeSinceTarget.set(antIndex, 0f);//Reset foraging time
