@@ -22,8 +22,8 @@ import static org.lwjgl.opengl.GL31.glDrawElementsInstanced;
 
 
 public class InstancedObject extends SceneObject {
-	final protected String VERTEX_SHADER = "instanced_circle_vertex.glsl";
-	final protected String FRAGMENT_SHADER = "instanced_circle_fragment.glsl";
+	final protected String VERTEX_SHADER = "instanced_vertex.glsl";
+	final protected String FRAGMENT_SHADER = "instanced_fragment.glsl";
 	protected Shader shader;
 	protected int N_Objects;
 	
@@ -78,6 +78,15 @@ public class InstancedObject extends SceneObject {
 		assignBuffers(); //Assigns all buffers used by GLSL
 	}
 	
+	public void setDefaultColour(Vector3f c) {
+		defaultColour = c;
+	}
+	
+	public void setScale(float s) {
+		max_scale = s;
+		max_scale = s;
+	}
+	
 	public void makeEmptyArrays() {
 		System.out.println("Making empty arrays :D");
 		position = new Vector3f[0];
@@ -124,7 +133,7 @@ public class InstancedObject extends SceneObject {
 	
 	protected Vector3f genColour() {
 		System.out.println("Initializing default colour");
-		return new Vector3f(0,1,0);
+		return new Vector3f(defaultColour.x, defaultColour.y, defaultColour.z);
 		//return defaultColour;
 	}
 	

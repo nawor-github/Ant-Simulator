@@ -62,6 +62,8 @@ public class Ant extends InstancedObject {
 	
 	private static float ANTENNAE_ROTATION = TAU / 8f;
 	
+	private Circle antennaeBalls;
+	
 	ArrayList<Integer> foraging; //1 for following food, 0 for following home
 	ArrayList<Float> foodAmount, timeSinceTarget; //Tracks food amount carried and time since was last at target
 	ArrayList<Vector3f> frontPos, leftPos, rightPos; //Positions of projected positions and antennae positions
@@ -70,6 +72,7 @@ public class Ant extends InstancedObject {
 		super(nAnts, max_Scale, min_Scale, s_X, s_Y);
 	
 		grid = g;
+		antennaeBalls = new Circle();
 		
 		System.out.println("John the ant is ant number 0. His position is: " + position[0].x + ", " +  position[0].y);
 		System.out.println("Scale: " + scale[0].x + ". Colour: " + colour[0].x + ", " +   colour[0].y + ", " +   colour[0].z);
@@ -123,6 +126,9 @@ public class Ant extends InstancedObject {
 		foraging.add(1);
 		foodAmount.add(0f);
 		timeSinceTarget.add(0f);
+		frontPos.add(new Vector3f(0,0,0));
+		leftPos.add(new Vector3f(0,0,0));
+		rightPos.add(new Vector3f(0,0,0));
 		setForagingMode(index-1, 1);
 		timeSinceTarget.set(index-1, 1000000f);
 		System.out.println("Time since target length is " + timeSinceTarget.size());
@@ -248,7 +254,6 @@ public class Ant extends InstancedObject {
 		}
 		s.addHomeScent(pheremoneAmount);
 	}
-	
 	
 	private Vector3f calcHeading(float r) { //The rotation as a number expressed in radians
 		r += ROTATION_ADJUSTMENT_FACTOR;

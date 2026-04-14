@@ -60,7 +60,7 @@ public class Grid extends SceneObject {
 	// 5 Home
 	// 6 Spawn new ants
 	
-	private final float FOOD_AMOUNT = 20000f; //Amount of food to paint
+	private final float FOOD_AMOUNT = 200000f; //Amount of food to paint
 	private final float SCENT_AMOUNT = 200f; //Amount of scent to paint
 	
 	public Grid(int w, int h, float s, float spacing, Scene Scene) {

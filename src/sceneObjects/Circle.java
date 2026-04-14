@@ -31,8 +31,8 @@ import static org.lwjgl.opengl.GL31.glDrawElementsInstanced;
 
 
 public class Circle extends InstancedObject {
-	final private String VERTEX_SHADER = "instanced_circle_vertex.glsl";
-	final private String FRAGMENT_SHADER = "instanced_circle_fragment.glsl";
+	final private String VERTEX_SHADER = "instanced_vertex.glsl";
+	final private String FRAGMENT_SHADER = "instanced_fragment.glsl";
 	private Shader shader;
 		
 	public Circle() {

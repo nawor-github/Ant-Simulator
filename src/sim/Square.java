@@ -22,7 +22,7 @@ public class Square {
 	
 	private final static float FOOD_SCENT_MAX_DISPLAY = 100f;
 	private final static float HOME_SCENT_MAX_DISPLAY = 100f;
-	private final static float FOOD_MAX_DISPLAY = 2000f;
+	private final static float FOOD_MAX_DISPLAY = 20000f;
 	
 	private final static float MINIMUM_SCENT_AMOUNT = 0.00001f; //Sets a floor on this sucka
 	

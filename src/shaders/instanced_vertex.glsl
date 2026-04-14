@@ -6,6 +6,7 @@ in vec3 a_scale; //The scale to draw at
 in vec3 a_colour; //The colour
 
 out float v_xCoord; //xCoordinate of point
+out vec3 v_colour; //colour out
 
 uniform mat4 u_mvpMatrix;
 
