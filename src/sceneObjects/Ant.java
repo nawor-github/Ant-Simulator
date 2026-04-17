@@ -131,6 +131,8 @@ public class Ant extends InstancedObject {
 		rightPos.add(new Vector3f(0,0,0));
 		setForagingMode(index-1, 1);
 		timeSinceTarget.set(index-1, 1000000f);
+		
+		antennaeBalls.addObject(getAntennaeWorldPos(index-1, true), new_colour, new_scale);
 		System.out.println("Time since target length is " + timeSinceTarget.size());
 	}
 	
@@ -263,6 +265,11 @@ public class Ant extends InstancedObject {
 		return result.normalize();
 	}
 	
+	/**
+	 * calculate and retrieve the world position of an antennae
+	 *
+	 * @param leftAnntennae true if working left antennae, right antennae otherwise
+	 */
 	public Vector3f getAntennaeWorldPos(int antIndex, boolean leftAnntennae) {
 		Vector3f antPos = position[antIndex];
 		float antennae_rot = -1f * ANTENNAE_ROTATION;
