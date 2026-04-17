@@ -145,8 +145,10 @@ public class Ant extends InstancedObject {
 		Vector4f fixedRAntennaPos = new Vector4f(RAntennaPos.x, RAntennaPos.y, RAntennaPos.z, 1);
 		
 		Vector3f antennaScale = new Vector3f(0.1f,0.1f, 0.1f);
-		leftAntennaeBalls.addNewObject(fixedLAntennaPos, new_colour, antennaScale);
-		rightAntennaeBalls.addNewObject(fixedRAntennaPos, new_colour, new_scale);
+		Vector3f red = new Vector3f(1f,0,0);
+		Vector3f green = new Vector3f(0, 1f, 0);
+		leftAntennaeBalls.addNewObject(fixedLAntennaPos, red, antennaScale);
+		rightAntennaeBalls.addNewObject(fixedRAntennaPos, green, antennaScale);
 		System.out.println(" ---> Antenna position length is " + leftAntennaeBalls.position.length + " and numObjects is " + leftAntennaeBalls.N_Objects);
 		//System.out.println("Time since target length is " + timeSinceTarget.size());
 	}
@@ -199,6 +201,7 @@ public class Ant extends InstancedObject {
 			heading[i] = calcHeading(rotation[i].x);
 			if (i == 0) {
 				//System.out.println("Heading is: " + heading[i].x + "," + heading[i].y + " and rotation is: " + rotation[i].x);
+				System.out.printf("Ant 0 is at position %.2f, %.2f and left antenna is at %.2f, %.2f \n", position[i].x, position[i].y, leftAntennaeBalls.position[i].x, leftAntennaeBalls.position[i].y);
 			}
 			position[i].x += heading[i].x * MOVE_SPEED * deltaTime;
 			position[i].y += heading[i].y * MOVE_SPEED * deltaTime;
