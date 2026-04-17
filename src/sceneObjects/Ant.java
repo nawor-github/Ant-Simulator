@@ -143,7 +143,9 @@ public class Ant extends InstancedObject {
 		
 		Vector3f RAntennaPos = getAntennaeWorldPos(index-1, false);
 		Vector4f fixedRAntennaPos = new Vector4f(RAntennaPos.x, RAntennaPos.y, RAntennaPos.z, 1);
-		leftAntennaeBalls.addNewObject(fixedLAntennaPos, new_colour, new_scale);
+		
+		Vector3f antennaScale = new Vector3f(0.1f,0.1f, 0.1f);
+		leftAntennaeBalls.addNewObject(fixedLAntennaPos, new_colour, antennaScale);
 		rightAntennaeBalls.addNewObject(fixedRAntennaPos, new_colour, new_scale);
 		System.out.println(" ---> Antenna position length is " + leftAntennaeBalls.position.length + " and numObjects is " + leftAntennaeBalls.N_Objects);
 		//System.out.println("Time since target length is " + timeSinceTarget.size());
@@ -203,8 +205,8 @@ public class Ant extends InstancedObject {
 			
 			//System.out.println(" ---> Antenna position length is " + leftAntennaeBalls.position.length + " and numObjects is " + leftAntennaeBalls.N_Objects);
 
-			leftAntennaeBalls.position[i] = getAntennaeWorldPos(i, true);
-			rightAntennaeBalls.position[i] = getAntennaeWorldPos(i, false);
+			leftAntennaeBalls.position[i] = leftPos.get(i);
+			rightAntennaeBalls.position[i] = rightPos.get(i);
 		}
 		assignBuffers();
 	}
@@ -427,6 +429,7 @@ public class Ant extends InstancedObject {
 	@Override
 	public void drawSelf(Matrix4f mvpMatrix) {
 		leftAntennaeBalls.draw();
+		rightAntennaeBalls.draw();
 		//System.out.println("Drawing ants!");
 		shader.enable();
 		
