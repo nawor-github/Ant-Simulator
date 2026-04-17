@@ -62,7 +62,8 @@ public class Ant extends InstancedObject {
 	
 	private static float ANTENNAE_ROTATION = TAU / 8f;
 	
-	private Circle antennaeBalls;
+	private Circle leftAntennaeBalls = new Circle();
+	private Circle rightAntennaeBalls = new Circle();
 	
 	ArrayList<Integer> foraging; //1 for following food, 0 for following home
 	ArrayList<Float> foodAmount, timeSinceTarget; //Tracks food amount carried and time since was last at target
@@ -72,7 +73,6 @@ public class Ant extends InstancedObject {
 		super(nAnts, max_Scale, min_Scale, s_X, s_Y);
 	
 		grid = g;
-		antennaeBalls = new Circle();
 		
 		System.out.println("John the ant is ant number 0. His position is: " + position[0].x + ", " +  position[0].y);
 		System.out.println("Scale: " + scale[0].x + ". Colour: " + colour[0].x + ", " +   colour[0].y + ", " +   colour[0].z);
@@ -99,6 +99,9 @@ public class Ant extends InstancedObject {
 		frontPos = new ArrayList<Vector3f>();
 		leftPos = new ArrayList<Vector3f>();
 		rightPos = new ArrayList<Vector3f>();
+		
+		leftAntennaeBalls = new Circle();
+		rightAntennaeBalls = new Circle();
 	}
 	
 	@Override
@@ -132,7 +135,10 @@ public class Ant extends InstancedObject {
 		setForagingMode(index-1, 1);
 		timeSinceTarget.set(index-1, 1000000f);
 		
-		antennaeBalls.addObject(getAntennaeWorldPos(index-1, true), new_colour, new_scale);
+		//Time to generate antennae balls
+		leftAntennaeBalls.addObject(getAntennaeWorldPos(index-1, true), new_colour, new_scale);
+		rightAntennaeBalls.addObject(getAntennaeWorldPos(index-1, true), new_colour, new_scale);
+
 		System.out.println("Time since target length is " + timeSinceTarget.size());
 	}
 	
