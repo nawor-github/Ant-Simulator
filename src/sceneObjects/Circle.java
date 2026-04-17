@@ -38,39 +38,12 @@ public class Circle extends InstancedObject {
 	public Circle() {
 		super();
 		shader = ShaderLibrary.instance.compileShader(VERTEX_SHADER, FRAGMENT_SHADER);
-	}
+	}	
 	
 	@Override
-	public void drawSelf(Matrix4f mvpMatrix) {
-		shader.enable();
+	public void addObject(Vector3f new_pos, Vector3f new_colour, Vector3f new_scale) {
+		System.out.println("Adding a new CIRCLE");
 		
-		shader.setUniform("u_mvpMatrix", mvpMatrix);
-
-		//Passing our instanced variables (yippee!)
-		shader.setAttribute("a_worldPos", positionBuffer);
-		glVertexAttribDivisor(shader.getAttribute("a_worldPos"), 1);
-		shader.setAttribute("a_scale", scaleBuffer);
-		glVertexAttribDivisor(shader.getAttribute("a_scale"), 1);
-		shader.setAttribute("a_colour", colourBuffer);
-		glVertexAttribDivisor(shader.getAttribute("a_colour"), 1);
-	    
-	    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-	    /*
-		        ________________
-		   ()==(                (@==()
-		        '_______________'|
-		          |              |
-		          | Draw call :) |
-		        __)_____________ |
-		   ()==(                (@==()
-		        '---------------'
-		*/
-	    glDrawElementsInstanced(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0, N_Objects);	
-	    
-	    // disable instance-based drawing (very important to a guy like me)
-		glVertexAttribDivisor(shader.getAttribute("a_worldPos"), 0);
-		glVertexAttribDivisor(shader.getAttribute("a_scale"), 0);
+		super.addObject(new_pos, new_colour, new_scale);
 	}
-	
-	
 }

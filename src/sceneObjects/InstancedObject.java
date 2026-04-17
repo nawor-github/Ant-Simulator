@@ -113,6 +113,20 @@ public class InstancedObject extends SceneObject {
 		index++;
 	}
 	
+	public void addNewObject(Vector4f pos) {
+		System.out.println("Adding a BRAND NEW new instanced at pos: " + pos.x + ", " + pos.y);
+		Vector3f p = new Vector3f(pos.x, pos.y, pos.z);
+		addObject(p, genColour(), genScale());
+		N_Objects++;
+	}
+	
+	public void addNewObject(Vector4f pos, Vector3f colour, Vector3f scale) {
+		System.out.println("Adding a BRAND NEW new instanced at pos: " + pos.x + ", " + pos.y);
+		Vector3f p = new Vector3f(pos.x, pos.y, pos.z);
+		addObject(p, colour, scale);
+		N_Objects++;
+	}
+	
 	protected Vector3f genPosition() {
 		System.out.println("Initializing ant position");
 
