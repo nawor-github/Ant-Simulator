@@ -146,7 +146,7 @@ public class Ant extends InstancedObject {
 		Vector3f RAntennaPos = getAntennaeWorldPos(index-1, false);
 		Vector4f fixedRAntennaPos = new Vector4f(RAntennaPos.x, RAntennaPos.y, RAntennaPos.z, 1);
 		
-		Vector3f antennaScale = new Vector3f(0.1f,0.1f, 0.1f);
+		Vector3f antennaScale = new Vector3f(0.5f,0.5f, 0.5f);
 		Vector3f red = new Vector3f(1f,0,0);
 		Vector3f green = new Vector3f(0, 1f, 0);
 		leftAntennaeBalls.addNewObject(fixedLAntennaPos, red, antennaScale);
@@ -433,8 +433,8 @@ public class Ant extends InstancedObject {
 	
 	@Override
 	public void drawSelf(Matrix4f mvpMatrix) {
-		leftAntennaeBalls.draw();
-		rightAntennaeBalls.draw();
+		leftAntennaeBalls.drawSelf(mvpMatrix);
+		rightAntennaeBalls.drawSelf(mvpMatrix);
 		//System.out.println("Drawing ants!");
 		shader.enable();
 		
