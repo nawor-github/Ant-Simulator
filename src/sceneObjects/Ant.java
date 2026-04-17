@@ -101,7 +101,9 @@ public class Ant extends InstancedObject {
 		rightPos = new ArrayList<Vector3f>();
 		
 		leftAntennaeBalls = new Circle();
+		leftAntennaeBalls.setParent(this.getParent());
 		rightAntennaeBalls = new Circle();
+		rightAntennaeBalls.setParent(this.getParent());
 	}
 	
 	@Override
