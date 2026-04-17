@@ -62,8 +62,8 @@ public class Ant extends InstancedObject {
 	
 	private static float ANTENNAE_ROTATION = TAU / 8f;
 	
-	private Circle leftAntennaeBalls = new Circle();
-	private Circle rightAntennaeBalls = new Circle();
+	private Circle leftAntennaeBalls;
+	private Circle rightAntennaeBalls;
 	
 	ArrayList<Integer> foraging; //1 for following food, 0 for following home
 	ArrayList<Float> foodAmount, timeSinceTarget; //Tracks food amount carried and time since was last at target
@@ -109,6 +109,8 @@ public class Ant extends InstancedObject {
 		//System.out.println("Assigning ant-specific buffers (rotation) :D");
 		super.assignBuffers();
 		rotationBuffer = GLBuffers.createBuffer(rotation); 
+		leftAntennaeBalls.assignBuffers();
+		rightAntennaeBalls.assignBuffers();
 	}
 	
 	@Override
@@ -143,8 +145,8 @@ public class Ant extends InstancedObject {
 		Vector4f fixedRAntennaPos = new Vector4f(RAntennaPos.x, RAntennaPos.y, RAntennaPos.z, 1);
 		leftAntennaeBalls.addNewObject(fixedLAntennaPos, new_colour, new_scale);
 		rightAntennaeBalls.addNewObject(fixedRAntennaPos, new_colour, new_scale);
-
-		System.out.println("Time since target length is " + timeSinceTarget.size());
+		System.out.println(" ---> Antenna position length is " + leftAntennaeBalls.position.length + " and numObjects is " + leftAntennaeBalls.N_Objects);
+		//System.out.println("Time since target length is " + timeSinceTarget.size());
 	}
 	
 	public void addAnt(Vector4f pos) {
@@ -199,6 +201,8 @@ public class Ant extends InstancedObject {
 			position[i].x += heading[i].x * MOVE_SPEED * deltaTime;
 			position[i].y += heading[i].y * MOVE_SPEED * deltaTime;
 			
+			//System.out.println(" ---> Antenna position length is " + leftAntennaeBalls.position.length + " and numObjects is " + leftAntennaeBalls.N_Objects);
+
 			leftAntennaeBalls.position[i] = getAntennaeWorldPos(i, true);
 			rightAntennaeBalls.position[i] = getAntennaeWorldPos(i, false);
 		}

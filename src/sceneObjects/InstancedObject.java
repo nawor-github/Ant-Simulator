@@ -83,7 +83,7 @@ public class InstancedObject extends SceneObject {
 	}
 	
 	public void setScale(float s) {
-		max_scale = s;
+		min_scale = s;
 		max_scale = s;
 	}
 	
