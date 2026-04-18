@@ -46,4 +46,24 @@ public class Circle extends InstancedObject {
 		
 		super.addObject(new_pos, new_colour, new_scale);
 	}
+	
+	
+	@Override
+	protected void makeMesh() {	
+		System.out.println("Generating squarer mesh");
+		vertices = new Vector4f[] {
+			//Main body
+			new Vector4f( 0.5f, 0.5f, 0, 1), //P0 square for now
+			new Vector4f( 0.5f, -0.5f, 0, 1), //P1
+			new Vector4f( -0.5f, -0.5f, 0, 1), //P2
+			new Vector4f( -0.5f, 0.5f, 0, 1), //P3
+		};
+		vertexBuffer = GLBuffers.createBuffer(vertices);
+
+		indices = new int[] {  
+			0,1,2, 
+			0,2,3,
+		};
+		indexBuffer = GLBuffers.createIndexBuffer(indices);
+	}
 }
