@@ -344,23 +344,23 @@ public class Ant extends InstancedObject {
 		Vector3f R_AnntennaePos = getAntennaeWorldPos(antIndex, false);
 		
 		//int currentIndex = grid.getCellAtWorldPos(new Vector4f(antPos.x, antPos.y, antPos.z, 1));
-		int projectedIndex = grid.getCellAtWorldPos(new Vector4f(projectedPos.x, projectedPos.y, projectedPos.z, 1));
-		if (projectedIndex == -1 || grid.getSquare(projectedIndex).isBlocker) { //Return a random turn direction if directly ahead is off-nap or a blocker
+		// projectedIndex = grid.getCellAtWorldPos(new Vector4f(projectedPos.x, projectedPos.y, projectedPos.z, 1));
+		Square forwardSquare = grid.getSquareAtWorldPos(projectedPos);
+		if (forwardSquare.i == -1 || forwardSquare.isBlocker) { //Return a random turn direction if directly ahead is off-nap or a blocker
 			if (antIndex % 2 == 0) { //Pick a side this ant will always turn towards
-				return 1;
+				return 1f;
 			} else {
-				return -1;
+				return -1f;
 			}
 		}
-		int leftIndex = grid.getCellAtWorldPos(new Vector4f(L_AnntennaePos.x, L_AnntennaePos.y, L_AnntennaePos.z, 1));
-		int rightIndex = grid.getCellAtWorldPos(new Vector4f(R_AnntennaePos.x, R_AnntennaePos.y, R_AnntennaePos.z, 1));
+		
+		Square leftSquare = grid.getSquareAtWorldPos(L_AnntennaePos);
+		Square rightSquare = grid.getSquareAtWorldPos(R_AnntennaePos);
 
-		Square forwardSquare = grid.getSquare(projectedIndex);
-		Square leftSquare = grid.getSquare(leftIndex);
+		
 		if (leftSquare.isBlocker || leftSquare.i == -1) {
 			return -1;
 		}
-		Square rightSquare = grid.getSquare(rightIndex);
 		if (rightSquare.isBlocker || rightSquare.i == -1) {
 			return 1;
 		}
@@ -385,8 +385,9 @@ public class Ant extends InstancedObject {
 	
 	private Square getCurrentSquare(int antIndex) {
 		Vector3f antPos = position[antIndex];
-		int currentIndex = grid.getCellAtWorldPos(new Vector4f(antPos.x, antPos.y, antPos.z, 1));
-		return grid.getSquare(currentIndex);
+		return grid.getSquareAtWorldPos(antPos);
+		//int currentIndex = grid.getCellAtWorldPos(new Vector4f(antPos.x, antPos.y, antPos.z, 1));
+		//return grid.getSquare(currentIndex);
 	}
 	
 	@Override
