@@ -136,8 +136,6 @@ public class Ant extends InstancedObject {
 		frontPos.add(new Vector3f(0,0,0));
 		leftPos.add(new Vector3f(0,0,0));
 		rightPos.add(new Vector3f(0,0,0));
-		setForagingMode(index-1, 1);
-		timeSinceTarget.set(index-1, 1000000f);
 		
 		//Time to generate antennae balls
 		Vector3f LAntennaPos = getAntennaeWorldPos(index-1, true);
@@ -146,13 +144,16 @@ public class Ant extends InstancedObject {
 		Vector3f RAntennaPos = getAntennaeWorldPos(index-1, false);
 		Vector4f fixedRAntennaPos = new Vector4f(RAntennaPos.x, RAntennaPos.y, RAntennaPos.z, 1);
 		
-		Vector3f antennaScale = new Vector3f(0.5f,0.5f, 0.5f);
-		Vector3f red = new Vector3f(1f,0,0);
-		Vector3f green = new Vector3f(0, 1f, 0);
-		leftAntennaeBalls.addNewObject(fixedLAntennaPos, red, antennaScale);
-		rightAntennaeBalls.addNewObject(fixedRAntennaPos, green, antennaScale);
+		Vector3f antennaScale = new Vector3f(0.3f,0.3f, 0.3f);
+		leftAntennaeBalls.addNewObject(fixedLAntennaPos, new_colour, antennaScale);
+		rightAntennaeBalls.addNewObject(fixedRAntennaPos, new_colour, antennaScale);
+		System.out.println(" ---> Antenna colour length is " + leftAntennaeBalls.colour.length + " and numObjects is " + leftAntennaeBalls.N_Objects);
+
 		System.out.println(" ---> Antenna position length is " + leftAntennaeBalls.position.length + " and numObjects is " + leftAntennaeBalls.N_Objects);
 		//System.out.println("Time since target length is " + timeSinceTarget.size());
+		setForagingMode(index-1, 1);
+		timeSinceTarget.set(index-1, 1000000f);
+
 	}
 	
 	public void addAnt(Vector4f pos) {
@@ -208,7 +209,6 @@ public class Ant extends InstancedObject {
 			position[i].x += heading[i].x * MOVE_SPEED * deltaTime;
 			position[i].y += heading[i].y * MOVE_SPEED * deltaTime;
 			
-			//System.out.println(" ---> Antenna position length is " + leftAntennaeBalls.position.length + " and numObjects is " + leftAntennaeBalls.N_Objects);
 
 			leftAntennaeBalls.position[i] = leftPos.get(i);
 			rightAntennaeBalls.position[i] = rightPos.get(i);
@@ -227,7 +227,7 @@ public class Ant extends InstancedObject {
 			return;
 		}
 		currentFood += foodGrabbed;
-		scale[antIndex] = new Vector3f(max_scale,max_scale,max_scale);
+		scale[antIndex] = new Vector3f(min_scale,min_scale,min_scale);
 		if (currentFood > FOOD_CAPACITY) {
 			s.addFood(currentFood-FOOD_CAPACITY);
 			currentFood = FOOD_CAPACITY;
@@ -267,6 +267,9 @@ public class Ant extends InstancedObject {
 	
 	private void setColour(int antIndex, Vector3f c) {
 		colour[antIndex] = c;
+		leftAntennaeBalls.colour[antIndex] = c;
+		rightAntennaeBalls.colour[antIndex] = c;
+
 	}
 	
 	private void depositTrail(int antIndex, Square s) { //1 for following food, 0 for following home
