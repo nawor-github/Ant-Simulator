@@ -1,5 +1,7 @@
 package sim;
 
+import java.awt.event.KeyEvent;
+
 import org.joml.Vector3f;
 
 import comp3170.InputManager;
@@ -83,6 +85,27 @@ public class Square {
 		return colour;
 	}
 	
+	public Vector3f calculateScentlessColour() {
+		if (isBlocker) {
+			colour = blockerColour;
+			return colour;
+		} else if (isHome) {
+			colour = homeColour;
+			return colour;
+		} else {
+			colour = clearColour;
+		} 
+		if (food > 0) {
+			float foodWeight = food / FOOD_MAX_DISPLAY;
+			if (foodWeight > FOOD_MAX_DISPLAY) {
+				foodWeight = 1;
+			}
+			colour = blendBetween(foodColour, clearColour, foodWeight);
+			return colour;
+		}
+		return colour;
+	}
+	
 	private Vector3f blendBetween(Vector3f a, Vector3f b, float t) { //Stub to be repalced with a lerp later on
 		// a * t + y * (1-t)
 		float R = (a.x * t) + (b.x*(1-t));
@@ -144,10 +167,31 @@ public class Square {
 		}
 	}
 
+	private int renderMode = 0; //0 = render scents, 1 = don't render scents
+	
+	public int getRenderMode() {
+		return renderMode;
+	}
+	
+	public void setRenderMode(int newMode) {
+		renderMode = newMode;
+	}
 
 	public void update(float deltaTime, InputManager input) {
 		decay(deltaTime);
-		calculateColour();
+		if (input.wasKeyPressed(KeyEvent.VK_CLOSE_BRACKET)){
+			setRenderMode(0);
+		}
+		if (input.wasKeyPressed(KeyEvent.VK_OPEN_BRACKET)){
+			setRenderMode(1);
+		}
+		switch (renderMode) {
+			case 1: 
+				calculateScentlessColour();
+			default:
+				calculateColour();
+		}
+		
 	}
 	
 	
