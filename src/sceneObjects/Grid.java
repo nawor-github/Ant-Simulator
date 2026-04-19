@@ -109,6 +109,13 @@ public class Grid extends SceneObject {
 		}
 		return new Square(-1,-1,-1); //Returns a square with an impossible index and coords
 	}
+	
+	public Square getSquare(int x, int y) {
+		if (x < 0 || y < 0 || x > count_x || y > count_y) {
+			return new Square(-1,-1,-1);
+		}
+		return squares[x][y];
+	}
 
 	public void update(float deltaTime, InputManager input) {
 		for (int x = 0; x < count_x; x++) {
