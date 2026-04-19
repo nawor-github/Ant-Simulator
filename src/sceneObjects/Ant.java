@@ -41,6 +41,10 @@ public class Ant extends InstancedObject {
 	protected final static Vector3f foodAntColour = new Vector3f(0.1f, 0.5f, 0.4f); //Dark green food scent colour
 	protected final static Vector3f debugColour = new Vector3f(0.1f, 1f, 0.4f); //Dark green food scent colour
 	
+	protected final static Vector3f foodColour = new Vector3f(0.9f, 0.7f, 0.2f); //Yellow food colour
+
+	protected final static Vector3f zero_scale = new Vector3f(0,0,0);
+	
 	private static final float ROTATION_ADJUSTMENT_FACTOR = 1.5708f; //magic number to make ants walk straight
 	
 	private Vector3f[] rotation, heading, Lheading, Rheading;
@@ -64,6 +68,8 @@ public class Ant extends InstancedObject {
 	
 	private Circle leftAntennaeBalls;
 	private Circle rightAntennaeBalls;
+	
+	private Circle foodBalls;
 	
 	ArrayList<Integer> foraging; //1 for following food, 0 for following home
 	ArrayList<Float> foodAmount, timeSinceTarget; //Tracks food amount carried and time since was last at target
@@ -104,6 +110,9 @@ public class Ant extends InstancedObject {
 		leftAntennaeBalls.setParent(this.getParent());
 		rightAntennaeBalls = new Circle();
 		rightAntennaeBalls.setParent(this.getParent());
+		
+		foodBalls = new Circle();
+		foodBalls.setParent(this.getParent());
 	}
 	
 	@Override
@@ -113,6 +122,7 @@ public class Ant extends InstancedObject {
 		rotationBuffer = GLBuffers.createBuffer(rotation); 
 		leftAntennaeBalls.assignBuffers();
 		rightAntennaeBalls.assignBuffers();
+		foodBalls.assignBuffers();
 	}
 	
 	@Override
@@ -150,6 +160,8 @@ public class Ant extends InstancedObject {
 		System.out.println(" ---> Antenna colour length is " + leftAntennaeBalls.colour.length + " and numObjects is " + leftAntennaeBalls.N_Objects);
 
 		System.out.println(" ---> Antenna position length is " + leftAntennaeBalls.position.length + " and numObjects is " + leftAntennaeBalls.N_Objects);
+		Vector4f frontPosFixed = new Vector4f(frontPos.get(index-1).x,frontPos.get(index-1).y,frontPos.get(index-1).z,1f);
+		foodBalls.addNewObject(frontPosFixed, foodColour, zero_scale);
 		//System.out.println("Time since target length is " + timeSinceTarget.size());
 		setForagingMode(index-1, 1);
 		timeSinceTarget.set(index-1, 1000000f);
@@ -169,7 +181,7 @@ public class Ant extends InstancedObject {
 	@Override
 	protected Vector3f genScale() {
 		System.out.println("Initializing ant scale");
-		float s = max_scale;
+		float s = min_scale;
 		return new Vector3f(s, s, s);
 	}
 	
@@ -212,6 +224,7 @@ public class Ant extends InstancedObject {
 
 			leftAntennaeBalls.position[i] = leftPos.get(i);
 			rightAntennaeBalls.position[i] = rightPos.get(i);
+			foodBalls.position[i] = frontPos.get(i);
 		}
 		assignBuffers();
 	}
@@ -251,12 +264,14 @@ public class Ant extends InstancedObject {
 	private void setForagingMode(int antIndex, int mode) { //1 for following food, 0 for following home
 		switch (mode) {
 			case 1:
-				foraging.set(antIndex, 1); //Following home, large and holding food
+				foraging.set(antIndex, 1); //Following food, small and hungry
 				setColour(antIndex, homeAntColour);
+				foodBalls.scale[antIndex] = zero_scale;
 				break;
 			case 0:
-				foraging.set(antIndex, 0); //Following food, small and hungry
+				foraging.set(antIndex, 0); //Following home, green and holding food
 				setColour(antIndex, foodAntColour);
+				foodBalls.scale[antIndex] = new Vector3f(0.3f);
 				break;
 			default:
 				foraging.set(antIndex, -1); 
@@ -435,6 +450,9 @@ public class Ant extends InstancedObject {
 	public void drawSelf(Matrix4f mvpMatrix) {
 		leftAntennaeBalls.drawSelf(mvpMatrix);
 		rightAntennaeBalls.drawSelf(mvpMatrix);
+		
+		foodBalls.drawSelf(mvpMatrix);
+
 		//System.out.println("Drawing ants!");
 		shader.enable();
 		
