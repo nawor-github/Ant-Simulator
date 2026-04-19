@@ -185,9 +185,11 @@ public class Square {
 		switch (renderMode) {
 			case 1: 
 				calculateScentlessColour();
+				break;
 				//System.out.println("Case 1");
 			default:
 				calculateColour();
+				break;
 				//calculateScentlessColour();
 		}
 		

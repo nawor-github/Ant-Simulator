@@ -115,7 +115,7 @@ public class Grid extends SceneObject {
 			for (int y = 0; y < count_y; y++) {
 				//squares[x][y].calculateColour();
 				colour[squares[x][y].i] = squares[x][y].getColour();
-				squares[x][y].update(deltaTime,  input);
+				squares[x][y].update(deltaTime, input);
 			}
 		}
 		colourBuffer = GLBuffers.createBuffer(colour); // See if this can be removed??
