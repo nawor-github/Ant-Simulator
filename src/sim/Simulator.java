@@ -45,7 +45,7 @@ import sceneObjects.Camera;
 		
 		public Simulator() throws OpenGLException {
 			instance = this;
-			window = new Window("Assignment 1", screenWidth, screenHeight, this);
+			window = new Window("Nawor's Amazing Ant simulator", screenWidth, screenHeight, this);
 			window.setResizable(true);
 			window.run();
 		}

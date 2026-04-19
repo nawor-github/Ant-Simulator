@@ -253,17 +253,14 @@ public class Ant extends InstancedObject {
 			case 1:
 				foraging.set(antIndex, 1); //Following home, large and holding food
 				setColour(antIndex, homeAntColour);
-				scale[antIndex] = new Vector3f(min_scale,min_scale,min_scale);
 				break;
 			case 0:
 				foraging.set(antIndex, 0); //Following food, small and hungry
 				setColour(antIndex, foodAntColour);
-				scale[antIndex] = new Vector3f(max_scale,max_scale,max_scale);
 				break;
 			default:
 				foraging.set(antIndex, -1); 
 				setColour(antIndex, debugColour);
-				scale[antIndex] = new Vector3f(min_scale,min_scale,min_scale);
 		}
 		timeSinceTarget.set(antIndex, 0f);//Reset foraging time
 	}
