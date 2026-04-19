@@ -113,7 +113,7 @@ public class Grid extends SceneObject {
 	public void update(float deltaTime, InputManager input) {
 		for (int x = 0; x < count_x; x++) {
 			for (int y = 0; y < count_y; y++) {
-				squares[x][y].calculateColour();
+				//squares[x][y].calculateColour();
 				colour[squares[x][y].i] = squares[x][y].getColour();
 				squares[x][y].update(deltaTime,  input);
 			}

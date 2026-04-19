@@ -121,25 +121,21 @@ public class Square {
 		isBlocker = false;
 		isHome = false;
 		colour = clearColour;
-		calculateColour();
 	}
 	
 	public void setBlocker() {
 		clear();
 		isBlocker = true;
-		calculateColour();
 	}
 	
 	public void setHome() {
 		clear();
 		isHome = true;
-		calculateColour();
 	}
 	
 	public void addFood(float f) {
 		food += f;
 		//System.out.println("Adding " + f + " food to " + x + "," + y + ". Food is now: " + food);
-		calculateColour();
 	}
 	
 	public float takeFood(float f) {
@@ -149,21 +145,18 @@ public class Square {
 			return value;
 		}
 		food -= f;
-		calculateColour();
 		return f;
 	}
 	
 	public void addFoodScent(float f) {
 		if (f > foodScent) {
 			foodScent = f;
-			calculateColour();
 		}
 	}
 	
 	public void addHomeScent(float f) {
 		if (f > homeScent) {
 			homeScent = f;
-			calculateColour();
 		}
 	}
 
@@ -181,15 +174,21 @@ public class Square {
 		decay(deltaTime);
 		if (input.wasKeyPressed(KeyEvent.VK_CLOSE_BRACKET)){
 			setRenderMode(0);
+			System.out.println("CLOSE BRACKET PRESSED");
+
 		}
 		if (input.wasKeyPressed(KeyEvent.VK_OPEN_BRACKET)){
+			System.out.println("OPEN BRACKET PRESSED");
 			setRenderMode(1);
 		}
+		System.out.println("Rendermode is: " + renderMode);
 		switch (renderMode) {
 			case 1: 
 				calculateScentlessColour();
+				//System.out.println("Case 1");
 			default:
 				calculateColour();
+				//calculateScentlessColour();
 		}
 		
 	}

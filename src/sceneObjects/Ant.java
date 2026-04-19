@@ -216,7 +216,7 @@ public class Ant extends InstancedObject {
 			heading[i] = calcHeading(rotation[i].x);
 			if (i == 0) {
 				//System.out.println("Heading is: " + heading[i].x + "," + heading[i].y + " and rotation is: " + rotation[i].x);
-				System.out.printf("Ant 0 is at position %.2f, %.2f and left antenna is at %.2f, %.2f \n", position[i].x, position[i].y, leftAntennaeBalls.position[i].x, leftAntennaeBalls.position[i].y);
+				//System.out.printf("Ant 0 is at position %.2f, %.2f and left antenna is at %.2f, %.2f \n", position[i].x, position[i].y, leftAntennaeBalls.position[i].x, leftAntennaeBalls.position[i].y);
 			}
 			position[i].x += heading[i].x * MOVE_SPEED * deltaTime;
 			position[i].y += heading[i].y * MOVE_SPEED * deltaTime;
