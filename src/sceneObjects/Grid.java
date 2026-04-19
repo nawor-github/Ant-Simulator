@@ -152,10 +152,11 @@ public class Grid extends SceneObject {
 		Vector4f mousePos = scene.getMousePos();
 		if (input.isMouseDown()) {
 			if (brushMode != 6) {
-				int gridIndex = getCellAtWorldPos(mousePos);
+				Square s = getSquareAtWorldPos(mousePos);
+				//int gridIndex = getCellAtWorldPos(mousePos);
+				int gridIndex = s.i;
 				//6System.out.println("Grid Index:" + gridIndex);
 				if (gridIndex != -1) {
-					Square s = getSquare(gridIndex);
 					switch(brushMode) {
 						case 0: // clear
 							s.clear();
@@ -204,13 +205,32 @@ public class Grid extends SceneObject {
 		return false;
 	}
 
-	public int getCellAtWorldPos(Vector4f mousePos) { //This can be optimized
+	public int getCellIndexAtWorldPos(Vector4f worldPos) { //This can be optimized
 		for (int i = 0; i < position.length; i++) {
-			if (liesWithin(mousePos, i)) {
+			if (liesWithin(worldPos, i)) {
 				return i;
 			}
 		}
 		return -1;
+	}
+	
+	public int getCellIndexAtWorldPos(Vector3f worldPos) { //This can be optimized
+		Vector4f fixedPos = new Vector4f(worldPos.x, worldPos.y, worldPos.z, 1f);
+		return getCellIndexAtWorldPos(fixedPos);
+	}
+	
+	public Square getSquareAtWorldPos(Vector4f worldPos) { //This can be optimized
+		for (int i = 0; i < position.length; i++) {
+			if (liesWithin(worldPos, i)) {
+				return getSquare(i);
+			}
+		}
+		return new Square(-1,-1,-1);
+	}
+	
+	public Square getSquareAtWorldPos(Vector3f worldPos) { //This can be optimized
+		Vector4f fixedPos = new Vector4f(worldPos.x, worldPos.y, worldPos.z, 1f);
+		return getSquareAtWorldPos(fixedPos);
 	}
 
 	public float getScale() {
