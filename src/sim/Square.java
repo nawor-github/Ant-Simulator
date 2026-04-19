@@ -174,14 +174,14 @@ public class Square {
 		decay(deltaTime);
 		if (input.wasKeyPressed(KeyEvent.VK_CLOSE_BRACKET)){
 			setRenderMode(0);
-			System.out.println("CLOSE BRACKET PRESSED");
+			//System.out.println("CLOSE BRACKET PRESSED");
 
 		}
 		if (input.wasKeyPressed(KeyEvent.VK_OPEN_BRACKET)){
 			System.out.println("OPEN BRACKET PRESSED");
-			setRenderMode(1);
+			//setRenderMode(1);
 		}
-		System.out.println("Rendermode is: " + renderMode);
+		//System.out.println("Rendermode is: " + renderMode);
 		switch (renderMode) {
 			case 1: 
 				calculateScentlessColour();

@@ -194,12 +194,12 @@ public class Grid extends SceneObject {
 		colourBuffer = GLBuffers.createBuffer(colour); // See if this can be removed??
 	}
 	
-	private boolean liesWithin(Vector4f mousePos, int index) {
+	private boolean liesWithin(Vector4f pos, int index) {
 		float x1 = position[index].x;
 		float y1 = position[index].y;
 		float x2 = x1 + getScale();
 		float y2 = y1 + getScale();
-		if (mousePos.x >= x1 && mousePos.x <= x2 && mousePos.y >= y1 && mousePos.y <= y2) {
+		if (pos.x >= x1 && pos.x <= x2 && pos.y >= y1 && pos.y <= y2) {
 			return true;
 		}
 		return false;
@@ -219,10 +219,28 @@ public class Grid extends SceneObject {
 		return getCellIndexAtWorldPos(fixedPos);
 	}
 	
+	public Square testGetSquareAtWorldPos(Vector4f worldPos) { //This can be optimized
+		int x = 0;
+		int y = 0;
+		if (worldPos.x < squares[0][0].x && worldPos.y < squares[0][0].y) { //If he NOWHERE
+			return new Square(-1,-1,-1); //Debug square[
+		}
+		while (worldPos.x > squares[x][y].x && x <= count_x) {
+			x++;
+		}
+		while (worldPos.y > squares[x][y].y && y <= count_y && x <= count_x) {
+			y++;
+		}
+		return squares[x][y];
+		//return new Square(-1,-1,-1);
+	}
+	
 	public Square getSquareAtWorldPos(Vector4f worldPos) { //This can be optimized
-		for (int i = 0; i < position.length; i++) {
-			if (liesWithin(worldPos, i)) {
-				return getSquare(i);
+		for (int x = 0; x < count_x; x++) {
+			for (int y = 0; y < count_y; y++) {
+				if (liesWithin(worldPos, squares[x][y].i)) {
+					return squares[x][y];
+				}
 			}
 		}
 		return new Square(-1,-1,-1);
