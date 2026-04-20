@@ -10,6 +10,7 @@ import comp3170.Shader;
 import comp3170.ShaderLibrary;
 import static comp3170.Math.TAU;
 
+import sim.Antlogic;
 import sim.Scene;
 import sim.Square;
 
@@ -52,8 +53,8 @@ public class Ant extends InstancedObject {
 	
 	private Grid grid;
 	
-	private final float MOVE_SPEED = 4f;
-	private final float TURN_SPEED = 5f;
+	public final float MOVE_SPEED = 4f;
+	public final float TURN_SPEED = 5f;
 	
 	private final float TRAIL_DEPOSIT_STRENGTH = 100f;
 
@@ -62,7 +63,7 @@ public class Ant extends InstancedObject {
 	
 	private static float decayMult = 0.1f;
 
-	private static float RANDOM_WIGGLE = 1f;
+	public static float RANDOM_WIGGLE = 1f;
 	
 	private static float ANTENNAE_ROTATION = TAU / 8f;
 	
@@ -130,7 +131,7 @@ public class Ant extends InstancedObject {
 	
 	@Override
 	public void addObject(Vector3f new_pos, Vector3f new_colour, Vector3f new_scale) {
-		System.out.println("Adding a new ant");
+		//System.out.println("Adding a new ant");
 		
 		super.addObject(new_pos, new_colour, new_scale);
 		float randomRotation = Scene.randBetween(0,TAU);
@@ -160,9 +161,9 @@ public class Ant extends InstancedObject {
 		Vector3f antennaScale = new Vector3f(0.3f,0.3f, 0.3f);
 		leftAntennaeBalls.addNewObject(fixedLAntennaPos, new_colour, antennaScale);
 		rightAntennaeBalls.addNewObject(fixedRAntennaPos, new_colour, antennaScale);
-		System.out.println(" ---> Antenna colour length is " + leftAntennaeBalls.colour.length + " and numObjects is " + leftAntennaeBalls.N_Objects);
+		//System.out.println(" ---> Antenna colour length is " + leftAntennaeBalls.colour.length + " and numObjects is " + leftAntennaeBalls.N_Objects);
 
-		System.out.println(" ---> Antenna position length is " + leftAntennaeBalls.position.length + " and numObjects is " + leftAntennaeBalls.N_Objects);
+		//System.out.println(" ---> Antenna position length is " + leftAntennaeBalls.position.length + " and numObjects is " + leftAntennaeBalls.N_Objects);
 		Vector4f frontPosFixed = new Vector4f(frontPos.get(index-1).x,frontPos.get(index-1).y,frontPos.get(index-1).z,1f);
 		foodBalls.addNewObject(frontPosFixed, foodColour, zero_scale);
 		//System.out.println("Time since target length is " + timeSinceTarget.size());
@@ -172,25 +173,25 @@ public class Ant extends InstancedObject {
 	}
 	
 	public void addAnt(Vector4f pos) {
-		System.out.println("Adding new ant at pos: " + pos.x + ", " + pos.y);
+		//System.out.println("Adding new ant at pos: " + pos.x + ", " + pos.y);
 		Vector3f p = new Vector3f(pos.x, pos.y, pos.z);
 		addObject(p, genColour(), genScale());
 		N_Objects++;
 		//assignBuffers(); //Assigns all buffers used by GLSL
 		
-		System.out.println("Generating a new ant at index: " + index);
+		//System.out.println("Generating a new ant at index: " + index);
 	}
 	
 	@Override
 	protected Vector3f genScale() {
-		System.out.println("Initializing ant scale");
+		//System.out.println("Initializing ant scale");
 		float s = min_scale;
 		return new Vector3f(s, s, s);
 	}
 	
 	@Override
 	protected Vector3f genColour() {
-		System.out.println("Initializing ant colour");
+		//System.out.println("Initializing ant colour");
 		return new Vector3f(debugColour.x, debugColour.y, debugColour.z);
 		//float r = Scene.randBetween(0f, 1f);
 		//float g = Scene.randBetween(0f, 1f);
@@ -203,6 +204,14 @@ public class Ant extends InstancedObject {
 		for (int i = 0; i < N_Objects; i++) {
 			
 			Square current = getCurrentSquare(i);
+			
+			Vector3f newPos = new Vector3f(heading[i].x * MOVE_SPEED * deltaTime * reverseMult, heading[i].y * MOVE_SPEED * deltaTime, 1f * reverseMult);
+			newPos.x += position[i].x;
+			newPos.y += position[i].y;
+			
+			Square next = grid.getSquareAtWorldPos(newPos);
+			calcMovement(i, current, next);
+			
 			//System.out.println("Time since target length is " + timeSinceTarget.size());
 			//System.out.println("Ant number " + i + " is at square " + current.i + ": " + current.x + ", " + current.y + " and position " + position[i].x + ", " + position[i].y);
 			float time = timeSinceTarget.get(i);
@@ -217,17 +226,7 @@ public class Ant extends InstancedObject {
 			rotation[i].x += (turnMult + (RANDOM_WIGGLE*Scene.randBetween(-1,1))) * TURN_SPEED * deltaTime;
 
 			heading[i] = calcHeading(rotation[i].x);
-			if (i == 0) {
-				//System.out.println("Heading is: " + heading[i].x + "," + heading[i].y + " and rotation is: " + rotation[i].x);
-				//System.out.printf("Ant 0 is at position %.2f, %.2f and left antenna is at %.2f, %.2f \n", position[i].x, position[i].y, leftAntennaeBalls.position[i].x, leftAntennaeBalls.position[i].y);
-			}
-			float reverseMult = 1f;
 			
-			Vector3f newPos = new Vector3f(heading[i].x * MOVE_SPEED * deltaTime * reverseMult, heading[i].y * MOVE_SPEED * deltaTime, 1f * reverseMult);
-			newPos.x += position[i].x;
-			newPos.y += position[i].y;
-			
-			Square next = grid.getSquareAtWorldPos(newPos);
 			if (current.isBlocker) {
 				fixPosition(i, current, next);
 			}
@@ -239,8 +238,22 @@ public class Ant extends InstancedObject {
 			leftAntennaeBalls.position[i] = leftPos.get(i);
 			rightAntennaeBalls.position[i] = rightPos.get(i);
 			foodBalls.position[i] = frontPos.get(i);
+			
+			Thread t1 = new Antlogic("Pasta");
+	        Thread t2 = new Antlogic("Salad");
+	        Thread t3 = new Antlogic("Dessert");
+	        Thread t4 = new Antlogic("Rice");
+
+	        t1.start();
+	        t2.start();
+	        t3.start();
+	        t4.start();
 		}
 		assignBuffers();
+	}
+	
+	private void calcMovement(int antIndex, Square currentSquare, Square nextSquare) {
+		
 	}
 	
 	private void fixPosition(int antIndex, Square current, Square next) {
@@ -415,7 +428,7 @@ public class Ant extends InstancedObject {
 	
 	@Override
 	protected void makeMesh() {	
-		System.out.println("Generating ant mesh");
+		//System.out.println("Generating ant mesh");
 		vertices = new Vector4f[] {
 			//Main body
 			new Vector4f( 0, 0, 0, 1), //P0 body vertices start
@@ -515,4 +528,5 @@ public class Ant extends InstancedObject {
 		glVertexAttribDivisor(shader.getAttribute("a_colour"), 0);
 		glVertexAttribDivisor(shader.getAttribute("a_rotation"), 0);
 	}
+
 }

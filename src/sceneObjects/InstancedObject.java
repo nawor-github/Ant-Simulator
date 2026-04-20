@@ -103,7 +103,7 @@ public class InstancedObject extends SceneObject {
 	
 	public void addDefaultObject() {
 		addObject(genPosition(), genColour(), genScale());
-		System.out.println("Generating a new default object at index: " + index);
+		//System.out.println("Generating a new default object at index: " + index);
 	}
 	
 	public void addObject(Vector3f new_pos, Vector3f new_colour, Vector3f new_scale) {		
@@ -114,21 +114,21 @@ public class InstancedObject extends SceneObject {
 	}
 	
 	public void addNewObject(Vector4f pos) {
-		System.out.println("Adding a BRAND NEW new instanced at pos: " + pos.x + ", " + pos.y);
+		//System.out.println("Adding a BRAND NEW new instanced at pos: " + pos.x + ", " + pos.y);
 		Vector3f p = new Vector3f(pos.x, pos.y, pos.z);
 		addObject(p, genColour(), genScale());
 		N_Objects++;
 	}
 	
 	public void addNewObject(Vector4f pos, Vector3f colour, Vector3f scale) {
-		System.out.println("Adding a BRAND NEW new instanced at pos: " + pos.x + ", " + pos.y);
+		//System.out.println("Adding a BRAND NEW new instanced at pos: " + pos.x + ", " + pos.y);
 		Vector3f p = new Vector3f(pos.x, pos.y, pos.z);
 		addObject(p, colour, scale);
 		N_Objects++;
 	}
 	
 	protected Vector3f genPosition() {
-		System.out.println("Initializing ant position");
+		//System.out.println("Initializing ant position");
 
 		float min_X = -scatter_X/2f;
 		float max_X = scatter_X/2f;
@@ -140,19 +140,19 @@ public class InstancedObject extends SceneObject {
 	}
 	
 	protected Vector3f genScale() {
-		System.out.println("Initializing default scale");
+		//System.out.println("Initializing default scale");
 		float s = Scene.randBetween(min_scale, max_scale);
 		return new Vector3f(s,0,0);
 	}
 	
 	protected Vector3f genColour() {
-		System.out.println("Initializing default colour");
+		//System.out.println("Initializing default colour");
 		return new Vector3f(defaultColour.x, defaultColour.y, defaultColour.z);
 		//return defaultColour;
 	}
 	
 	protected void makeMesh() {	 //Cactus is default mesh
-		System.out.println("Generating default (cactus) mesh");
+		//System.out.println("Generating default (cactus) mesh");
 		vertices = new Vector4f[] {
 			//Main body
 			new Vector4f( 0, 0, 0, 1), //P0 body vertices start

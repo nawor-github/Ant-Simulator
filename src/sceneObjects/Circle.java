@@ -42,7 +42,7 @@ public class Circle extends InstancedObject {
 	
 	@Override
 	public void addObject(Vector3f new_pos, Vector3f new_colour, Vector3f new_scale) {
-		System.out.println("Adding a new CIRCLE");
+		//System.out.println("Adding a new CIRCLE");
 		
 		super.addObject(new_pos, new_colour, new_scale);
 	}
@@ -50,7 +50,7 @@ public class Circle extends InstancedObject {
 	
 	@Override
 	protected void makeMesh() {	
-		System.out.println("Generating squarer mesh");
+		//System.out.println("Generating squarer mesh");
 		vertices = new Vector4f[] {
 			//Main body
 			new Vector4f( 0.5f, 0.5f, 0, 1), //P0 square for now
