@@ -80,8 +80,11 @@ public class Ant extends InstancedObject {
 	
 		grid = g;
 		
-		System.out.println("John the ant is ant number 0. His position is: " + position[0].x + ", " +  position[0].y);
-		System.out.println("Scale: " + scale[0].x + ". Colour: " + colour[0].x + ", " +   colour[0].y + ", " +   colour[0].z);
+		if (N_Objects > 0) {
+			System.out.println("John the ant is ant number 0. His position is: " + position[0].x + ", " +  position[0].y);
+			System.out.println("Scale: " + scale[0].x + ". Colour: " + colour[0].x + ", " +   colour[0].y + ", " +   colour[0].z);
+		}
+		
 	}
 	
 	@Override
@@ -218,10 +221,15 @@ public class Ant extends InstancedObject {
 				//System.out.println("Heading is: " + heading[i].x + "," + heading[i].y + " and rotation is: " + rotation[i].x);
 				//System.out.printf("Ant 0 is at position %.2f, %.2f and left antenna is at %.2f, %.2f \n", position[i].x, position[i].y, leftAntennaeBalls.position[i].x, leftAntennaeBalls.position[i].y);
 			}
-			position[i].x += heading[i].x * MOVE_SPEED * deltaTime;
-			position[i].y += heading[i].y * MOVE_SPEED * deltaTime;
+			Vector3f newPos = new Vector3f(heading[i].x * MOVE_SPEED * deltaTime, heading[i].y * MOVE_SPEED * deltaTime, 1f);
 			
-
+			newPos.x += position[i].x;
+			newPos.y += position[i].y;
+			Square next = grid.getSquareAtWorldPos(newPos);
+			if (!next.isBlocker) {
+				position[i].x = newPos.x;
+				position[i].y = newPos.y;
+			}
 			leftAntennaeBalls.position[i] = leftPos.get(i);
 			rightAntennaeBalls.position[i] = rightPos.get(i);
 			foodBalls.position[i] = frontPos.get(i);
