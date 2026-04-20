@@ -205,12 +205,7 @@ public class Ant extends InstancedObject {
 			
 			Square current = getCurrentSquare(i);
 			
-			Vector3f newPos = new Vector3f(heading[i].x * MOVE_SPEED * deltaTime * reverseMult, heading[i].y * MOVE_SPEED * deltaTime, 1f * reverseMult);
-			newPos.x += position[i].x;
-			newPos.y += position[i].y;
-			
-			Square next = grid.getSquareAtWorldPos(newPos);
-			calcMovement(i, current, next);
+			calcMovement(i, deltaTime);
 			
 			//System.out.println("Time since target length is " + timeSinceTarget.size());
 			//System.out.println("Ant number " + i + " is at square " + current.i + ": " + current.x + ", " + current.y + " and position " + position[i].x + ", " + position[i].y);
@@ -222,22 +217,6 @@ public class Ant extends InstancedObject {
 			pickUpFood(i, current);
 			dropOffFood(i, current);
 			depositTrail(i, current);
-			float turnMult = turnDirection(i);
-			rotation[i].x += (turnMult + (RANDOM_WIGGLE*Scene.randBetween(-1,1))) * TURN_SPEED * deltaTime;
-
-			heading[i] = calcHeading(rotation[i].x);
-			
-			if (current.isBlocker) {
-				fixPosition(i, current, next);
-			}
-			if (!next.isBlocker) {
-				position[i].x = newPos.x;
-				position[i].y = newPos.y;
-			}
-			
-			leftAntennaeBalls.position[i] = leftPos.get(i);
-			rightAntennaeBalls.position[i] = rightPos.get(i);
-			foodBalls.position[i] = frontPos.get(i);
 			
 			Thread t1 = new Antlogic("Pasta");
 	        Thread t2 = new Antlogic("Salad");
@@ -252,8 +231,28 @@ public class Ant extends InstancedObject {
 		assignBuffers();
 	}
 	
-	private void calcMovement(int antIndex, Square currentSquare, Square nextSquare) {
+	private void calcMovement(int i, float deltaTime) {
+		Square current = getCurrentSquare(i);
 		
+		Vector3f newPos = new Vector3f(heading[i].x * MOVE_SPEED * deltaTime, heading[i].y * MOVE_SPEED * deltaTime, 1f);
+		newPos.x += position[i].x;
+		newPos.y += position[i].y;
+		
+		Square next = grid.getSquareAtWorldPos(newPos);
+		
+		float turnMult = turnDirection(i);
+		rotation[i].x += (turnMult + (RANDOM_WIGGLE*Scene.randBetween(-1,1))) * TURN_SPEED * deltaTime;
+
+		heading[i] = calcHeading(rotation[i].x);
+		
+		if (!next.isBlocker) {
+			position[i].x = newPos.x;
+			position[i].y = newPos.y;
+		}
+		
+		leftAntennaeBalls.position[i] = leftPos.get(i);
+		rightAntennaeBalls.position[i] = rightPos.get(i);
+		foodBalls.position[i] = frontPos.get(i);
 	}
 	
 	private void fixPosition(int antIndex, Square current, Square next) {
