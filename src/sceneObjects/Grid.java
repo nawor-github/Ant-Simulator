@@ -43,6 +43,7 @@ public class Grid extends SceneObject {
 	private int colourBuffer;
 	
 	private Square[][] squares;
+	private Square[] indexedSquares;
 	
 	private int count_x, count_y, numSquares;
 	private float scale;
@@ -77,6 +78,7 @@ public class Grid extends SceneObject {
 		position = new Vector3f[numSquares];
 		colour = new Vector3f[numSquares];
 		squares = new Square[count_x][count_y];
+		indexedSquares = new Square[count_x * count_y];
 		
 		float widthRadius = count_x * spacing / 2;
 		float heighRadius = count_y * spacing / 2;
@@ -89,7 +91,11 @@ public class Grid extends SceneObject {
 				float yCoord = (y*spacing) - squareRadius - heighRadius;
 				position[index] = new Vector3f(xCoord, yCoord, 0f);
 				colour[index] = new Vector3f(0.8f, 0.8f, 0.5f);
-				squares[x][y] = new Square(x,y,index);
+				Vector3f centre = calcCentre(index);
+				Vector3f BL = calcBL(index);
+				Vector3f TR = calcTR(index);
+				squares[x][y] = new Square(x,y,index, centre, BL, TR);
+				indexedSquares[index] = squares[x][y];
 			}
 		}
 		positionBuffer = GLBuffers.createBuffer(position);
@@ -107,12 +113,12 @@ public class Grid extends SceneObject {
 				}
 			}
 		}
-		return new Square(-1,-1,-1); //Returns a square with an impossible index and coords
+		return new Square(-1); //Returns a square with an impossible index and coords
 	}
 	
 	public Square getSquare(int x, int y) {
 		if (x < 0 || y < 0 || x > count_x || y > count_y) {
-			return new Square(-1,-1,-1);
+			return new Square(-1);
 		}
 		return squares[x][y];
 	}
@@ -194,12 +200,42 @@ public class Grid extends SceneObject {
 		colourBuffer = GLBuffers.createBuffer(colour); // See if this can be removed??
 	}
 	
+	private Vector3f calcCentre(int index) {
+		Vector3f BL = calcBL(index);
+		float x = BL.x + getScale()/2f;
+		float y = BL.y + getScale()/2f;
+		return new Vector3f(x, y, 1f);
+	}
+	
+	public Vector3f getCentre(int index){
+		return indexedSquares[index].centre;
+	}
+	
+	private Vector3f calcBL(int index) {
+		float x = position[index].x;
+		float y = position[index].y;
+		return new Vector3f(x, y, 1f);
+	}
+	
+	public Vector3f getBottomLeft(int index){
+		return indexedSquares[index].BLCorner;
+	}
+
+	private Vector3f calcTR(int index) {
+		Vector3f BL = calcBL(index);
+		float x = BL.x + getScale();
+		float y = BL.y + getScale();
+		return new Vector3f(x, y, 1f);
+	}
+	
+	public Vector3f getTopRight(int index){
+		return indexedSquares[index].TRCorner;
+	}
+	
 	private boolean liesWithin(Vector4f pos, int index) {
-		float x1 = position[index].x;
-		float y1 = position[index].y;
-		float x2 = x1 + getScale();
-		float y2 = y1 + getScale();
-		if (pos.x >= x1 && pos.x <= x2 && pos.y >= y1 && pos.y <= y2) {
+		Vector3f BL = getBottomLeft(index);
+		Vector3f TR = getTopRight(index);
+		if (pos.x >= BL.x && pos.x <= TR.x && pos.y >= BL.y && pos.y <= TR.y) {
 			return true;
 		}
 		return false;
@@ -223,7 +259,7 @@ public class Grid extends SceneObject {
 		int x = 0;
 		int y = 0;
 		if (worldPos.x < squares[0][0].x && worldPos.y < squares[0][0].y) { //If he NOWHERE
-			return new Square(-1,-1,-1); //Debug square[
+			return new Square(-1); //Debug square[
 		}
 		while (worldPos.x > squares[x][y].x && x <= count_x) {
 			x++;
@@ -243,7 +279,7 @@ public class Grid extends SceneObject {
 				}
 			}
 		}
-		return new Square(-1,-1,-1);
+		return new Square(-1);
 	}
 	
 	public Square getSquareAtWorldPos(Vector3f worldPos) { //This can be optimized

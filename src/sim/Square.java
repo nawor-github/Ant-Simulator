@@ -10,6 +10,7 @@ public class Square {
 	float food, foodScent, homeScent;
 	public boolean isBlocker, isHome;
 	public int x, y, i;
+	public Vector3f centre, BLCorner, TRCorner;
 	private Vector3f colour;
 	
 	private Vector3f clearColour = new Vector3f(0.1f, 0.15f, 0.2f); //Light coloured clear colour
@@ -28,10 +29,23 @@ public class Square {
 	
 	private final static float MINIMUM_SCENT_AMOUNT = 0.00001f; //Sets a floor on this sucka
 	
-	public Square(int X, int Y, int I) {
+	public Square(int X, int Y, int I, Vector3f Centre, Vector3f BL, Vector3f TR) {
+		centre = Centre;
+		BLCorner = BL;
+		TRCorner = TR;
 		x = X;
 		y = Y;
 		i = I;
+		clear();
+	}
+	
+	public Square(int X) { //For making invalid squares
+		centre = new Vector3f(0);
+		BLCorner = new Vector3f(0);
+		TRCorner = new Vector3f(0);
+		x = -1;
+		y = -1;
+		i = -1;
 		clear();
 	}
 

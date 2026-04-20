@@ -221,20 +221,35 @@ public class Ant extends InstancedObject {
 				//System.out.println("Heading is: " + heading[i].x + "," + heading[i].y + " and rotation is: " + rotation[i].x);
 				//System.out.printf("Ant 0 is at position %.2f, %.2f and left antenna is at %.2f, %.2f \n", position[i].x, position[i].y, leftAntennaeBalls.position[i].x, leftAntennaeBalls.position[i].y);
 			}
-			Vector3f newPos = new Vector3f(heading[i].x * MOVE_SPEED * deltaTime, heading[i].y * MOVE_SPEED * deltaTime, 1f);
+			float reverseMult = 1f;
 			
+			Vector3f newPos = new Vector3f(heading[i].x * MOVE_SPEED * deltaTime * reverseMult, heading[i].y * MOVE_SPEED * deltaTime, 1f * reverseMult);
 			newPos.x += position[i].x;
 			newPos.y += position[i].y;
+			
 			Square next = grid.getSquareAtWorldPos(newPos);
+			if (current.isBlocker) {
+				fixPosition(i, current, next);
+			}
 			if (!next.isBlocker) {
 				position[i].x = newPos.x;
 				position[i].y = newPos.y;
 			}
+			
 			leftAntennaeBalls.position[i] = leftPos.get(i);
 			rightAntennaeBalls.position[i] = rightPos.get(i);
 			foodBalls.position[i] = frontPos.get(i);
 		}
 		assignBuffers();
+	}
+	
+	private void fixPosition(int antIndex, Square current, Square next) {
+		if (!current.isBlocker) {
+			return;
+		}
+		if (!next.isBlocker) {
+			//position[antIndex] = next.getCentre();
+		}
 	}
 	
 	private void pickUpFood(int antIndex, Square s) {
