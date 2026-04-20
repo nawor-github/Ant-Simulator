@@ -48,10 +48,10 @@ public class Ant extends InstancedObject {
 	
 	private static final float ROTATION_ADJUSTMENT_FACTOR = 1.5708f; //magic number to make ants walk straight
 	
-	private Vector3f[] rotation, heading, Lheading, Rheading;
+	public Vector3f[] rotation, heading, Lheading, Rheading;
 	private int rotationBuffer;
 	
-	private Grid grid;
+	public Grid grid;
 	
 	public final float MOVE_SPEED = 4f;
 	public final float TURN_SPEED = 5f;
@@ -67,14 +67,11 @@ public class Ant extends InstancedObject {
 	
 	private static float ANTENNAE_ROTATION = TAU / 8f;
 	
-	private Circle leftAntennaeBalls;
-	private Circle rightAntennaeBalls;
-	
-	private Circle foodBalls;
+	public Circle leftAntennaeBalls, rightAntennaeBalls, foodBalls;
 	
 	ArrayList<Integer> foraging; //1 for following food, 0 for following home
 	ArrayList<Float> foodAmount, timeSinceTarget; //Tracks food amount carried and time since was last at target
-	ArrayList<Vector3f> frontPos, leftPos, rightPos; //Positions of projected positions and antennae positions
+	public ArrayList<Vector3f> leftPos, rightPos, frontPos;
 		
 	public Ant(int nAnts, float max_Scale, float min_Scale, float s_X, float s_Y, Grid g) {
 		super(nAnts, max_Scale, min_Scale, s_X, s_Y);
@@ -201,11 +198,12 @@ public class Ant extends InstancedObject {
 	}
 	
 	public void update(float deltaTime, InputManager input) {
+		Thread[] threads = new Thread[N_Objects];
 		for (int i = 0; i < N_Objects; i++) {
 			
 			Square current = getCurrentSquare(i);
 			
-			calcMovement(i, deltaTime);
+			//calcMovement(i, deltaTime);
 			
 			//System.out.println("Time since target length is " + timeSinceTarget.size());
 			//System.out.println("Ant number " + i + " is at square " + current.i + ": " + current.x + ", " + current.y + " and position " + position[i].x + ", " + position[i].y);
@@ -218,21 +216,35 @@ public class Ant extends InstancedObject {
 			dropOffFood(i, current);
 			depositTrail(i, current);
 			
-			Thread t1 = new Antlogic("Pasta");
-	        Thread t2 = new Antlogic("Salad");
-	        Thread t3 = new Antlogic("Dessert");
-	        Thread t4 = new Antlogic("Rice");
+			threads[i] = new Antlogic("Ant:" + i, this, i, deltaTime);
+			
+			threads[i].start();
+			
+			//Thread t1 = new Antlogic("Pasta");
+	        //Thread t2 = new Antlogic("Salad");
+	        //Thread t3 = new Antlogic("Dessert");
+	        //Thread t4 = new Antlogic("Rice");
 
-	        t1.start();
-	        t2.start();
-	        t3.start();
-	        t4.start();
+	        //t1.start();
+	        //t2.start();
+	        //t3.start();
+	        //t4.start();
 		}
+		while (threadCount < N_Objects) {
+			System.out.println(threadCount + " Threads are finished.");
+		}
+		threadCount = 0;
 		assignBuffers();
 	}
 	
+	int threadCount = 0;
+	
+	public void incrementCounter() {
+		threadCount++;
+	}
+	
 	private void calcMovement(int i, float deltaTime) {
-		Square current = getCurrentSquare(i);
+		//Square current = getCurrentSquare(i);
 		
 		Vector3f newPos = new Vector3f(heading[i].x * MOVE_SPEED * deltaTime, heading[i].y * MOVE_SPEED * deltaTime, 1f);
 		newPos.x += position[i].x;
@@ -332,7 +344,7 @@ public class Ant extends InstancedObject {
 		s.addHomeScent(pheremoneAmount);
 	}
 	
-	private Vector3f calcHeading(float r) { //The rotation as a number expressed in radians
+	public Vector3f calcHeading(float r) { //The rotation as a number expressed in radians
 		r += ROTATION_ADJUSTMENT_FACTOR;
 		float x = (float) Math.cos(r);
 		float y = (float) Math.sin(r);
@@ -373,7 +385,7 @@ public class Ant extends InstancedObject {
 		return frontPos.get(antIndex);
 	}
 
-	private float turnDirection(int antIndex) {
+	public float turnDirection(int antIndex) {
 		Vector3f projectedPos = calcFrontPos(antIndex);
 		Vector3f L_AnntennaePos = getAntennaeWorldPos(antIndex, true);
 		Vector3f R_AnntennaePos = getAntennaeWorldPos(antIndex, false);

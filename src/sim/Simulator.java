@@ -88,7 +88,7 @@ import sceneObjects.Camera;
 			long time = System.currentTimeMillis();
 			float deltaTime = (time - oldTime) / 1000f;
 			float FPS = 1f / (deltaTime);
-			//System.out.printf("The current FPS is %4.1f \n", FPS);
+			System.out.printf("The current FPS is %4.1f \n", FPS);
 			oldTime = time;
 			
 			// update the scene

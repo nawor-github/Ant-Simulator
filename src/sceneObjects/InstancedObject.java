@@ -31,7 +31,7 @@ public class InstancedObject extends SceneObject {
 	protected int vertexBuffer, indexBuffer;
 	protected int[] indices;
 	
-	protected Vector3f[] position, scale, colour;
+	public Vector3f[] position, scale, colour;
 	protected int positionBuffer, scaleBuffer, colourBuffer;
 	
 	protected float max_scale, min_scale, scatter_X, scatter_Y;;
