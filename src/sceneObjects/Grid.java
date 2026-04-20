@@ -104,14 +104,8 @@ public class Grid extends SceneObject {
 
 	
 	public Square getSquare(int index) {
-		if (index != -1) {
-			for (int x = 0; x < count_x; x++) {
-				for (int y = 0; y < count_y; y++) {
-					if (squares[x][y].i == index) {
-						return squares[x][y];
-					}
-				}
-			}
+		if (index > 0 && index < indexedSquares.length) {
+			return indexedSquares[index];
 		}
 		return new Square(-1); //Returns a square with an impossible index and coords
 	}
