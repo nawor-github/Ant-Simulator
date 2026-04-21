@@ -10,7 +10,6 @@ import comp3170.Shader;
 import comp3170.ShaderLibrary;
 import static comp3170.Math.TAU;
 
-import sim.Antlogic;
 import sim.Scene;
 import sim.Square;
 
@@ -198,12 +197,11 @@ public class Ant extends InstancedObject {
 	}
 	
 	public void update(float deltaTime, InputManager input) {
-		Thread[] threads = new Thread[N_Objects];
 		for (int i = 0; i < N_Objects; i++) {
 			
 			Square current = getCurrentSquare(i);
 			
-			//calcMovement(i, deltaTime);
+			calcMovement(i, deltaTime);
 			
 			//System.out.println("Time since target length is " + timeSinceTarget.size());
 			//System.out.println("Ant number " + i + " is at square " + current.i + ": " + current.x + ", " + current.y + " and position " + position[i].x + ", " + position[i].y);
@@ -216,10 +214,6 @@ public class Ant extends InstancedObject {
 			dropOffFood(i, current);
 			depositTrail(i, current);
 			
-			threads[i] = new Antlogic("Ant:" + i, this, i, deltaTime);
-			
-			threads[i].start();
-			
 			//Thread t1 = new Antlogic("Pasta");
 	        //Thread t2 = new Antlogic("Salad");
 	        //Thread t3 = new Antlogic("Dessert");
@@ -230,17 +224,7 @@ public class Ant extends InstancedObject {
 	        //t3.start();
 	        //t4.start();
 		}
-		while (threadCount < N_Objects) {
-			System.out.println(threadCount + " Threads are finished.");
-		}
-		threadCount = 0;
 		assignBuffers();
-	}
-	
-	int threadCount = 0;
-	
-	public void incrementCounter() {
-		threadCount++;
 	}
 	
 	private void calcMovement(int i, float deltaTime) {
