@@ -312,9 +312,11 @@ public class Ant extends InstancedObject {
 	}
 	
 	private void setColour(int antIndex, Vector3f c) {
+		float r = Scene.randBetween(0, 0.1f);
+		Vector3f randomisedColour = new Vector3f(c.x - r, c.y - r, c.z - r);
 		colour[antIndex] = c;
-		leftAntennaeBalls.colour[antIndex] = c;
-		rightAntennaeBalls.colour[antIndex] = c;
+		leftAntennaeBalls.colour[antIndex] = randomisedColour;
+		rightAntennaeBalls.colour[antIndex] = randomisedColour;
 
 	}
 	
