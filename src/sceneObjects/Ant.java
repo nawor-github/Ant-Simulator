@@ -66,6 +66,7 @@ public class Ant extends InstancedObject {
 	public static float RANDOM_WIGGLE = 1f;
 	
 	private static float ANTENNAE_ROTATION = TAU / 8f;
+	private static float ANTENNAE_SCALE = 0.2f;
 	
 	public Circle leftAntennaeBalls, rightAntennaeBalls, foodBalls;
 	
@@ -154,7 +155,7 @@ public class Ant extends InstancedObject {
 		Vector3f RAntennaPos = getAntennaeWorldPos(index-1, false);
 		Vector4f fixedRAntennaPos = new Vector4f(RAntennaPos.x, RAntennaPos.y, RAntennaPos.z, 1);
 		
-		Vector3f antennaScale = new Vector3f(0.3f,0.3f, 0.3f);
+		Vector3f antennaScale = new Vector3f(ANTENNAE_SCALE);
 		leftAntennaeBalls.addNewObject(fixedLAntennaPos, new_colour, antennaScale);
 		rightAntennaeBalls.addNewObject(fixedRAntennaPos, new_colour, antennaScale);
 		//System.out.println(" ---> Antenna colour length is " + leftAntennaeBalls.colour.length + " and numObjects is " + leftAntennaeBalls.N_Objects);
