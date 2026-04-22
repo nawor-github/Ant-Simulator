@@ -193,7 +193,7 @@ public class Square {
 		}
 		if (input.wasKeyPressed(KeyEvent.VK_OPEN_BRACKET)){
 			System.out.println("OPEN BRACKET PRESSED");
-			//setRenderMode(1);
+			setRenderMode(1);
 		}
 		//System.out.println("Rendermode is: " + renderMode);
 		switch (renderMode) {

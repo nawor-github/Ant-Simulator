@@ -107,18 +107,7 @@ public class Scene extends SceneObject{
 		cameraMatrix.invert();
 		mousePos = new Vector4f(x, y, 0f, 1f);
 		mousePos.mul(cameraMatrix);
-		
-		//Matrix4f mvpMatrix = new Matrix4f();
-		//camera.getModelToWorldMatrix(mvpMatrix);
-		//mousePos.mul(mvpMatrix);
-		
-		//Matrix4f finalMatrix = new Matrix4f();
-		//finalMatrix.set(cameraMatrix.mul(mvpMatrix));
-		//mousePos.mul(finalMatrix);
-
-		System.out.printf("Update function detecting mouse at: %.2f, %.2f\n", mousePos.x, mousePos.y);
-
-		//mousePos.mul(camera.getMatrix());
+		//System.out.printf("Update function detecting mouse at: %.2f, %.2f\n", mousePos.x, mousePos.y);
 		return mousePos;
 	}
 
