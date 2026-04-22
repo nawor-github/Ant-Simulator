@@ -206,12 +206,7 @@ public class Square {
 				break;
 				//calculateScentlessColour();
 		}
-		
 	}
-	
-	
-	
-	
 	
 	private void decay(float deltaTime) {
 		float decayProportion = (float) Math.pow((1 - DECAY_SPEED), deltaTime);

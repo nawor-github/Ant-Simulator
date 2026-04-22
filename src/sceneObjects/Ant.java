@@ -159,7 +159,9 @@ public class Ant extends InstancedObject {
 		leftPos.add(new Vector3f(0,0,0));
 		rightPos.add(new Vector3f(0,0,0));
 		
-		calculateSquares(index-1);
+		frontSquare.add(new Square(-1));
+		leftSquare.add(new Square(-1));
+		rightSquare.add(new Square(-1));
 		
 		//Time to generate antennae balls
 		Vector3f LAntennaPos = getAntennaeWorldPos(index-1, true);
@@ -192,27 +194,13 @@ public class Ant extends InstancedObject {
 		//System.out.println("Generating a new ant at index: " + index);
 	}
 	
-	@Override
-	protected Vector3f genScale() {
-		//System.out.println("Initializing ant scale");
-		float s = min_scale;
-		return new Vector3f(s, s, s);
-	}
-	
-	@Override
-	protected Vector3f genColour() {
-		//System.out.println("Initializing ant colour");
-		return new Vector3f(debugColour.x, debugColour.y, debugColour.z);
-		//float r = Scene.randBetween(0f, 1f);
-		//float g = Scene.randBetween(0f, 1f);
-		//float b = Scene.randBetween(0f, 1f);
-		//return new Vector3f(r,g,b);
-		//return antColour;
-	}
+
 	
 	public void update(float deltaTime, InputManager input) {
 		for (int i = 0; i < N_Objects; i++) {
 			
+			calculatePositions(i);
+			calculateSquares(i);
 			Square current = getCurrentSquare(i);
 			
 			calcMovement(i, deltaTime);
@@ -227,16 +215,6 @@ public class Ant extends InstancedObject {
 			pickUpFood(i, current);
 			dropOffFood(i, current);
 			depositTrail(i, current);
-			
-			//Thread t1 = new Antlogic("Pasta");
-	        //Thread t2 = new Antlogic("Salad");
-	        //Thread t3 = new Antlogic("Dessert");
-	        //Thread t4 = new Antlogic("Rice");
-
-	        //t1.start();
-	        //t2.start();
-	        //t3.start();
-	        //t4.start();
 		}
 		assignBuffers();
 		
@@ -251,8 +229,6 @@ public class Ant extends InstancedObject {
 	}
 	
 	private void calcMovement(int i, float deltaTime) {
-		//Square current = getCurrentSquare(i);
-		
 		Vector3f newPos = new Vector3f(heading[i].x * MOVE_SPEED * deltaTime, heading[i].y * MOVE_SPEED * deltaTime, 1f);
 		newPos.x += position[i].x;
 		newPos.y += position[i].y;
@@ -260,7 +236,7 @@ public class Ant extends InstancedObject {
 		Square next = grid.getSquareAtWorldPos(newPos);
 		
 		float turnMult = turnDirection(i);
-		rotation[i].x += (turnMult + (RANDOM_WIGGLE*Scene.randBetween(-1,1))) * TURN_SPEED * deltaTime;
+		rotation[i].x += (turnMult + (RANDOM_WIGGLE*Scene.randBetween(-1f,1f))) * TURN_SPEED * deltaTime;
 
 		heading[i] = calcHeading(rotation[i].x);
 		
@@ -278,10 +254,10 @@ public class Ant extends InstancedObject {
 	
 	public Vector3f calcHeading(float r) { //The rotation as a number expressed in radians
 		r += ROTATION_ADJUSTMENT_FACTOR;
-		float x = (float) Math.cos(r);
+		float x = (float) Math.cos(r); //Let's calc this boy with pythagoras
 		float y = (float) Math.sin(r);
 		Vector3f result = new Vector3f(x, y, 0);
-		return result.normalize();
+		return result.normalize(); //Makes sure the heading vector is length 1
 	}
 	
 	private void calculatePositions(int antIndex) {
@@ -325,15 +301,11 @@ public class Ant extends InstancedObject {
 		Vector3f projectedPos = heading[antIndex];
 		projectedPos.x += antPos.x;
 		projectedPos.y += antPos.y;
-		frontPos.set(antIndex, projectedPos);
-		return frontPos.get(antIndex);
+		return projectedPos;
 	}
 
 	public float turnDirection(int antIndex) {
-		calculatePositions(antIndex);
-		calculateSquares(antIndex);
-
-		if (frontSquare.get(antIndex).i == -1 || frontSquare.get(antIndex).isBlocker) { //Return a random turn direction if directly ahead is off-nap or a blocker
+		if (!isValid(frontSquare.get(antIndex))) { //Return a random turn direction if directly ahead is off-nap or a blocker
 			if (antIndex % 2 == 0) { //Pick a side this ant will always turn towards
 				return 1f;
 			} else {
@@ -343,7 +315,7 @@ public class Ant extends InstancedObject {
 		
 		if (!isValid(leftSquare.get(antIndex)) && !isValid(rightSquare.get(antIndex))) { //In cases where both antennae are detecting blockers
 			setForagingMode(antIndex, 2); //Set this ant to be FREAKING OUT!
-			return -2f;
+			return -1f;
 		}
 
 		
@@ -380,13 +352,10 @@ public class Ant extends InstancedObject {
 	}
 	
 	private Square getCurrentSquare(int antIndex) {
-		Vector3f antPos = position[antIndex];
-		return grid.getSquareAtWorldPos(antPos);
-		//int currentIndex = grid.getCellAtWorldPos(new Vector4f(antPos.x, antPos.y, antPos.z, 1));
-		//return grid.getSquare(currentIndex);
+		return frontSquare.get(antIndex);
 	}
 	
-private void pickUpFood(int antIndex, Square s) {
+	private void pickUpFood(int antIndex, Square s) {
 		
 		float currentFood = foodAmount.get(antIndex);
 		if (currentFood == FOOD_CAPACITY) {
@@ -483,6 +452,24 @@ private void pickUpFood(int antIndex, Square s) {
 			return;
 		}
 		s.addHomeScent(pheremoneAmount);
+	}
+	
+	@Override
+	protected Vector3f genScale() {
+		//System.out.println("Initializing ant scale");
+		float s = min_scale;
+		return new Vector3f(s, s, s);
+	}
+	
+	@Override
+	protected Vector3f genColour() {
+		//System.out.println("Initializing ant colour");
+		return new Vector3f(debugColour.x, debugColour.y, debugColour.z);
+		//float r = Scene.randBetween(0f, 1f);
+		//float g = Scene.randBetween(0f, 1f);
+		//float b = Scene.randBetween(0f, 1f);
+		//return new Vector3f(r,g,b);
+		//return antColour;
 	}
 	
 	@Override
