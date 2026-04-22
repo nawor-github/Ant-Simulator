@@ -74,6 +74,7 @@ public class Ant extends InstancedObject {
 	//Fear is used to track how long an ant should freak out for
 	ArrayList<Float> foodAmount, timeSinceTarget, fear; //Tracks food amount carried and time since was last at target
 	public ArrayList<Vector3f> leftPos, rightPos, frontPos;
+	public ArrayList<Square> leftSquare, rightSquare, frontSquare;
 		
 	public Ant(int nAnts, float max_Scale, float min_Scale, float s_X, float s_Y, Grid g) {
 		super(nAnts, max_Scale, min_Scale, s_X, s_Y);
@@ -105,9 +106,14 @@ public class Ant extends InstancedObject {
 		foodAmount = new ArrayList<Float>();
 		fear = new ArrayList<Float>();
 		timeSinceTarget = new ArrayList<Float>();
+		
 		frontPos = new ArrayList<Vector3f>();
 		leftPos = new ArrayList<Vector3f>();
 		rightPos = new ArrayList<Vector3f>();
+		
+		frontSquare = new ArrayList<Square>();
+		leftSquare = new ArrayList<Square>();
+		rightSquare = new ArrayList<Square>();
 		
 		leftAntennaeBalls = new Circle();
 		leftAntennaeBalls.setParent(this.getParent());
@@ -128,6 +134,7 @@ public class Ant extends InstancedObject {
 		foodBalls.assignBuffers();
 	}
 	
+
 	@Override
 	public void addObject(Vector3f new_pos, Vector3f new_colour, Vector3f new_scale) {
 		//System.out.println("Adding a new ant");
@@ -147,9 +154,12 @@ public class Ant extends InstancedObject {
 		foodAmount.add(0f);
 		timeSinceTarget.add(0f);
 		fear.add(0f);
+		
 		frontPos.add(new Vector3f(0,0,0));
 		leftPos.add(new Vector3f(0,0,0));
 		rightPos.add(new Vector3f(0,0,0));
+		
+		calculateSquares(index-1);
 		
 		//Time to generate antennae balls
 		Vector3f LAntennaPos = getAntennaeWorldPos(index-1, true);
@@ -264,7 +274,119 @@ public class Ant extends InstancedObject {
 		foodBalls.position[i] = frontPos.get(i);
 	}
 	
-	private void pickUpFood(int antIndex, Square s) {
+	
+	
+	public Vector3f calcHeading(float r) { //The rotation as a number expressed in radians
+		r += ROTATION_ADJUSTMENT_FACTOR;
+		float x = (float) Math.cos(r);
+		float y = (float) Math.sin(r);
+		Vector3f result = new Vector3f(x, y, 0);
+		return result.normalize();
+	}
+	
+	private void calculatePositions(int antIndex) {
+		frontPos.set(antIndex, calcFrontPos(antIndex));
+		leftPos.set(antIndex, getAntennaeWorldPos(antIndex, true));
+		rightPos.set(antIndex, getAntennaeWorldPos(antIndex, false));
+	}
+	
+	private void calculateSquares(int antIndex) {
+		frontSquare.set(antIndex, grid.getSquareAtWorldPos(frontPos.get(antIndex)));
+		leftSquare.set(antIndex, grid.getSquareAtWorldPos(leftPos.get(antIndex)));
+		rightSquare.set(antIndex, grid.getSquareAtWorldPos(rightPos.get(antIndex)));
+	}
+	
+	/**
+	 * calculate and retrieve the world position of an antennae
+	 *
+	 * @param leftAnntennae true if working left antennae, right antennae otherwise
+	 */
+	public Vector3f getAntennaeWorldPos(int antIndex, boolean leftAnntennae) {
+		Vector3f antPos = position[antIndex];
+		float antennae_rot = -1f * ANTENNAE_ROTATION;
+		if (leftAnntennae) {
+			antennae_rot = ANTENNAE_ROTATION;
+		}
+		Lheading[antIndex] = calcHeading(rotation[antIndex].x + antennae_rot);
+		Vector3f anntennaePos = Lheading[antIndex];
+		anntennaePos.x += antPos.x;
+		anntennaePos.y += antPos.y;
+		if (leftAnntennae) {
+			leftPos.set(antIndex, anntennaePos);
+		} else {
+			rightPos.set(antIndex, anntennaePos);
+		}
+		return anntennaePos;
+	}
+	
+	private Vector3f calcFrontPos(int antIndex) {
+		Vector3f antPos = position[antIndex];
+		heading[antIndex] = calcHeading(rotation[antIndex].x);
+		Vector3f projectedPos = heading[antIndex];
+		projectedPos.x += antPos.x;
+		projectedPos.y += antPos.y;
+		frontPos.set(antIndex, projectedPos);
+		return frontPos.get(antIndex);
+	}
+
+	public float turnDirection(int antIndex) {
+		calculatePositions(antIndex);
+		calculateSquares(antIndex);
+
+		if (frontSquare.get(antIndex).i == -1 || frontSquare.get(antIndex).isBlocker) { //Return a random turn direction if directly ahead is off-nap or a blocker
+			if (antIndex % 2 == 0) { //Pick a side this ant will always turn towards
+				return 1f;
+			} else {
+				return -1f;
+			}
+		}
+		
+		if (!isValid(leftSquare.get(antIndex)) && !isValid(rightSquare.get(antIndex))) { //In cases where both antennae are detecting blockers
+			setForagingMode(antIndex, 2); //Set this ant to be FREAKING OUT!
+			return -2f;
+		}
+
+		
+		if (!isValid(leftSquare.get(antIndex))) {
+			return -1;
+		}
+		if (!isValid(rightSquare.get(antIndex))) {
+			return 1;
+		}
+		float value = 0; //Steady course
+		if (foraging.get(antIndex) == 1) { // Following food
+			if (frontSquare.get(antIndex).getFoodScent() < leftSquare.get(antIndex).getFoodScent() && rightSquare.get(antIndex).getFoodScent() < leftSquare.get(antIndex).getFoodScent()) {
+				value = 1; //Turn left
+			}
+			if (frontSquare.get(antIndex).getFoodScent() < rightSquare.get(antIndex).getFoodScent()) {
+				value = -1; //Turn right
+			}
+			return value;
+		}
+		if (frontSquare.get(antIndex).getHomeScent() < leftSquare.get(antIndex).getHomeScent() && rightSquare.get(antIndex).getHomeScent() < leftSquare.get(antIndex).getHomeScent()) { //Following home
+			value = 1; //Turn left
+		}
+		if (frontSquare.get(antIndex).getHomeScent() < rightSquare.get(antIndex).getHomeScent()) {
+			value = -1; //Turn right
+		}
+		return value;
+	}
+	
+	private boolean isValid(Square s) {
+		if (s.isBlocker || s.i == -1) {
+			return false;
+		}
+		return true;
+	}
+	
+	private Square getCurrentSquare(int antIndex) {
+		Vector3f antPos = position[antIndex];
+		return grid.getSquareAtWorldPos(antPos);
+		//int currentIndex = grid.getCellAtWorldPos(new Vector4f(antPos.x, antPos.y, antPos.z, 1));
+		//return grid.getSquare(currentIndex);
+	}
+	
+private void pickUpFood(int antIndex, Square s) {
 		
 		float currentFood = foodAmount.get(antIndex);
 		if (currentFood == FOOD_CAPACITY) {
@@ -361,110 +483,6 @@ public class Ant extends InstancedObject {
 			return;
 		}
 		s.addHomeScent(pheremoneAmount);
-	}
-	
-	public Vector3f calcHeading(float r) { //The rotation as a number expressed in radians
-		r += ROTATION_ADJUSTMENT_FACTOR;
-		float x = (float) Math.cos(r);
-		float y = (float) Math.sin(r);
-		Vector3f result = new Vector3f(x, y, 0);
-		return result.normalize();
-	}
-	
-	/**
-	 * calculate and retrieve the world position of an antennae
-	 *
-	 * @param leftAnntennae true if working left antennae, right antennae otherwise
-	 */
-	public Vector3f getAntennaeWorldPos(int antIndex, boolean leftAnntennae) {
-		Vector3f antPos = position[antIndex];
-		float antennae_rot = -1f * ANTENNAE_ROTATION;
-		if (leftAnntennae) {
-			antennae_rot = ANTENNAE_ROTATION;
-		}
-		Lheading[antIndex] = calcHeading(rotation[antIndex].x + antennae_rot);
-		Vector3f anntennaePos = Lheading[antIndex];
-		anntennaePos.x += antPos.x;
-		anntennaePos.y += antPos.y;
-		if (leftAnntennae) {
-			leftPos.set(antIndex, anntennaePos);
-		} else {
-			rightPos.set(antIndex, anntennaePos);
-		}
-		return anntennaePos;
-	}
-	
-	private Vector3f calcFrontPos(int antIndex) {
-		Vector3f antPos = position[antIndex];
-		heading[antIndex] = calcHeading(rotation[antIndex].x);
-		Vector3f projectedPos = heading[antIndex];
-		projectedPos.x += antPos.x;
-		projectedPos.y += antPos.y;
-		frontPos.set(antIndex, projectedPos);
-		return frontPos.get(antIndex);
-	}
-
-	public float turnDirection(int antIndex) {
-		Vector3f projectedPos = calcFrontPos(antIndex);
-		Vector3f L_AnntennaePos = getAntennaeWorldPos(antIndex, true);
-		Vector3f R_AnntennaePos = getAntennaeWorldPos(antIndex, false);
-		
-		//int currentIndex = grid.getCellAtWorldPos(new Vector4f(antPos.x, antPos.y, antPos.z, 1));
-		// projectedIndex = grid.getCellAtWorldPos(new Vector4f(projectedPos.x, projectedPos.y, projectedPos.z, 1));
-		Square forwardSquare = grid.getSquareAtWorldPos(projectedPos);
-		if (forwardSquare.i == -1 || forwardSquare.isBlocker) { //Return a random turn direction if directly ahead is off-nap or a blocker
-			if (antIndex % 2 == 0) { //Pick a side this ant will always turn towards
-				return 1f;
-			} else {
-				return -1f;
-			}
-		}
-		
-		Square leftSquare = grid.getSquareAtWorldPos(L_AnntennaePos);
-		Square rightSquare = grid.getSquareAtWorldPos(R_AnntennaePos);
-		if (!isValid(leftSquare) && !isValid(rightSquare)) { //In cases where both antennae are detecting blockers
-			setForagingMode(antIndex, 2); //Set this ant to be FREAKING OUT!
-			return -2f;
-		}
-
-		
-		if (!isValid(leftSquare)) {
-			return -1;
-		}
-		if (!isValid(rightSquare)) {
-			return 1;
-		}
-		float value = 0; //Steady course
-		if (foraging.get(antIndex) == 1) { // Following food
-			if (forwardSquare.getFoodScent() < leftSquare.getFoodScent() && rightSquare.getFoodScent() < leftSquare.getFoodScent()) {
-				value = 1; //Turn left
-			}
-			if (forwardSquare.getFoodScent() < rightSquare.getFoodScent()) {
-				value = -1; //Turn right
-			}
-			return value;
-		}
-		if (forwardSquare.getHomeScent() < leftSquare.getHomeScent() && rightSquare.getHomeScent() < leftSquare.getHomeScent()) { //Following home
-			value = 1; //Turn left
-		}
-		if (forwardSquare.getHomeScent() < rightSquare.getHomeScent()) {
-			value = -1; //Turn right
-		}
-		return value;
-	}
-	
-	private boolean isValid(Square s) {
-		if (s.isBlocker || s.i == -1) {
-			return false;
-		}
-		return true;
-	}
-	
-	private Square getCurrentSquare(int antIndex) {
-		Vector3f antPos = position[antIndex];
-		return grid.getSquareAtWorldPos(antPos);
-		//int currentIndex = grid.getCellAtWorldPos(new Vector4f(antPos.x, antPos.y, antPos.z, 1));
-		//return grid.getSquare(currentIndex);
 	}
 	
 	@Override
