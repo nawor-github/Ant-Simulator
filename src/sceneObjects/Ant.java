@@ -422,12 +422,15 @@ public class Ant extends InstancedObject {
 		
 		Square leftSquare = grid.getSquareAtWorldPos(L_AnntennaePos);
 		Square rightSquare = grid.getSquareAtWorldPos(R_AnntennaePos);
+		if (!isValid(leftSquare) && !isValid(rightSquare)) { //In cases where both antennae are detecting blockers
+			return -2f;
+		}
 
 		
-		if (leftSquare.isBlocker || leftSquare.i == -1) {
+		if (!isValid(leftSquare)) {
 			return -1;
 		}
-		if (rightSquare.isBlocker || rightSquare.i == -1) {
+		if (!isValid(rightSquare)) {
 			return 1;
 		}
 		float value = 0; //Steady course
@@ -447,6 +450,13 @@ public class Ant extends InstancedObject {
 			value = -1; //Turn right
 		}
 		return value;
+	}
+	
+	private boolean isValid(Square s) {
+		if (s.isBlocker || s.i == -1) {
+			return false;
+		}
+		return true;
 	}
 	
 	private Square getCurrentSquare(int antIndex) {
