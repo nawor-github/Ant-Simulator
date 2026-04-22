@@ -16,6 +16,8 @@ import sim.Square;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_DOWN;
@@ -34,8 +36,7 @@ public class Ant extends InstancedObject {
 	final protected String VERTEX_SHADER = "instanced_ant_vertex.glsl";
 	final protected String FRAGMENT_SHADER = "instanced_ant_fragment.glsl";
 	
-	protected Vector3f antColour = new Vector3f(0.1f,0.2f,0.2f); //Dark colour
-	protected Vector3f stripeColour = new Vector3f(0.05f, 0.1f, 0.2f); //Old clear colour now ant colour
+	private final static Vector3f antColour = new Vector3f(0.9f,0.9f,0.9f); //Dark colour
 	
 	protected final static Vector3f homeAntColour = new Vector3f(0.5f, 0.1f, 0.3f); //Magenta home scent colour
 	protected final static Vector3f foodAntColour = new Vector3f(0.1f, 0.5f, 0.4f); //Dark green food scent colour
@@ -81,7 +82,6 @@ public class Ant extends InstancedObject {
 			System.out.println("John the ant is ant number 0. His position is: " + position[0].x + ", " +  position[0].y);
 			System.out.println("Scale: " + scale[0].x + ". Colour: " + colour[0].x + ", " +   colour[0].y + ", " +   colour[0].z);
 		}
-		
 	}
 	
 	@Override
@@ -225,6 +225,15 @@ public class Ant extends InstancedObject {
 	        //t4.start();
 		}
 		assignBuffers();
+		
+		if (input.wasKeyPressed(KeyEvent.VK_P)){
+			setRenderMode(0); //Debug mode
+			System.out.println("P Pressed");
+		}
+		if (input.wasKeyPressed(KeyEvent.VK_O)){
+			setRenderMode(1); //Full colour
+			System.out.println("O Pressed");
+		}
 	}
 	
 	private void calcMovement(int i, float deltaTime) {
@@ -311,14 +320,38 @@ public class Ant extends InstancedObject {
 		timeSinceTarget.set(antIndex, 0f);//Reset foraging time
 	}
 	
+	private int renderMode = 0;
+	
+	public int getRenderMode() {
+		return renderMode;
+	}
+	
+	public void setRenderMode(int newMode) {
+		renderMode = newMode;
+		for (int i = 0; i < N_Objects; i++) {
+			setForagingMode(i, foraging.get(i));
+		}
+	}
+	
 	private void setColour(int antIndex, Vector3f c) {
 		float r = Scene.randBetween(0, 0.1f);
-		Vector3f randomisedColour = new Vector3f(c.x - r, c.y - r, c.z - r);
-		colour[antIndex] = c;
+		Vector3f randomisedColour;
+		switch (renderMode) {
+			case 1: //Full colour 
+				System.out.println("Render case 1");
+				randomisedColour = new Vector3f(c.x - r, c.y - r, c.z - r);
+				break;
+				//System.out.println("Case 1");
+			default: //Dark colour
+				System.out.println("Render case 0");
+				randomisedColour = new Vector3f(antColour.x - r, antColour.y - r, antColour.z - r);
+				break;
+				//calculateScentlessColour();
+		}
+		colour[antIndex] = randomisedColour;
 		leftAntennaeBalls.colour[antIndex] = randomisedColour;
 		rightAntennaeBalls.colour[antIndex] = randomisedColour;
-
-	}
+	}	
 	
 	private void depositTrail(int antIndex, Square s) { //1 for following food, 0 for following home
 
