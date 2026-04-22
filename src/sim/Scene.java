@@ -33,7 +33,7 @@ public class Scene extends SceneObject{
 	private final float GRID_SPACING = 1f;
 	private final float GRID_SCALE = 1;
 	
-	private final int ANT_COUNT = 1000;
+	private final int ANT_COUNT = 10;
 	private final float ANT_SCALE_MIN = 0.5f;
 	private final float ANT_SCALE_MAX = 1f;
 	private final float SCATTER_WIDTH = 2f;
@@ -91,24 +91,34 @@ public class Scene extends SceneObject{
 	}
 	
 	public Vector4f getMousePosWorld(InputManager input) {
-		input.getCursorPos(mousePosition);
+		input.getCursorPos(mousePosition); //Get mouse coords in screen coords relative to top left-corner
 		
-		float x = (2f * ((float) mousePosition.x()/screenWidth) - 1f);
-		float y = 1f - (2f * (((float) mousePosition.y()/screenHeight)));
-		//System.out.println("Update function detecting mouse at: " + x + " " + y);
+		float x = (2f * ((float) mousePosition.x()/screenWidth) - 1f); //Correct screen coords to NDC coords
+		float y = 1f - (2f * (((float) mousePosition.y()/screenHeight))); //Correct screen coords to NDC coords
 		
 		
-		Matrix4f mvpMatrix = new Matrix4f();
+		Matrix4f cameraMatrix = new Matrix4f();
 		Matrix4f viewMatrix = new Matrix4f();
 		camera.getViewMatrix(viewMatrix);
 		Matrix4f projectionMatrix = new Matrix4f();
 		camera.getProjectionMatrix(projectionMatrix);
 
-		mvpMatrix.set(viewMatrix.mul(projectionMatrix));
-		mvpMatrix.invert();
-		
+		cameraMatrix.set(projectionMatrix.mul(viewMatrix));
+		cameraMatrix.invert();
 		mousePos = new Vector4f(x, y, 0f, 1f);
-		mousePos.mul(mvpMatrix);
+		mousePos.mul(cameraMatrix);
+		
+		//Matrix4f mvpMatrix = new Matrix4f();
+		//camera.getModelToWorldMatrix(mvpMatrix);
+		//mousePos.mul(mvpMatrix);
+		
+		//Matrix4f finalMatrix = new Matrix4f();
+		//finalMatrix.set(cameraMatrix.mul(mvpMatrix));
+		//mousePos.mul(finalMatrix);
+
+		System.out.printf("Update function detecting mouse at: %.2f, %.2f\n", mousePos.x, mousePos.y);
+
+		//mousePos.mul(camera.getMatrix());
 		return mousePos;
 	}
 
