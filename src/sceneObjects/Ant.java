@@ -70,8 +70,9 @@ public class Ant extends InstancedObject {
 	
 	public Circle leftAntennaeBalls, rightAntennaeBalls, foodBalls;
 	
-	ArrayList<Integer> foraging; //1 for following food, 0 for following home
-	ArrayList<Float> foodAmount, timeSinceTarget; //Tracks food amount carried and time since was last at target
+	ArrayList<Integer> foraging; //1 for following food, 0 for following home, 2 for STUCK AND FREAKING OUT
+	//Fear is used to track how long an ant should freak out for
+	ArrayList<Float> foodAmount, timeSinceTarget, fear; //Tracks food amount carried and time since was last at target
 	public ArrayList<Vector3f> leftPos, rightPos, frontPos;
 		
 	public Ant(int nAnts, float max_Scale, float min_Scale, float s_X, float s_Y, Grid g) {
@@ -102,6 +103,7 @@ public class Ant extends InstancedObject {
 		
 		foraging = new ArrayList<Integer>();
 		foodAmount = new ArrayList<Float>();
+		fear = new ArrayList<Float>();
 		timeSinceTarget = new ArrayList<Float>();
 		frontPos = new ArrayList<Vector3f>();
 		leftPos = new ArrayList<Vector3f>();
@@ -144,6 +146,7 @@ public class Ant extends InstancedObject {
 		foraging.add(1);
 		foodAmount.add(0f);
 		timeSinceTarget.add(0f);
+		fear.add(0f);
 		frontPos.add(new Vector3f(0,0,0));
 		leftPos.add(new Vector3f(0,0,0));
 		rightPos.add(new Vector3f(0,0,0));
@@ -261,15 +264,6 @@ public class Ant extends InstancedObject {
 		foodBalls.position[i] = frontPos.get(i);
 	}
 	
-	private void fixPosition(int antIndex, Square current, Square next) {
-		if (!current.isBlocker) {
-			return;
-		}
-		if (!next.isBlocker) {
-			//position[antIndex] = next.getCentre();
-		}
-	}
-	
 	private void pickUpFood(int antIndex, Square s) {
 		
 		float currentFood = foodAmount.get(antIndex);
@@ -304,6 +298,11 @@ public class Ant extends InstancedObject {
 	
 	private void setForagingMode(int antIndex, int mode) { //1 for following food, 0 for following home
 		switch (mode) {
+			case 2:
+				foraging.set(antIndex, 2); //Stuck and freaking out
+				setColour(antIndex, debugColour);
+				//Do not change food information
+				break;
 			case 1:
 				foraging.set(antIndex, 1); //Following food, small and hungry
 				setColour(antIndex, homeAntColour);
@@ -424,6 +423,7 @@ public class Ant extends InstancedObject {
 		Square leftSquare = grid.getSquareAtWorldPos(L_AnntennaePos);
 		Square rightSquare = grid.getSquareAtWorldPos(R_AnntennaePos);
 		if (!isValid(leftSquare) && !isValid(rightSquare)) { //In cases where both antennae are detecting blockers
+			setForagingMode(antIndex, 2); //Set this ant to be FREAKING OUT!
 			return -2f;
 		}
 
