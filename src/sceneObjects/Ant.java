@@ -68,8 +68,8 @@ public class Ant extends InstancedObject {
 	private static float ANTENNAE_ROTATION = TAU / 8f;
 	private static float ANTENNAE_SCALE = 0.2f;
 	
-	private static float FEAR_THRESHOLD = 3f;
-	private static float FEAR_LOWER_THRESHOLD = 2.75f;
+	private static float FEAR_THRESHOLD = 1f;
+	private static float FEAR_LOWER_THRESHOLD = 0.85f;
 	private static float COLOUR_VARIATION = 0.2f;
 	
 	public Circle leftAntennaeBalls, rightAntennaeBalls, foodBalls;
@@ -261,10 +261,14 @@ public class Ant extends InstancedObject {
 	}
 	
 	private void calcMovement(int i, float deltaTime) {
+		float moveSpeed = MOVE_SPEED;
+		if (!isValid(leftSquare.get(i)) || !isValid(rightSquare.get(i))) {
+			moveSpeed = moveSpeed/2f;
+		}
 		
-		Vector3f newPos = new Vector3f(heading[i].x * MOVE_SPEED * deltaTime, heading[i].y * MOVE_SPEED * deltaTime, 1f);
+		Vector3f newPos = new Vector3f(heading[i].x * moveSpeed * deltaTime, heading[i].y * moveSpeed * deltaTime, 1f);
 		if (fearful.get(i) == 1) {
-			newPos = new Vector3f(heading[i].x * MOVE_SPEED * deltaTime, heading[i].y * MOVE_SPEED * deltaTime, 1f);
+			newPos = new Vector3f(heading[i].x * moveSpeed * deltaTime, heading[i].y * moveSpeed * deltaTime, 1f);
 			newPos.x = position[i].x - newPos.x;
 			newPos.y = position[i].y - newPos.y;
 			
