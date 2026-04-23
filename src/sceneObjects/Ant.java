@@ -220,11 +220,11 @@ public class Ant extends InstancedObject {
 		
 		if (input.wasKeyPressed(KeyEvent.VK_P)){
 			setRenderMode(0); //Debug mode
-			System.out.println("P Pressed");
+			//System.out.println("P Pressed");
 		}
 		if (input.wasKeyPressed(KeyEvent.VK_O)){
 			setRenderMode(1); //Full colour
-			System.out.println("O Pressed");
+			//System.out.println("O Pressed");
 		}
 	}
 	
@@ -260,10 +260,6 @@ public class Ant extends InstancedObject {
 	
 	private Vector3f calcFrontPos(int antIndex) {
 		Vector3f antPos = new Vector3f(position[antIndex]);
-		//Vector3f frontPos = heading[antIndex];
-		//frontPos.x += antPos.x;
-		//frontPos.y += antPos.y;
-		//return frontPos;
 		return antPos.add(heading[antIndex]);
 	}
 	
@@ -423,7 +419,9 @@ public class Ant extends InstancedObject {
 	public void setRenderMode(int newMode) {
 		renderMode = newMode;
 		for (int i = 0; i < N_Objects; i++) {
+			float savedTimedSinceTarget = timeSinceTarget.get(i);
 			setForagingMode(i, foraging.get(i));
+			timeSinceTarget.set(i, savedTimedSinceTarget); //Prevents overriding foraging mode for colour purposes from overriding other important factors
 		}
 	}
 	
