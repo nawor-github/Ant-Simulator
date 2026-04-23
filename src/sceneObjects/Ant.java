@@ -68,7 +68,7 @@ public class Ant extends InstancedObject {
 	private static float ANTENNAE_ROTATION = TAU / 8f;
 	private static float ANTENNAE_SCALE = 0.2f;
 	
-	private static float FEAR_THRESHOLD = 60f;
+	private static float FEAR_THRESHOLD = 500f;
 	private static float COLOUR_VARIATION = 0.2f;
 	
 	public Circle leftAntennaeBalls, rightAntennaeBalls, foodBalls;
@@ -210,7 +210,7 @@ public class Ant extends InstancedObject {
 			if (currentSquare.get(i).i == oldSquare.get(i).i) {
 				fear.set(i, fear.get(i) + (1f * deltaTime)); //If we're in the same place, increment the fear of being stuck
 			} else {
-				fear.set(i, 0); //If we've moved, remove that fear
+				fear.set(i, 0f); //If we've moved, remove that fear
 			}
 			calculateSquares(i);			
 			calcMovement(i, deltaTime);
@@ -239,9 +239,18 @@ public class Ant extends InstancedObject {
 	}
 	
 	private void calcMovement(int i, float deltaTime) {
+		
 		Vector3f newPos = new Vector3f(heading[i].x * MOVE_SPEED * deltaTime, heading[i].y * MOVE_SPEED * deltaTime, 1f);
-		newPos.x += position[i].x;
-		newPos.y += position[i].y;
+		if (fear.get(i) > FEAR_THRESHOLD) { //If we're scared, go in reverse
+			newPos.x = position[i].x - newPos.x;
+			newPos.y = position[i].y - newPos.y;
+			//newPos.x += position[i].x;
+			//newPos.y += position[i].y;
+		} else {
+			newPos.x += position[i].x;
+			newPos.y += position[i].y;
+		}
+		
 		
 		Square next = grid.getSquareAtWorldPos(newPos);
 		
@@ -250,7 +259,7 @@ public class Ant extends InstancedObject {
 
 		heading[i] = calcHeading(rotation[i].x);
 		
-		if (!next.isBlocker && fear.get(i) > FEAR_THRESHOLD) {
+		if (isValid(next) && isValid(leftSquare.get(i)) && isValid(rightSquare.get(i))) {
 			position[i].x = newPos.x;
 			position[i].y = newPos.y;
 		}
@@ -262,7 +271,9 @@ public class Ant extends InstancedObject {
 	
 	
 	private void calculateSquares(int antIndex) {
-		oldSquare.set(antIndex, currentSquare.get(antIndex));
+		oldSquare.set(antIndex, frontSquare.get(antIndex));
+		//oldSquare.set(antIndex, currentSquare.get(antIndex));
+
 		frontSquare.set(antIndex, grid.getSquareAtWorldPos(frontPos.get(antIndex)));
 		leftSquare.set(antIndex, grid.getSquareAtWorldPos(leftPos.get(antIndex)));
 		rightSquare.set(antIndex, grid.getSquareAtWorldPos(rightPos.get(antIndex)));
@@ -323,9 +334,12 @@ public class Ant extends InstancedObject {
 			}
 		}
 		
-		if (!isValid(leftSquare.get(antIndex)) && !isValid(rightSquare.get(antIndex))) { //In cases where both antennae are detecting blockers
-			setForagingMode(antIndex, 2); //Set this ant to be FREAKING OUT!
-			return -1f;
+		if (!isValid(leftSquare.get(antIndex)) && !isValid(rightSquare.get(antIndex)) && isValid(frontSquare.get(antIndex))) { //In cases where both antennae are detecting blockers BUt the front isn't
+			if (antIndex % 2 == 0) { //Pick a side this ant will always turn towards
+				return 1f;
+			} else {
+				return -1f;
+			}
 		}
 
 		
