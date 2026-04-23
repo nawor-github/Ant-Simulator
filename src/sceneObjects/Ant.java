@@ -250,7 +250,22 @@ public class Ant extends InstancedObject {
 		foodBalls.position[i] = frontPos.get(i);
 	}
 	
+
 	
+	private void calculatePositions(int antIndex) {
+		frontPos.set(antIndex, calcFrontPos(antIndex));
+		leftPos.set(antIndex, getAntennaeWorldPos(antIndex, true));
+		rightPos.set(antIndex, getAntennaeWorldPos(antIndex, false));
+	}
+	
+	private Vector3f calcFrontPos(int antIndex) {
+		Vector3f antPos = new Vector3f(position[antIndex]);
+		//Vector3f frontPos = heading[antIndex];
+		//frontPos.x += antPos.x;
+		//frontPos.y += antPos.y;
+		//return frontPos;
+		return antPos.add(heading[antIndex]);
+	}
 	
 	public Vector3f calcHeading(float r) { //The rotation as a number expressed in radians
 		r += ROTATION_ADJUSTMENT_FACTOR;
@@ -258,12 +273,6 @@ public class Ant extends InstancedObject {
 		float y = (float) Math.sin(r);
 		Vector3f result = new Vector3f(x, y, 0);
 		return result.normalize(); //Makes sure the heading vector is length 1
-	}
-	
-	private void calculatePositions(int antIndex) {
-		frontPos.set(antIndex, calcFrontPos(antIndex));
-		leftPos.set(antIndex, getAntennaeWorldPos(antIndex, true));
-		rightPos.set(antIndex, getAntennaeWorldPos(antIndex, false));
 	}
 	
 	private void calculateSquares(int antIndex) {
@@ -295,14 +304,7 @@ public class Ant extends InstancedObject {
 		return anntennaePos;
 	}
 	
-	private Vector3f calcFrontPos(int antIndex) {
-		Vector3f antPos = position[antIndex];
-		heading[antIndex] = calcHeading(rotation[antIndex].x);
-		Vector3f projectedPos = heading[antIndex];
-		projectedPos.x += antPos.x;
-		projectedPos.y += antPos.y;
-		return projectedPos;
-	}
+	
 
 	public float turnDirection(int antIndex) {
 		if (!isValid(frontSquare.get(antIndex))) { //Return a random turn direction if directly ahead is off-nap or a blocker
@@ -352,7 +354,8 @@ public class Ant extends InstancedObject {
 	}
 	
 	private Square getCurrentSquare(int antIndex) {
-		return frontSquare.get(antIndex);
+		Square s = grid.getSquareAtWorldPos(position[antIndex]);
+		return s;
 	}
 	
 	private void pickUpFood(int antIndex, Square s) {
