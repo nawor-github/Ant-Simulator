@@ -208,9 +208,9 @@ public class Ant extends InstancedObject {
 			
 			calculatePositions(i);
 			if (currentSquare.get(i).i == oldSquare.get(i).i) {
-				fear.set(i, fear.get(i) + 1); //If we're in the same place, increment the fear of being stuck
+				fear.set(i, fear.get(i) + (1f * deltaTime)); //If we're in the same place, increment the fear of being stuck
 			} else {
-				fear.set(i, fear.get(i)); //If we've moved, remove that fear
+				fear.set(i, 0); //If we've moved, remove that fear
 			}
 			calculateSquares(i);			
 			calcMovement(i, deltaTime);
