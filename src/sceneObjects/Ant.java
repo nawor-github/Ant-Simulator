@@ -68,6 +68,9 @@ public class Ant extends InstancedObject {
 	private static float ANTENNAE_ROTATION = TAU / 8f;
 	private static float ANTENNAE_SCALE = 0.2f;
 	
+	private static float FEAR_THRESHOLD = 60f;
+	private static float COLOUR_VARIATION = 0.2f;
+	
 	public Circle leftAntennaeBalls, rightAntennaeBalls, foodBalls;
 	
 	ArrayList<Integer> foraging; //1 for following food, 0 for following home, 2 for STUCK AND FREAKING OUT
@@ -247,7 +250,7 @@ public class Ant extends InstancedObject {
 
 		heading[i] = calcHeading(rotation[i].x);
 		
-		if (!next.isBlocker) {
+		if (!next.isBlocker && fear.get(i) > FEAR_THRESHOLD) {
 			position[i].x = newPos.x;
 			position[i].y = newPos.y;
 		}
@@ -435,7 +438,7 @@ public class Ant extends InstancedObject {
 	}
 	
 	private void setColour(int antIndex, Vector3f c) {
-		float r = Scene.randBetween(0, 0.1f);
+		float r = Scene.randBetween(0, COLOUR_VARIATION);
 		Vector3f randomisedColour;
 		switch (renderMode) {
 			case 1: //Full colour 
