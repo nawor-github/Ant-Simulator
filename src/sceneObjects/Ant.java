@@ -74,7 +74,7 @@ public class Ant extends InstancedObject {
 	//Fear is used to track how long an ant should freak out for
 	ArrayList<Float> foodAmount, timeSinceTarget, fear; //Tracks food amount carried and time since was last at target
 	public ArrayList<Vector3f> leftPos, rightPos, frontPos;
-	public ArrayList<Square> leftSquare, rightSquare, frontSquare;
+	public ArrayList<Square> leftSquare, rightSquare, frontSquare, currentSquare, oldSquare;
 		
 	public Ant(int nAnts, float max_Scale, float min_Scale, float s_X, float s_Y, Grid g) {
 		super(nAnts, max_Scale, min_Scale, s_X, s_Y);
@@ -114,6 +114,8 @@ public class Ant extends InstancedObject {
 		frontSquare = new ArrayList<Square>();
 		leftSquare = new ArrayList<Square>();
 		rightSquare = new ArrayList<Square>();
+		currentSquare = new ArrayList<Square>();
+		oldSquare = new ArrayList<Square>();
 		
 		leftAntennaeBalls = new Circle();
 		leftAntennaeBalls.setParent(this.getParent());
@@ -162,6 +164,8 @@ public class Ant extends InstancedObject {
 		frontSquare.add(new Square(-1));
 		leftSquare.add(new Square(-1));
 		rightSquare.add(new Square(-1));
+		currentSquare.add(new Square(-1));
+		oldSquare.add(new Square(-1));
 		
 		//Time to generate antennae balls
 		Vector3f LAntennaPos = getAntennaeWorldPos(index-1, true);
@@ -200,21 +204,24 @@ public class Ant extends InstancedObject {
 		for (int i = 0; i < N_Objects; i++) {
 			
 			calculatePositions(i);
-			calculateSquares(i);
-			Square current = getCurrentSquare(i);
-			
+			if (currentSquare.get(i).i == oldSquare.get(i).i) {
+				fear.set(i, fear.get(i) + 1); //If we're in the same place, increment the fear of being stuck
+			} else {
+				fear.set(i, fear.get(i)); //If we've moved, remove that fear
+			}
+			calculateSquares(i);			
 			calcMovement(i, deltaTime);
 			
 			//System.out.println("Time since target length is " + timeSinceTarget.size());
 			//System.out.println("Ant number " + i + " is at square " + current.i + ": " + current.x + ", " + current.y + " and position " + position[i].x + ", " + position[i].y);
 			float time = timeSinceTarget.get(i);
 			timeSinceTarget.set(i, time + deltaTime);
-			if (current.isHome || current.getFood() > 0) { 
+			if (currentSquare.get(i).isHome || currentSquare.get(i).getFood() > 0) { 
 				timeSinceTarget.set(i, 0f);
 			}
-			pickUpFood(i, current);
-			dropOffFood(i, current);
-			depositTrail(i, current);
+			pickUpFood(i, currentSquare.get(i));
+			dropOffFood(i, currentSquare.get(i));
+			depositTrail(i, currentSquare.get(i));
 		}
 		assignBuffers();
 		
@@ -250,7 +257,14 @@ public class Ant extends InstancedObject {
 		foodBalls.position[i] = frontPos.get(i);
 	}
 	
-
+	
+	private void calculateSquares(int antIndex) {
+		oldSquare.set(antIndex, currentSquare.get(antIndex));
+		frontSquare.set(antIndex, grid.getSquareAtWorldPos(frontPos.get(antIndex)));
+		leftSquare.set(antIndex, grid.getSquareAtWorldPos(leftPos.get(antIndex)));
+		rightSquare.set(antIndex, grid.getSquareAtWorldPos(rightPos.get(antIndex)));
+		currentSquare.set(antIndex, grid.getSquareAtWorldPos(position[antIndex]));
+	}
 	
 	private void calculatePositions(int antIndex) {
 		frontPos.set(antIndex, calcFrontPos(antIndex));
@@ -270,12 +284,7 @@ public class Ant extends InstancedObject {
 		Vector3f result = new Vector3f(x, y, 0);
 		return result.normalize(); //Makes sure the heading vector is length 1
 	}
-	
-	private void calculateSquares(int antIndex) {
-		frontSquare.set(antIndex, grid.getSquareAtWorldPos(frontPos.get(antIndex)));
-		leftSquare.set(antIndex, grid.getSquareAtWorldPos(leftPos.get(antIndex)));
-		rightSquare.set(antIndex, grid.getSquareAtWorldPos(rightPos.get(antIndex)));
-	}
+
 	
 	/**
 	 * calculate and retrieve the world position of an antennae
