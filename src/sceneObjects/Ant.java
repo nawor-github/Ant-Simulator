@@ -69,11 +69,12 @@ public class Ant extends InstancedObject {
 	private static float ANTENNAE_SCALE = 0.2f;
 	
 	private static float FEAR_THRESHOLD = 500f;
+	private static float FEAR_LOWER_THRESHOLD = 100f;
 	private static float COLOUR_VARIATION = 0.2f;
 	
 	public Circle leftAntennaeBalls, rightAntennaeBalls, foodBalls;
 	
-	ArrayList<Integer> foraging; //1 for following food, 0 for following home, 2 for STUCK AND FREAKING OUT
+	ArrayList<Integer> foraging, fearful; //1 for following food, 0 for following home, 0 for fearless, 1 for fearful
 	//Fear is used to track how long an ant should freak out for
 	ArrayList<Float> foodAmount, timeSinceTarget, fear; //Tracks food amount carried and time since was last at target
 	public ArrayList<Vector3f> leftPos, rightPos, frontPos;
@@ -106,6 +107,8 @@ public class Ant extends InstancedObject {
 		Rheading = new Vector3f[0];
 		
 		foraging = new ArrayList<Integer>();
+		fearful = new ArrayList<Integer>();
+		
 		foodAmount = new ArrayList<Float>();
 		fear = new ArrayList<Float>();
 		timeSinceTarget = new ArrayList<Float>();
@@ -156,6 +159,8 @@ public class Ant extends InstancedObject {
 		Rheading = addToVector3fArray(Rheading, newRheading);
 		
 		foraging.add(1);
+		fearful.add(0);
+		
 		foodAmount.add(0f);
 		timeSinceTarget.add(0f);
 		fear.add(0f);
@@ -201,18 +206,33 @@ public class Ant extends InstancedObject {
 		//System.out.println("Generating a new ant at index: " + index);
 	}
 	
+	private void incrementFear(int i, float deltaTime) {
+		fear.set(i, fear.get(i) + (1f * deltaTime)); //If we're in the same place, increment the fear of being stuck
+	}
+	
+	private void clearFear(int i, float deltaTime) {
+		fear.set(i, 0f); //If we've moved, remove that fear
+	}
+	
+	private void decrementFear(int i, float deltaTime) {
+		fear.set(i, fear.get(i) - (1f * deltaTime)); //If we're in the same place, increment the fear of being stuck
+		if (fear.get(i) < 0) {
+			fear.set(i, 0f);
+		}
+	}
 
 	
 	public void update(float deltaTime, InputManager input) {
 		for (int i = 0; i < N_Objects; i++) {
 			
 			calculatePositions(i);
-			if (currentSquare.get(i).i == oldSquare.get(i).i) {
-				fear.set(i, fear.get(i) + (1f * deltaTime)); //If we're in the same place, increment the fear of being stuck
-			} else {
-				fear.set(i, 0f); //If we've moved, remove that fear
+			calculateSquares(i);		
+			if (fear.get(i) < FEAR_LOWER_THRESHOLD) {
+				fearful.set(i, 0);
 			}
-			calculateSquares(i);			
+			if (fear.get(i) > FEAR_THRESHOLD) {
+				fearful.set(i, 1);
+			}
 			calcMovement(i, deltaTime);
 			
 			//System.out.println("Time since target length is " + timeSinceTarget.size());
@@ -260,9 +280,17 @@ public class Ant extends InstancedObject {
 		heading[i] = calcHeading(rotation[i].x);
 		
 		if (isValid(next) && isValid(leftSquare.get(i)) && isValid(rightSquare.get(i))) {
-			position[i].x = newPos.x;
-			position[i].y = newPos.y;
+			decrementFear(i, deltaTime);
+			setColour(i, antColour);
+
+		} else { //When there is invalid positions, get scared
+			incrementFear(i, deltaTime);
+			setColour(i, antColour);
+			System.out.println("Fear is " + fear.get(i));
 		}
+		
+		position[i].x = newPos.x;
+		position[i].y = newPos.y;
 		
 		leftAntennaeBalls.position[i] = leftPos.get(i);
 		rightAntennaeBalls.position[i] = rightPos.get(i);
@@ -466,7 +494,9 @@ public class Ant extends InstancedObject {
 				break;
 				//calculateScentlessColour();
 		}
-		colour[antIndex] = randomisedColour;
+		//colour[antIndex] = randomisedColour;
+		colour[antIndex] = new Vector3f(fear.get(antIndex));
+
 		leftAntennaeBalls.colour[antIndex] = randomisedColour;
 		rightAntennaeBalls.colour[antIndex] = randomisedColour;
 	}	
