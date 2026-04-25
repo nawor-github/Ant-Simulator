@@ -323,31 +323,48 @@ public class Ant extends InstancedObject {
 		return anntennaePos;
 	}
 	
+	private float distanceBetweenSquareAndAnt(int i, Square s) {
+		Vector3f antPos = position[i];
+		Vector3f squareCentre = s.centre;
+		float bottomLength = Math.abs(squareCentre.x - antPos.x);
+		float sideLength = Math.abs(squareCentre.y - antPos.y);
+		return (float) Math.hypot(bottomLength, sideLength);
+	}
 	
 
 	public float turnDirection(int antIndex) {
 		if (!isValid(frontSquare.get(antIndex))) { //Return a random turn direction if directly ahead is off-nap or a blocker
-			if (antIndex % 2 == 0) { //Pick a side this ant will always turn towards
-				return 1f;
+			if (!isValid(leftSquare.get(antIndex))) {
+				return -1f;//Turn right if left and front are blocked
+			}
+			if (!isValid(rightSquare.get(antIndex))) {
+				return 1f;//Turn left if right and front are blocked
+			}
+			if (antIndex % 2 == 0) { //Pick a side this ant will always turn towards if tied
+				return 1f; //Turn left
 			} else {
-				return -1f;
+				return -1f;//Turn right
 			}
 		}
-		
-		if (!isValid(leftSquare.get(antIndex)) && !isValid(rightSquare.get(antIndex)) && isValid(frontSquare.get(antIndex))) { //In cases where both antennae are detecting blockers BUt the front isn't
-			if (antIndex % 2 == 0) { //Pick a side this ant will always turn towards
-				return 1f;
+		 //In cases where both positions left and right are invalid,
+		// Calculate the distances to each one and turn away from the closer one.
+		if (!isValid(leftSquare.get(antIndex)) && !isValid(rightSquare.get(antIndex))) {
+			float leftDistance = distanceBetweenSquareAndAnt(antIndex, leftSquare.get(antIndex));
+			float rightDistance = distanceBetweenSquareAndAnt(antIndex, rightSquare.get(antIndex));
+
+			if (leftDistance > rightDistance) { //Turn toward the side furthest away
+				return 1f; //Turn left
 			} else {
-				return -1f;
+				return -1f; //Turn right
 			}
 		}
 
 		
-		if (!isValid(leftSquare.get(antIndex))) {
-			return -1;
+		if (!isValid(leftSquare.get(antIndex))) { //If left is invalid, go right
+			return -1; //Turn right
 		}
-		if (!isValid(rightSquare.get(antIndex))) {
-			return 1;
+		if (!isValid(rightSquare.get(antIndex))) {// If right is blocked, go left
+			return 1; //Turn left
 		}
 		float value = 0; //Steady course
 		if (foraging.get(antIndex) == 1) { // Following food
