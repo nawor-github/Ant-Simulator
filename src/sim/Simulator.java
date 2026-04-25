@@ -91,6 +91,10 @@ import sceneObjects.Camera;
 			System.out.printf("The current FPS is %4.1f \n", FPS);
 			oldTime = time;
 			
+			if (deltaTime > 40f) { //Adds a cap on how slow simulation ticks can be to reduce innacuracies at low frame rates
+				deltaTime = 40f;
+			}
+			
 			// update the scene
 			scene.update(deltaTime, input);
 		
