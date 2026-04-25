@@ -259,7 +259,9 @@ public class Ant extends InstancedObject {
 
 		heading[i] = calcHeading(rotation[i].x);
 		
-		if (isValid(next) && isValid(leftSquare.get(i)) && isValid(rightSquare.get(i))) {
+		//if (isValid(next) && isValid(leftSquare.get(i)) && isValid(rightSquare.get(i))) {
+
+		if (isValid(next)) {
 			position[i].x = newPos.x;
 			position[i].y = newPos.y;
 		}
@@ -346,13 +348,14 @@ public class Ant extends InstancedObject {
 				return -1f;//Turn right
 			}
 		}
-		 //In cases where both positions left and right are invalid,
+		//In cases where both positions left and right are invalid,
 		// Calculate the distances to each one and turn away from the closer one.
 		if (!isValid(leftSquare.get(antIndex)) && !isValid(rightSquare.get(antIndex))) {
 			float leftDistance = distanceBetweenSquareAndAnt(antIndex, leftSquare.get(antIndex));
 			float rightDistance = distanceBetweenSquareAndAnt(antIndex, rightSquare.get(antIndex));
+			if (antIndex % 2 == 0) { //Pick a side this ant will always turn towards if tied
 
-			if (leftDistance > rightDistance) { //Turn toward the side furthest away
+			//if (leftDistance > rightDistance) { //Turn toward the side furthest away
 				return 1f; //Turn left
 			} else {
 				return -1f; //Turn right
