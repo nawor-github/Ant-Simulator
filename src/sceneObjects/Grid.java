@@ -22,6 +22,7 @@ import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL33.glVertexAttribDivisor;
 
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL31.glDrawElementsInstanced;
 
@@ -236,6 +237,37 @@ public class Grid extends SceneObject {
 		return indexedSquares[index].getCentre();
 	}
 	
+	public float getCollisionLength(Vector3f endPos, Vector3f startPos) {
+		Square startSquare = getSquareAtWorldPos(startPos);
+		Square endSquare = getSquareAtWorldPos(endPos);
+		Vector3f ray = startPos.sub(endPos); //Ray between the two points supplied
+		int BLx, BLy, TRx, TRy;
+		if (startPos.x > endPos.x) { //In cases where the startpos is further right than the end pos
+			TRx = startSquare.x; 
+			BLx = endSquare.x;
+		} else { //In cases where the endpos is further right than the startpos
+			TRx = endSquare.x;
+			BLx = startSquare.x;
+		}
+		
+		if (startPos.y > endPos.y) { //In cases where the startpos is higher than the end pos
+			TRy = startSquare.x; 
+			BLy = endSquare.x;
+		} else { //In cases where the endpos is further right than the startpos
+			TRy = endSquare.x;
+			BLy = startSquare.x;
+		}
+		ArrayList<Square> squaresOnLine = new ArrayList<Square>();
+		for (int x = BLx; x < TRx; x++) { //Loop through all included coloumns
+			for (int y = BLy; y < TRy; y++) { //And all inclusive rows of squares
+				if (squares[x][y].collidesWith(ray)) {
+					
+				}
+			}
+		}
+		
+		return 0f;
+	}
 	
 	private boolean liesWithin(Vector4f pos, int index) {
 		Vector3f BL = getBottomLeft(index);

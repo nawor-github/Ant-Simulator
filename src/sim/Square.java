@@ -69,6 +69,10 @@ public class Square {
 		return new Vector3f(BLCorner.x, TRCorner.y, 1f);
 	}
 	
+	public boolean collidesWith(Vector3f ray) {
+		return false;
+	}
+	
 	public Vector3f calculateColour() {
 		if (isBlocker) {
 			colour = blockerColour;
