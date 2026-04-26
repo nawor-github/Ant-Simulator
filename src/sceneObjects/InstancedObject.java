@@ -136,7 +136,7 @@ public class InstancedObject extends SceneObject {
 		float max_Y = scatter_Y/2f;
 		float x = Scene.randBetween(min_X, max_X);
 		float y = Scene.randBetween(min_Y, max_Y);
-		return new Vector3f(x,y,0);
+		return new Vector3f(x,y,1);
 	}
 	
 	protected Vector3f genScale() {

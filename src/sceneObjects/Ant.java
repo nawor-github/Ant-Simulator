@@ -68,13 +68,12 @@ public class Ant extends InstancedObject {
 	private static float ANTENNAE_ROTATION = TAU / 8f;
 	private static float ANTENNAE_SCALE = 0.2f;
 	
-	private static float FEAR_THRESHOLD = 1f;
-	private static float FEAR_LOWER_THRESHOLD = 0.85f;
+	private static float FEAR_THRESHOLD = 500f;
 	private static float COLOUR_VARIATION = 0.2f;
 	
 	public Circle leftAntennaeBalls, rightAntennaeBalls, foodBalls;
 	
-	ArrayList<Integer> foraging, fearful; //1 for following food, 0 for following home, 0 for fearless, 1 for fearful
+	ArrayList<Integer> foraging; //1 for following food, 0 for following home, 2 for STUCK AND FREAKING OUT
 	//Fear is used to track how long an ant should freak out for
 	ArrayList<Float> foodAmount, timeSinceTarget, fear; //Tracks food amount carried and time since was last at target
 	public ArrayList<Vector3f> leftPos, rightPos, frontPos;
@@ -107,8 +106,6 @@ public class Ant extends InstancedObject {
 		Rheading = new Vector3f[0];
 		
 		foraging = new ArrayList<Integer>();
-		fearful = new ArrayList<Integer>();
-		
 		foodAmount = new ArrayList<Float>();
 		fear = new ArrayList<Float>();
 		timeSinceTarget = new ArrayList<Float>();
@@ -159,8 +156,6 @@ public class Ant extends InstancedObject {
 		Rheading = addToVector3fArray(Rheading, newRheading);
 		
 		foraging.add(1);
-		fearful.add(0);
-		
 		foodAmount.add(0f);
 		timeSinceTarget.add(0f);
 		fear.add(0f);
@@ -206,35 +201,18 @@ public class Ant extends InstancedObject {
 		//System.out.println("Generating a new ant at index: " + index);
 	}
 	
-	private void incrementFear(int i, float deltaTime) {
-		fear.set(i, fear.get(i) + (2f * deltaTime)); //If we're in the same place, increment the fear of being stuck
-		if (fear.get(i) > FEAR_THRESHOLD * 2) {
-			fear.set(i, FEAR_THRESHOLD * 2);
-		}
-	}
-	
-	private void clearFear(int i, float deltaTime) {
-		fear.set(i, 0f); //If we've moved, remove that fear
-	}
-	
-	private void decrementFear(int i, float deltaTime) {
-		fear.set(i, fear.get(i) - (1f * deltaTime)); //If we're in the same place, increment the fear of being stuck
-		if (fear.get(i) < 0) {
-			fear.set(i, 0f);
-		}
-	}
 
 	
 	public void update(float deltaTime, InputManager input) {
 		for (int i = 0; i < N_Objects; i++) {
 			
-			calculateSquares(i);		
-			if (fear.get(i) < FEAR_LOWER_THRESHOLD) {
-				fearful.set(i, 0);
+			calculatePositions(i);
+			if (currentSquare.get(i).i == oldSquare.get(i).i) {
+				fear.set(i, fear.get(i) + (1f * deltaTime)); //If we're in the same place, increment the fear of being stuck
+			} else {
+				fear.set(i, 0f); //If we've moved, remove that fear
 			}
-			if (fear.get(i) > FEAR_THRESHOLD) {
-				fearful.set(i, 1);
-			}
+			calculateSquares(i);			
 			calcMovement(i, deltaTime);
 			
 			//System.out.println("Time since target length is " + timeSinceTarget.size());
@@ -261,21 +239,18 @@ public class Ant extends InstancedObject {
 	}
 	
 	private void calcMovement(int i, float deltaTime) {
-		float moveSpeed = MOVE_SPEED;
-		if (!isValid(leftSquare.get(i)) || !isValid(rightSquare.get(i))) {
-			moveSpeed = moveSpeed/2f;
-		}
 		
-		Vector3f newPos = new Vector3f(heading[i].x * moveSpeed * deltaTime, heading[i].y * moveSpeed * deltaTime, 1f);
-		if (fearful.get(i) == 1) {
-			newPos = new Vector3f(heading[i].x * moveSpeed * deltaTime, heading[i].y * moveSpeed * deltaTime, 1f);
+		Vector3f newPos = new Vector3f(heading[i].x * MOVE_SPEED * deltaTime, heading[i].y * MOVE_SPEED * deltaTime, 1f);
+		if (fear.get(i) > FEAR_THRESHOLD) { //If we're scared, go in reverse
 			newPos.x = position[i].x - newPos.x;
 			newPos.y = position[i].y - newPos.y;
-			
+			//newPos.x += position[i].x;
+			//newPos.y += position[i].y;
 		} else {
 			newPos.x += position[i].x;
 			newPos.y += position[i].y;
 		}
+		
 		
 		Square next = grid.getSquareAtWorldPos(newPos);
 		
@@ -284,22 +259,13 @@ public class Ant extends InstancedObject {
 
 		heading[i] = calcHeading(rotation[i].x);
 		
-		if (isValid(leftSquare.get(i)) && isValid(rightSquare.get(i))) {
-			decrementFear(i, deltaTime);
-			setColour(i, antColour);
+		//if (isValid(next) && isValid(leftSquare.get(i)) && isValid(rightSquare.get(i))) {
 
-		} else { //When there is invalid positions, get scared
-			incrementFear(i, deltaTime);
-			setColour(i, antColour);
-			System.out.println("Fear is " + fear.get(i));
-		}
-		
 		if (isValid(next)) {
 			position[i].x = newPos.x;
 			position[i].y = newPos.y;
 		}
 		
-		calculatePositions(i);
 		leftAntennaeBalls.position[i] = leftPos.get(i);
 		rightAntennaeBalls.position[i] = rightPos.get(i);
 		foodBalls.position[i] = frontPos.get(i);
@@ -359,33 +325,49 @@ public class Ant extends InstancedObject {
 		return anntennaePos;
 	}
 	
+	private float distanceBetweenSquareAndAnt(int i, Square s) {
+		Vector3f antPos = position[i];
+		Vector3f squareCentre = s.centre;
+		float bottomLength = Math.abs(squareCentre.x - antPos.x);
+		float sideLength = Math.abs(squareCentre.y - antPos.y);
+		return (float) Math.hypot(bottomLength, sideLength);
+	}
 	
 
 	public float turnDirection(int antIndex) {
-		if (fearful.get(antIndex) == 1) {
-			return 0f; //Fearful ANTS BACK UP STRAIGHT
-		}
 		if (!isValid(frontSquare.get(antIndex))) { //Return a random turn direction if directly ahead is off-nap or a blocker
-			if (antIndex % 2 == 0) { //Pick a side this ant will always turn towards
-				return 1f;
+			if (!isValid(leftSquare.get(antIndex))) {
+				return -1f;//Turn right if left and front are blocked
+			}
+			if (!isValid(rightSquare.get(antIndex))) {
+				return 1f;//Turn left if right and front are blocked
+			}
+			if (antIndex % 2 == 0) { //Pick a side this ant will always turn towards if tied
+				return 1f; //Turn left
 			} else {
-				return -1f;
+				return -1f;//Turn right
 			}
 		}
-		
-		if (!isValid(leftSquare.get(antIndex)) && !isValid(rightSquare.get(antIndex)) && isValid(frontSquare.get(antIndex))) { //In cases where both antennae are detecting blockers BUt the front isn't
-			if (antIndex % 2 == 0) { //Pick a side this ant will always turn towards
-				return 1f;
+		//In cases where both positions left and right are invalid,
+		// Calculate the distances to each one and turn away from the closer one.
+		if (!isValid(leftSquare.get(antIndex)) && !isValid(rightSquare.get(antIndex))) {
+			float leftDistance = distanceBetweenSquareAndAnt(antIndex, leftSquare.get(antIndex));
+			float rightDistance = distanceBetweenSquareAndAnt(antIndex, rightSquare.get(antIndex));
+			if (antIndex % 2 == 0) { //Pick a side this ant will always turn towards if tied
+
+			//if (leftDistance > rightDistance) { //Turn toward the side furthest away
+				return 1f; //Turn left
 			} else {
-				return -1f;
+				return -1f; //Turn right
 			}
 		}
+
 		
-		if (!isValid(leftSquare.get(antIndex))) {
-			return -1;
+		if (!isValid(leftSquare.get(antIndex))) { //If left is invalid, go right
+			return -1; //Turn right
 		}
-		if (!isValid(rightSquare.get(antIndex))) {
-			return 1;
+		if (!isValid(rightSquare.get(antIndex))) {// If right is blocked, go left
+			return 1; //Turn left
 		}
 		float value = 0; //Steady course
 		if (foraging.get(antIndex) == 1) { // Following food
@@ -504,9 +486,7 @@ public class Ant extends InstancedObject {
 				break;
 				//calculateScentlessColour();
 		}
-		//colour[antIndex] = randomisedColour;
-		colour[antIndex] = new Vector3f(fear.get(antIndex), fearful.get(antIndex), 1f);
-
+		colour[antIndex] = randomisedColour;
 		leftAntennaeBalls.colour[antIndex] = randomisedColour;
 		rightAntennaeBalls.colour[antIndex] = randomisedColour;
 	}	
