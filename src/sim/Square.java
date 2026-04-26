@@ -48,8 +48,26 @@ public class Square {
 		i = -1;
 		clear();
 	}
+	
+	public Vector3f getCentre() {
+		return centre;
+	}
 
-
+	public Vector3f getBottomLeft() {
+		return BLCorner;
+	}
+	
+	public Vector3f getTopRight() {
+		return TRCorner;
+	}
+	
+	public Vector3f getBottomRight() {
+		return new Vector3f(TRCorner.x, BLCorner.y, 1f);
+	}
+	
+	public Vector3f getTopLeft() {
+		return new Vector3f(BLCorner.x, TRCorner.y, 1f);
+	}
 	
 	public Vector3f calculateColour() {
 		if (isBlocker) {

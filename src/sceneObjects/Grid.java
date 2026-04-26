@@ -201,9 +201,7 @@ public class Grid extends SceneObject {
 		return new Vector3f(x, y, 1f);
 	}
 	
-	public Vector3f getCentre(int index){
-		return indexedSquares[index].centre;
-	}
+	
 	
 	private Vector3f calcBL(int index) {
 		float x = position[index].x;
@@ -211,10 +209,6 @@ public class Grid extends SceneObject {
 		return new Vector3f(x, y, 1f);
 	}
 	
-	public Vector3f getBottomLeft(int index){
-		return indexedSquares[index].BLCorner;
-	}
-
 	private Vector3f calcTR(int index) {
 		Vector3f BL = calcBL(index);
 		float x = BL.x + getScale();
@@ -222,9 +216,26 @@ public class Grid extends SceneObject {
 		return new Vector3f(x, y, 1f);
 	}
 	
-	public Vector3f getTopRight(int index){
-		return indexedSquares[index].TRCorner;
+	public Vector3f getBottomLeft(int index){
+		return indexedSquares[index].getBottomLeft();
 	}
+	
+	public Vector3f getTopRight(int index){
+		return indexedSquares[index].getTopRight();
+	}
+	
+	public Vector3f getTopLeft(int index){
+		return indexedSquares[index].getTopLeft();
+	}
+	
+	public Vector3f getBottomRight(int index){
+		return indexedSquares[index].getBottomRight();
+	}
+	
+	public Vector3f getCentre(int index){
+		return indexedSquares[index].getCentre();
+	}
+	
 	
 	private boolean liesWithin(Vector4f pos, int index) {
 		Vector3f BL = getBottomLeft(index);

@@ -332,7 +332,6 @@ public class Ant extends InstancedObject {
 		float sideLength = Math.abs(squareCentre.y - antPos.y);
 		return (float) Math.hypot(bottomLength, sideLength);
 	}
-	
 
 	public float turnDirection(int antIndex) {
 		if (!isValid(frontSquare.get(antIndex))) { //Return a random turn direction if directly ahead is off-nap or a blocker
